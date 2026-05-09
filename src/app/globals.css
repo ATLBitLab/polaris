@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  --surface: oklch(98% 0.006 90);
+  --panel: oklch(94% 0.008 95);
+  --panel-strong: oklch(90% 0.012 92);
+  --foreground: oklch(22% 0.012 85);
+  --muted: oklch(46% 0.014 82);
+  --border: oklch(84% 0.012 88);
+  --accent: oklch(47% 0.085 165);
+  --accent-strong: oklch(34% 0.078 165);
+  --accent-soft: oklch(90% 0.042 165);
+  --caution: oklch(58% 0.085 70);
+  --caution-soft: oklch(91% 0.048 75);
+  --attention-soft: oklch(91% 0.052 48);
+  --focus: oklch(58% 0.11 180);
+}
+
+@theme inline {
+  --color-background: var(--surface);
+  --color-foreground: var(--foreground);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--surface);
+}
+
+body {
+  min-width: 320px;
+  background: var(--surface);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
