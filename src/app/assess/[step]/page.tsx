@@ -3,15 +3,15 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toRomanNumeral } from "@/components/safety-quiz-chrome";
 import {
-  totalQuestionCount,
+  useQuizQuestionCount,
   useSafetyQuiz,
 } from "@/components/safety-quiz-provider";
 import {
-  quizConfig,
+  getQuestionsForRole,
   type AnswerKey,
   type QuestionKey,
 } from "@/lib/quiz-config";
@@ -24,11 +24,22 @@ export default function AssessQuestionPage({
   const { step } = use(params);
   const stepIndex = Number(step);
   const router = useRouter();
-  const { answers, setAnswer, submitQuiz } = useSafetyQuiz();
+  const { role, answers, setAnswer, submitQuiz } = useSafetyQuiz();
+  const totalQuestionCount = useQuizQuestionCount();
   const [validationMessage, setValidationMessage] = useState<string | null>(
     null,
   );
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!role) {
+      router.replace("/assess/role");
+    }
+  }, [role, router]);
+
+  if (!role) {
+    return null;
+  }
 
   if (
     !Number.isInteger(stepIndex) ||
@@ -38,9 +49,10 @@ export default function AssessQuestionPage({
     notFound();
   }
 
-  const question = quizConfig.questions[stepIndex - 1];
+  const questions = getQuestionsForRole(role);
+  const question = questions[stepIndex - 1];
   const isLast = stepIndex === totalQuestionCount;
-  const previousHref = stepIndex > 1 ? `/assess/${stepIndex - 1}` : "/";
+  const previousHref = stepIndex > 1 ? `/assess/${stepIndex - 1}` : "/assess/role";
   const selectedAnswer = answers[question.key];
 
   function handleSelect(answerKey: AnswerKey) {
@@ -114,7 +126,7 @@ export default function AssessQuestionPage({
           <span className="button-icon" aria-hidden="true">
             <ChevronLeft className="h-4 w-4" />
           </span>
-          <span>{stepIndex > 1 ? "Back" : "Home"}</span>
+          <span>Back</span>
         </Link>
         <Button
           type="button"

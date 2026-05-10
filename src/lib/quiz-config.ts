@@ -2,6 +2,8 @@ export type RiskBand = "lower" | "moderate" | "elevated";
 
 export type AnswerKey = "A" | "B" | "C" | "D";
 
+export type QuizRole = "participant" | "organizer";
+
 export type QuestionKey =
   | "event_visibility"
   | "public_posting"
@@ -51,6 +53,7 @@ export type GuidanceItem = {
   readonly body: string;
   readonly priority: number;
   readonly minBand: RiskBand;
+  readonly applicableRoles: readonly QuizRole[];
   readonly triggers?: readonly GuidanceTrigger[];
 };
 
@@ -61,7 +64,7 @@ export const answerScores: Record<AnswerKey, number> = {
   D: 3,
 };
 
-const answers = {
+const sharedAnswers = {
   event_visibility: [
     {
       key: "A",
@@ -163,7 +166,7 @@ const answers = {
         "Predictable venue and timing details raise the value of a careful arrival and departure plan.",
     },
   ],
-  response_plan: [
+  response_plan_organizer: [
     {
       key: "A",
       label: "Clear plan and owners",
@@ -195,6 +198,33 @@ const answers = {
       points: 3,
       rationale:
         "A missing response plan is one of the strongest reasons to slow down and assign responsibilities.",
+    },
+  ],
+  response_plan_participant: [
+    {
+      key: "A",
+      label: "Formally aware",
+      description:
+        "Organizer has shared specific details of all response plan contacts including but not limited to emergency exits and escalation contacts.",
+      points: 0,
+      rationale: "The organizer has shared a clear response plan.",
+    },
+    {
+      key: "B",
+      label: "Informally aware",
+      description: "People have talked about it but no one clearly owns it.",
+      points: 2,
+      rationale:
+        "Informal coordination leaves room for confusion if conditions change.",
+    },
+    {
+      key: "C",
+      label: "Not aware of a response plan",
+      description:
+        "A response plan has not been shared by the organizer of this event.",
+      points: 3,
+      rationale:
+        "A missing response plan is one of the strongest reasons to slow down before attending.",
     },
   ],
   harassment_history: [
@@ -367,18 +397,52 @@ const answers = {
         "Sensitive account or payment links should be separated from public event activity where feasible.",
     },
   ],
-  public_profile: [
+  public_profile_participant: [
     {
       key: "A",
       label: "Low public profile",
-      description: "You or the organizers are not publicly associated with the event.",
+      description: "The organizer is not publicly associated with the event.",
+      points: 0,
+      rationale: "Organizer public profile exposure appears low.",
+    },
+    {
+      key: "B",
+      label: "Known in the community",
+      description: "The organizer has some community visibility.",
+      points: 1,
+      rationale: "Existing community visibility for the organizer adds some exposure.",
+    },
+    {
+      key: "C",
+      label: "Named public role",
+      description:
+        "The organizer is listed as a speaker, media contact, host, or public representative.",
+      points: 2,
+      rationale:
+        "Named public roles for the organizer make personal account and contact boundaries more important.",
+    },
+    {
+      key: "D",
+      label: "Targeted public attention",
+      description:
+        "Media attention, hostile monitoring, or targeted public posts mention the organizer.",
+      points: 3,
+      rationale:
+        "Targeted public attention on the organizer raises both event safety and identity protection needs.",
+    },
+  ],
+  public_profile_organizer: [
+    {
+      key: "A",
+      label: "Low public profile",
+      description: "You are not publicly associated with the event.",
       points: 0,
       rationale: "Public profile exposure appears low.",
     },
     {
       key: "B",
       label: "Known in the community",
-      description: "You or organizers have some community visibility.",
+      description: "You have some community visibility.",
       points: 1,
       rationale: "Existing community visibility adds some exposure.",
     },
@@ -386,7 +450,7 @@ const answers = {
       key: "C",
       label: "Named public role",
       description:
-        "You or organizers are listed as speakers, media contacts, hosts, or public representatives.",
+        "You are listed as a speaker, media contact, host, or public representative.",
       points: 2,
       rationale:
         "Named public roles make personal account and contact boundaries more important.",
@@ -395,101 +459,184 @@ const answers = {
       key: "D",
       label: "Targeted public attention",
       description:
-        "Media attention, hostile monitoring, or targeted public posts mention you, organizers, or attendees.",
+        "Media attention, hostile monitoring, or targeted public posts mention you.",
       points: 3,
       rationale:
         "Targeted public attention raises both event safety and identity protection needs.",
     },
   ],
-} as const satisfies Record<QuestionKey, readonly AnswerOption[]>;
+} as const satisfies Record<string, readonly AnswerOption[]>;
+
+const eventVisibilityQuestion: QuizQuestion = {
+  key: "event_visibility",
+  prompt: "How public is the event itself?",
+  helper: "Choose the option closest to the audience and likely attention.",
+  answers: sharedAnswers.event_visibility,
+};
+
+const publicPostingQuestion: QuizQuestion = {
+  key: "public_posting",
+  prompt: "How much event information is posted publicly?",
+  helper: "Consider flyers, event pages, social posts, and reshared details.",
+  answers: sharedAnswers.public_posting,
+};
+
+const venueTimingQuestion: QuizQuestion = {
+  key: "venue_timing",
+  prompt: "How sensitive are the venue and timing details?",
+  helper: "A date or place can change the exposure even when the event is small.",
+  answers: sharedAnswers.venue_timing,
+};
+
+const responsePlanOrganizerQuestion: QuizQuestion = {
+  key: "response_plan",
+  prompt: "How prepared is the response plan?",
+  helper: "Think about check-ins, exit points, accessibility needs, and escalation.",
+  answers: sharedAnswers.response_plan_organizer,
+};
+
+const responsePlanParticipantQuestion: QuizQuestion = {
+  key: "response_plan",
+  prompt: "Are you aware of a response plan?",
+  helper:
+    "Think about whether the organizer has shared check-ins, exits, and escalation contacts.",
+  answers: sharedAnswers.response_plan_participant,
+};
+
+const harassmentHistoryQuestion: QuizQuestion = {
+  key: "harassment_history",
+  prompt: "How likely is unwanted attention or harassment?",
+  helper: "Use what you know now, not worst-case speculation.",
+  answers: sharedAnswers.harassment_history,
+};
+
+const incidentDocumentationQuestion: QuizQuestion = {
+  key: "incident_documentation",
+  prompt: "How will photos, video, or incident notes be handled?",
+  helper: "Include press, livestreams, social posts, and shared folders.",
+  answers: sharedAnswers.incident_documentation,
+};
+
+const legalIdentityQuestion: QuizQuestion = {
+  key: "legal_identity",
+  prompt: "How much legal identity information is required?",
+  helper: "Registration, travel, venue access, and reimbursements all count.",
+  answers: sharedAnswers.legal_identity,
+};
+
+const familyWorkExposureQuestion: QuizQuestion = {
+  key: "family_work_exposure",
+  prompt: "Could participation affect family, work, school, or housing?",
+  helper: "Consider where participation might become visible beyond the event.",
+  answers: sharedAnswers.family_work_exposure,
+};
+
+const accountPaymentsQuestion: QuizQuestion = {
+  key: "account_payments",
+  prompt: "What accounts or payment tools are involved?",
+  helper: "Look for account sign-ins, donations, reimbursements, and travel systems.",
+  answers: sharedAnswers.account_payments,
+};
+
+const publicProfileParticipantQuestion: QuizQuestion = {
+  key: "public_profile",
+  prompt: "From your perspective, how visible is the organizer of this event?",
+  helper:
+    "Perspective based on public roles, media contact, and targeted online attention.",
+  answers: sharedAnswers.public_profile_participant,
+};
+
+const publicProfileOrganizerQuestion: QuizQuestion = {
+  key: "public_profile",
+  prompt:
+    "From your perspective as an organizer, how visible is your profile?",
+  helper:
+    "Perspective based on public roles, media contact, and targeted online attention.",
+  answers: sharedAnswers.public_profile_organizer,
+};
+
+const participantQuestions: readonly QuizQuestion[] = [
+  eventVisibilityQuestion,
+  publicPostingQuestion,
+  venueTimingQuestion,
+  responsePlanParticipantQuestion,
+  harassmentHistoryQuestion,
+  familyWorkExposureQuestion,
+  publicProfileParticipantQuestion,
+];
+
+const organizerQuestions: readonly QuizQuestion[] = [
+  eventVisibilityQuestion,
+  publicPostingQuestion,
+  venueTimingQuestion,
+  responsePlanOrganizerQuestion,
+  harassmentHistoryQuestion,
+  incidentDocumentationQuestion,
+  legalIdentityQuestion,
+  familyWorkExposureQuestion,
+  accountPaymentsQuestion,
+  publicProfileOrganizerQuestion,
+];
+
+const participantThresholds: readonly RiskBandConfig[] = [
+  {
+    band: "lower",
+    label: "Lower",
+    minScore: 0,
+    maxScore: 5,
+    summary: "Routine planning should cover the main needs for this event.",
+  },
+  {
+    band: "moderate",
+    label: "Moderate",
+    minScore: 6,
+    maxScore: 10,
+    summary: "Add a few more coordination steps before the event.",
+  },
+  {
+    band: "elevated",
+    label: "Elevated",
+    minScore: 11,
+    maxScore: 21,
+    summary:
+      "Use a more deliberate plan for arrival, communications, and check-ins.",
+  },
+];
+
+const organizerThresholds: readonly RiskBandConfig[] = [
+  {
+    band: "lower",
+    label: "Lower",
+    minScore: 0,
+    maxScore: 7,
+    summary: "Routine planning should cover the main needs for this event.",
+  },
+  {
+    band: "moderate",
+    label: "Moderate",
+    minScore: 8,
+    maxScore: 15,
+    summary: "Add a few more coordination steps before the event.",
+  },
+  {
+    band: "elevated",
+    label: "Elevated",
+    minScore: 16,
+    maxScore: 30,
+    summary:
+      "Use a more deliberate plan for identity, travel, and communications.",
+  },
+];
 
 export const quizConfig = {
-  questions: [
-    {
-      key: "event_visibility",
-      prompt: "How public is the event itself?",
-      helper: "Choose the option closest to the audience and likely attention.",
-      answers: answers.event_visibility,
-    },
-    {
-      key: "public_posting",
-      prompt: "How much event information is posted publicly?",
-      helper: "Consider flyers, event pages, social posts, and reshared details.",
-      answers: answers.public_posting,
-    },
-    {
-      key: "venue_timing",
-      prompt: "How sensitive are the venue and timing details?",
-      helper: "A date or place can change the exposure even when the event is small.",
-      answers: answers.venue_timing,
-    },
-    {
-      key: "response_plan",
-      prompt: "How prepared is the response plan?",
-      helper: "Think about check-ins, exit points, accessibility needs, and escalation.",
-      answers: answers.response_plan,
-    },
-    {
-      key: "harassment_history",
-      prompt: "How likely is unwanted attention or harassment?",
-      helper: "Use what you know now, not worst-case speculation.",
-      answers: answers.harassment_history,
-    },
-    {
-      key: "incident_documentation",
-      prompt: "How will photos, video, or incident notes be handled?",
-      helper: "Include press, livestreams, social posts, and shared folders.",
-      answers: answers.incident_documentation,
-    },
-    {
-      key: "legal_identity",
-      prompt: "How much legal identity information is required?",
-      helper: "Registration, travel, venue access, and reimbursements all count.",
-      answers: answers.legal_identity,
-    },
-    {
-      key: "family_work_exposure",
-      prompt: "Could participation affect family, work, school, or housing?",
-      helper: "Consider where participation might become visible beyond the event.",
-      answers: answers.family_work_exposure,
-    },
-    {
-      key: "account_payments",
-      prompt: "What accounts or payment tools are involved?",
-      helper: "Look for account sign-ins, donations, reimbursements, and travel systems.",
-      answers: answers.account_payments,
-    },
-    {
-      key: "public_profile",
-      prompt: "How visible are you or the organizers already?",
-      helper: "Include public roles, media contact, and targeted online attention.",
-      answers: answers.public_profile,
-    },
-  ],
-  thresholds: [
-    {
-      band: "lower",
-      label: "Lower",
-      minScore: 0,
-      maxScore: 7,
-      summary: "Routine planning should cover the main needs for this event.",
-    },
-    {
-      band: "moderate",
-      label: "Moderate",
-      minScore: 8,
-      maxScore: 15,
-      summary: "Add a few more coordination steps before the event.",
-    },
-    {
-      band: "elevated",
-      label: "Elevated",
-      minScore: 16,
-      maxScore: 30,
-      summary:
-        "Use a more deliberate plan for identity, travel, and communications.",
-    },
-  ],
+  questions: {
+    participant: participantQuestions,
+    organizer: organizerQuestions,
+  },
+  thresholds: {
+    participant: participantThresholds,
+    organizer: organizerThresholds,
+  },
   guidanceCategories: [
     {
       key: "event_safety",
@@ -512,6 +659,7 @@ export const quizConfig = {
       body: "Tell one trusted person where you will be, when you expect to leave, and how you will check in.",
       priority: 10,
       minBand: "lower",
+      applicableRoles: ["participant", "organizer"],
     },
     {
       id: "arrival-exit",
@@ -520,6 +668,7 @@ export const quizConfig = {
       body: "Choose a meetup point, a backup place nearby, and a transit or ride plan before you go.",
       priority: 20,
       minBand: "lower",
+      applicableRoles: ["participant", "organizer"],
     },
     {
       id: "coordination-roles",
@@ -528,6 +677,7 @@ export const quizConfig = {
       body: "Assign point people for check-ins, accessibility needs, and escalation decisions so one person is not carrying everything.",
       priority: 30,
       minBand: "moderate",
+      applicableRoles: ["organizer"],
     },
     {
       id: "public-buddy-plan",
@@ -536,6 +686,7 @@ export const quizConfig = {
       body: "For higher-visibility events, pair up and agree on when to step away if conditions change.",
       priority: 40,
       minBand: "moderate",
+      applicableRoles: ["participant", "organizer"],
       triggers: [
         { question: "event_visibility", minAnswer: "C" },
         { question: "harassment_history", minAnswer: "C" },
@@ -549,6 +700,7 @@ export const quizConfig = {
       body: "Share exact arrival, departure, venue, and timing details only with people who need them for coordination.",
       priority: 50,
       minBand: "moderate",
+      applicableRoles: ["participant", "organizer"],
       triggers: [
         { question: "public_posting", minAnswer: "C" },
         { question: "venue_timing", minAnswer: "C" },
@@ -561,6 +713,7 @@ export const quizConfig = {
       body: "Agree who can record, where incident notes go, and what should be reviewed before anything becomes public.",
       priority: 60,
       minBand: "elevated",
+      applicableRoles: ["organizer"],
       triggers: [
         { question: "incident_documentation", minAnswer: "C" },
         { question: "harassment_history", minAnswer: "C" },
@@ -574,6 +727,7 @@ export const quizConfig = {
       body: "Avoid asking for legal names, home addresses, extra contact fields, or account links unless there is a clear need.",
       priority: 70,
       minBand: "lower",
+      applicableRoles: ["organizer"],
     },
     {
       id: "photo-consent",
@@ -582,6 +736,7 @@ export const quizConfig = {
       body: "Before posting photos, check consent and avoid tagging people who did not ask to be identified.",
       priority: 80,
       minBand: "lower",
+      applicableRoles: ["organizer"],
       triggers: [
         { question: "incident_documentation", minAnswer: "B" },
         { question: "public_posting", minAnswer: "C" },
@@ -595,6 +750,7 @@ export const quizConfig = {
       body: "Check that flyers, posts, and sign-up pages do not expose private contact details, participant lists, or volunteer information.",
       priority: 90,
       minBand: "moderate",
+      applicableRoles: ["organizer"],
       triggers: [
         { question: "public_posting", minAnswer: "C" },
         { question: "legal_identity", minAnswer: "C" },
@@ -609,6 +765,7 @@ export const quizConfig = {
       body: "Consider a dedicated email or messaging channel for event logistics instead of personal accounts.",
       priority: 100,
       minBand: "moderate",
+      applicableRoles: ["organizer"],
     },
     {
       id: "account-boundaries",
@@ -617,6 +774,7 @@ export const quizConfig = {
       body: "Keep personal accounts, payment trails, and public organizing channels separate when feasible.",
       priority: 110,
       minBand: "elevated",
+      applicableRoles: ["organizer"],
       triggers: [
         { question: "legal_identity", minAnswer: "C" },
         { question: "family_work_exposure", minAnswer: "C" },
@@ -631,6 +789,7 @@ export const quizConfig = {
       body: "Decide in advance what you want visible to relatives, employers, schools, landlords, or clients, and adjust registration and posting choices around that.",
       priority: 120,
       minBand: "elevated",
+      applicableRoles: ["organizer"],
       triggers: [
         { question: "family_work_exposure", minAnswer: "C" },
         { question: "public_profile", minAnswer: "D" },
@@ -638,8 +797,8 @@ export const quizConfig = {
     },
   ],
 } as const satisfies {
-  readonly questions: readonly QuizQuestion[];
-  readonly thresholds: readonly RiskBandConfig[];
+  readonly questions: Record<QuizRole, readonly QuizQuestion[]>;
+  readonly thresholds: Record<QuizRole, readonly RiskBandConfig[]>;
   readonly guidanceCategories: readonly {
     readonly key: GuidanceCategoryKey;
     readonly title: string;
@@ -648,7 +807,7 @@ export const quizConfig = {
   readonly guidanceItems: readonly GuidanceItem[];
 };
 
-export const questionKeys = quizConfig.questions.map((question) => question.key);
+export const quizRoles = ["participant", "organizer"] as const satisfies readonly QuizRole[];
 
 export const answerKeys = ["A", "B", "C", "D"] as const satisfies readonly AnswerKey[];
 
@@ -657,3 +816,34 @@ export const riskBandRank: Record<RiskBand, number> = {
   moderate: 1,
   elevated: 2,
 };
+
+const allQuestionKeys: readonly QuestionKey[] = [
+  "event_visibility",
+  "public_posting",
+  "venue_timing",
+  "response_plan",
+  "harassment_history",
+  "incident_documentation",
+  "legal_identity",
+  "family_work_exposure",
+  "account_payments",
+  "public_profile",
+];
+
+export const questionKeys = allQuestionKeys;
+
+export function getQuestionsForRole(role: QuizRole): readonly QuizQuestion[] {
+  return quizConfig.questions[role];
+}
+
+export function getQuestionKeysForRole(role: QuizRole): readonly QuestionKey[] {
+  return quizConfig.questions[role].map((question) => question.key);
+}
+
+export function getThresholdsForRole(role: QuizRole): readonly RiskBandConfig[] {
+  return quizConfig.thresholds[role];
+}
+
+export function isQuizRole(value: string): value is QuizRole {
+  return value === "participant" || value === "organizer";
+}

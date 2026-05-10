@@ -11,13 +11,13 @@ export default function AssessIntroPage() {
         Plan ahead with a steady hand.
       </h1>
       <p className="mt-7 max-w-[60ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
-        One question at a time. Answer ten short prompts; receive a short,
-        considered list of practical steps. Only anonymous answer letters and
-        the planning band may be saved for aggregate analytics.
+        A simple quiz to help you assess if you might be at risk of being the
+        target of TNR. This test is completely private and we do not store any
+        identifiable information about you.
       </p>
 
       <div className="mt-10 flex flex-wrap items-center gap-3">
-        <Link href="/assess/1" className="button button-primary">
+        <Link href="/assess/role" className="button button-primary">
           <span>Get started</span>
           <span className="button-icon" aria-hidden="true">
             <ChevronRight strokeWidth={1.75} className="h-4 w-4" />
