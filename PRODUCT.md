@@ -6,17 +6,19 @@ product
 
 ## Users
 
-Polaris is a planning tool for community members and organizers thinking through real, sometimes politically sensitive event decisions in the U.S.
+Polaris is built for people in the United States who are surveilled, harassed, or threatened by the Chinese government, and for the allies who stand with them. This is transnational repression: pressure that follows people across borders, including intimidation at protests, online harassment campaigns, and coercive pressure placed on family members still living in China.
 
-The canonical persona is a Chinese pro-democracy activist living in the U.S., opening Polaris on a quiet weekday evening to think through whether and how to attend a public commemoration. Polaris should serve them well; it should also serve the broader population of community members and event organizers facing ordinary planning questions, without naming any community in the surface copy.
+The primary audience is members of the Hong Kong, Tibetan, Uyghur, and mainland Chinese communities, along with allies of pro-democracy advocates from China. Surface copy names these groups, and the perpetrator, directly. The canonical persona is a Chinese pro-democracy activist living in the U.S., opening Polaris on a weekday evening to record an incident of harassment, surveillance, or threat, or to think through how to attend a public commemoration safely.
 
 A second audience is implicit: program officers and grant-makers at human rights and civic-tech funders who reach the page while reviewing the project. They should see craft, restraint, and a serious privacy stance immediately, without ever encountering marketing language.
 
 ## Product Purpose
 
-The Safety Quiz collects ten A-D answers about safety exposure and returns a calm planning band ("Lower," "Moderate," "Elevated") plus a short, prioritized list of practical steps in two areas: personal safety at events and identity protection.
+Polaris has two surfaces. The primary surface is incident reporting: a structured way to document what happened (when, where, who was involved, what was said or done) without requiring an account. The user controls whether to share contact details for follow-up.
 
-Success means a user leaves with three or four concrete steps in mind, the page collected nothing identifying, and the experience felt like clear-headed planning rather than a panic checklist.
+The secondary surface is the Safety Quiz: ten A-D answers about safety exposure that return a calm planning band ("Lower," "Moderate," "Elevated") plus a short, prioritized list of practical steps in personal safety and identity protection.
+
+Success means a user leaves with either a record they can act on or three or four concrete next steps in mind, and the experience felt like clear-headed thinking rather than a panic checklist.
 
 ## Brand Personality
 
