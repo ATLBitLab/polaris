@@ -1,7 +1,4 @@
-import {
-  ReportIntro,
-  ReportStatusBar,
-} from "@/components/incident-report-chrome";
+import { ReportStatusBar } from "@/components/incident-report-chrome";
 
 export default function ReportWizardLayout({
   children,
@@ -10,7 +7,6 @@ export default function ReportWizardLayout({
 }) {
   return (
     <>
-      <ReportIntro />
       <ReportStatusBar />
       {children}
     </>

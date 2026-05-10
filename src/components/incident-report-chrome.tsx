@@ -45,35 +45,6 @@ export function ReportMasthead() {
   );
 }
 
-export function ReportIntro() {
-  return (
-    <section className="mt-10">
-      <p className="numeral text-[0.78rem] tracking-[0.18em] text-[var(--clay-deep)] uppercase">
-        Incident report
-      </p>
-      <h1 className="display mt-3 max-w-[18ch] text-[2.25rem] leading-[1.1] text-[var(--ink)] sm:text-[2.75rem]">
-        Record what happened while details are fresh.
-      </h1>
-      <div className="mt-7 grid gap-x-12 gap-y-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)]">
-        <p className="max-w-[62ch] text-[1.03rem] leading-[1.75] text-[var(--ink-2)]">
-          One section at a time. Polaris autosaves from this browser, and each
-          continue confirms what is on file.
-        </p>
-        <aside className="display border-t border-[var(--rule-strong)] pt-4 text-[0.95rem] leading-[1.6] text-[var(--ink-2)] sm:mt-2">
-          <p className="italic">
-            <span className="not-italic numeral mr-2 text-[var(--clay)]">
-              §
-            </span>
-            Incident reports may include identifying details when you choose
-            to provide them. The safety quiz remains the no-identifying-detail
-            path.
-          </p>
-        </aside>
-      </div>
-    </section>
-  );
-}
-
 export function ReportStatusBar() {
   const { saveState, error, report } = useIncidentReport();
   return (
