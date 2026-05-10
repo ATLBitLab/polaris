@@ -5,7 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { useIncidentReport } from "@/components/incident-report-provider";
+import {
+  getOrCreateDeviceSource,
+  useIncidentReport,
+} from "@/components/incident-report-provider";
 import { StarMark } from "@/components/incident-report-chrome";
 
 export default function ReportDonePage() {
@@ -17,10 +20,22 @@ export default function ReportDonePage() {
     resetReport,
   } = useIncidentReport();
   const blindingRequestedRef = useRef<string | null>(null);
+  const submitNotifiedRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (report) {
       markReportSubmitted();
+    }
+
+    if (report && submitNotifiedRef.current !== report.id) {
+      submitNotifiedRef.current = report.id;
+      void fetch(`/api/incident-reports/${report.id}/submit`, {
+        method: "POST",
+        headers: { "x-polaris-device-source": getOrCreateDeviceSource() },
+        keepalive: true,
+      }).catch((nextError) => {
+        console.warn("Unable to mark incident report submitted", nextError);
+      });
     }
 
     if (
@@ -34,7 +49,7 @@ export default function ReportDonePage() {
 
   function startAnother() {
     resetReport();
-    router.push("/report/when");
+    router.push("/report");
   }
 
   return (

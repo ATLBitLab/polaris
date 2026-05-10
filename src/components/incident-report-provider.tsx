@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 import type {
   IncidentChecklistItem,
   IncidentClientReport,
@@ -40,7 +41,7 @@ type ApiPayload = {
 };
 
 const deviceStorageKey = "polaris.incident.device.v1";
-const reportIdStorageKey = "polaris.incident.report.v1";
+export const reportIdStorageKey = "polaris.incident.report.v1";
 const submittedReportIdStorageKey = "polaris.incident.submitted-report.v1";
 
 type IncidentReportContextValue = {
@@ -80,6 +81,7 @@ type IncidentReportContextValue = {
   readonly requestReportBlinding: () => Promise<void>;
   readonly flushPendingPatches: () => Promise<void>;
   readonly resetReport: () => void;
+  readonly seedReport: (report: IncidentClientReport) => void;
 };
 
 const IncidentReportContext = createContext<IncidentReportContextValue | null>(
@@ -101,6 +103,7 @@ export function IncidentReportProvider({
 }: {
   readonly children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [report, setReport] = useState<IncidentClientReport | null>(null);
   const [deviceSource, setDeviceSource] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("starting");
@@ -226,69 +229,62 @@ export function IncidentReportProvider({
     [schedulePatch],
   );
 
-  const startReport = useCallback(async (source: string) => {
-    setSaveState("starting");
-    const storedId = window.localStorage.getItem(reportIdStorageKey);
-    const submittedId = window.localStorage.getItem(submittedReportIdStorageKey);
-    const shouldStartFresh =
-      storedId !== null &&
-      submittedId === storedId &&
-      window.location.pathname !== "/report/done";
-
-    if (shouldStartFresh) {
-      window.localStorage.removeItem(reportIdStorageKey);
-      window.localStorage.removeItem(submittedReportIdStorageKey);
-    }
-
-    if (storedId && !shouldStartFresh) {
-      try {
-        const response = await fetch(
-          `/api/incident-reports/${storedId}`,
-          {
-            headers: { "x-polaris-device-source": source },
-          },
-        );
-        if (response.ok) {
-          const payload = (await response.json()) as ApiPayload;
-          if (payload.report) {
-            setReport(payload.report);
-            setSaveState("saved");
-            seedManualFields(payload.report.draft, {
-              setManualDateTime,
-              setManualLatitude,
-              setManualLongitude,
-            });
-            return;
-          }
-        }
-      } catch {
-        // fall through to create a fresh report
-      }
-      window.localStorage.removeItem(reportIdStorageKey);
-      window.localStorage.removeItem(submittedReportIdStorageKey);
-    }
-
-    try {
-      const response = await fetch("/api/incident-reports", {
-        method: "POST",
-        headers: { "x-polaris-device-source": source },
-      });
-      const payload = (await response.json()) as ApiPayload;
-      if (!response.ok || !payload.report) {
-        throw new Error(payload.error ?? "Unable to start report");
-      }
-      window.localStorage.setItem(reportIdStorageKey, payload.report.id);
-      setReport(payload.report);
-      setSaveState("saved");
-    } catch (nextError) {
-      setError(
-        nextError instanceof Error
-          ? nextError.message
-          : "Unable to start report",
+  const startReport = useCallback(
+    async (source: string) => {
+      setSaveState("starting");
+      const storedId = window.localStorage.getItem(reportIdStorageKey);
+      const submittedId = window.localStorage.getItem(
+        submittedReportIdStorageKey,
       );
-      setSaveState("error");
-    }
-  }, []);
+      const currentPath = window.location.pathname;
+      const shouldStartFresh =
+        storedId !== null &&
+        submittedId === storedId &&
+        currentPath !== "/report/done";
+
+      if (shouldStartFresh) {
+        window.localStorage.removeItem(reportIdStorageKey);
+        window.localStorage.removeItem(submittedReportIdStorageKey);
+      }
+
+      const usableStoredId = storedId && !shouldStartFresh ? storedId : null;
+
+      if (usableStoredId) {
+        try {
+          const response = await fetch(
+            `/api/incident-reports/${usableStoredId}`,
+            {
+              headers: { "x-polaris-device-source": source },
+            },
+          );
+          if (response.ok) {
+            const payload = (await response.json()) as ApiPayload;
+            if (payload.report) {
+              setReport(payload.report);
+              setSaveState("saved");
+              seedManualFields(payload.report.draft, {
+                setManualDateTime,
+                setManualLatitude,
+                setManualLongitude,
+              });
+              return;
+            }
+          }
+        } catch {
+          // fall through to redirect
+        }
+        window.localStorage.removeItem(reportIdStorageKey);
+        window.localStorage.removeItem(submittedReportIdStorageKey);
+      }
+
+      setSaveState("idle");
+
+      if (currentPath !== "/report") {
+        router.replace("/report");
+      }
+    },
+    [router],
+  );
 
   useEffect(() => {
     if (startedRef.current) {
@@ -721,6 +717,22 @@ export function IncidentReportProvider({
     [updateDraft],
   );
 
+  const seedReport = useCallback((nextReport: IncidentClientReport) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(reportIdStorageKey, nextReport.id);
+      window.localStorage.removeItem(submittedReportIdStorageKey);
+    }
+    startedRef.current = true;
+    setReport(nextReport);
+    setSaveState("saved");
+    setError(null);
+    seedManualFields(nextReport.draft, {
+      setManualDateTime,
+      setManualLatitude,
+      setManualLongitude,
+    });
+  }, []);
+
   const markReportSubmitted = useCallback(() => {
     const currentReport = reportRef.current;
     if (currentReport) {
@@ -770,11 +782,8 @@ export function IncidentReportProvider({
     setError(null);
     setAnalysisState("idle");
     setRecordingState("idle");
-    startedRef.current = false;
-    if (deviceSourceRef.current) {
-      void startReport(deviceSourceRef.current);
-    }
-  }, [startReport]);
+    setSaveState("idle");
+  }, []);
 
   const value = useMemo<IncidentReportContextValue>(
     () => ({
@@ -805,6 +814,7 @@ export function IncidentReportProvider({
       requestReportBlinding,
       flushPendingPatches,
       resetReport,
+      seedReport,
     }),
     [
       report,
@@ -833,6 +843,7 @@ export function IncidentReportProvider({
       requestReportBlinding,
       flushPendingPatches,
       resetReport,
+      seedReport,
     ],
   );
 
@@ -882,7 +893,7 @@ function toLocalDateTimeInputValue(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-function getOrCreateDeviceSource(): string {
+export function getOrCreateDeviceSource(): string {
   const existing = window.localStorage.getItem(deviceStorageKey);
 
   if (existing && existing.length >= 32) {
