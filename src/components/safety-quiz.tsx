@@ -2,13 +2,6 @@
 
 import { type FormEvent, useMemo, useState } from "react";
 import {
-  ArrowRight,
-  Check,
-  LockKeyhole,
-  RotateCcw,
-  ShieldCheck,
-} from "lucide-react";
-import {
   quizConfig,
   type EventTypeKey,
   type LocationKey,
@@ -17,21 +10,30 @@ import {
 import { scoreQuiz, type QuizResult } from "@/lib/quiz-engine";
 
 const defaultInput = {
-  location: "metro_atlanta" as LocationKey,
+  location: "other_us" as LocationKey,
   role: "community_member" as RoleKey,
   eventTypes: ["low_key_social"] as EventTypeKey[],
 };
 
-const bandTone = {
-  lower:
-    "border-[oklch(71%_0.07_165)] bg-[var(--accent-soft)] text-[var(--accent-strong)]",
-  moderate:
-    "border-[oklch(72%_0.076_75)] bg-[var(--caution-soft)] text-[oklch(33%_0.055_72)]",
-  elevated:
-    "border-[oklch(70%_0.082_48)] bg-[var(--attention-soft)] text-[oklch(32%_0.06_48)]",
-} as const;
-
 type SaveState = "idle" | "saving" | "saved" | "skipped";
+
+const numerals = ["I.", "II.", "III."] as const;
+
+function StarMark({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M12 1.6 L13.05 10.95 L22.4 12 L13.05 13.05 L12 22.4 L10.95 13.05 L1.6 12 L10.95 10.95 Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
 
 export function SafetyQuiz() {
   const [location, setLocation] = useState<LocationKey>(defaultInput.location);
@@ -41,11 +43,6 @@ export function SafetyQuiz() {
   );
   const [result, setResult] = useState<QuizResult | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
-
-  const currentResult = useMemo(
-    () => scoreQuiz({ location, role, eventTypes }),
-    [eventTypes, location, role],
-  );
 
   const locationGroups = useMemo(
     () => ({
@@ -58,23 +55,25 @@ export function SafetyQuiz() {
     [],
   );
 
+  function clearResult() {
+    setResult(null);
+    setSaveState("idle");
+  }
+
   function toggleEventType(eventType: EventTypeKey) {
     setEventTypes((current) => {
       if (current.includes(eventType)) {
         const next = current.filter((item) => item !== eventType);
         return next.length > 0 ? next : current;
       }
-
       return [...current, eventType];
     });
-    setResult(null);
-    setSaveState("idle");
+    clearResult();
   }
 
   async function submitQuiz(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextResult = scoreQuiz({ location, role, eventTypes });
-
     setResult(nextResult);
     setSaveState("saving");
 
@@ -84,11 +83,19 @@ export function SafetyQuiz() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ location, role, eventTypes }),
       });
-
       const payload = (await response.json()) as { saved?: boolean };
       setSaveState(response.ok && payload.saved ? "saved" : "skipped");
     } catch {
       setSaveState("skipped");
+    }
+
+    if (typeof window !== "undefined") {
+      requestAnimationFrame(() => {
+        document.getElementById("plan-anchor")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      });
     }
   }
 
@@ -96,250 +103,329 @@ export function SafetyQuiz() {
     setLocation(defaultInput.location);
     setRole(defaultInput.role);
     setEventTypes(defaultInput.eventTypes);
-    setResult(null);
-    setSaveState("idle");
+    clearResult();
   }
 
-  const selectedLocation = quizConfig.locationBuckets.find(
-    (item) => item.key === location,
-  );
-  const selectedRole = quizConfig.roleOptions.find((item) => item.key === role);
-
   return (
-    <main className="min-h-screen px-5 py-6 text-[var(--foreground)] sm:px-8 lg:px-10">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
-        <header className="grid gap-5 border-b border-[var(--border)] pb-6 md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] md:items-end">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
-              Polaris
-            </p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-normal text-[var(--foreground)] sm:text-4xl">
-              Safety Quiz
-            </h1>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-              Choose broad details about the event. The result is a calm
-              planning band and a short action list.
-            </p>
-          </div>
+    <main className="mx-auto w-full max-w-[44rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
+      <Masthead />
 
-          <div className="flex items-start gap-3 rounded-lg border border-[var(--border)] bg-[var(--panel)] p-4 text-sm leading-6 text-[var(--muted)]">
-            <LockKeyhole
-              className="mt-1 h-4 w-4 flex-none text-[var(--accent-strong)]"
-              aria-hidden="true"
-            />
-            <p>
-              No names, contact info, street addresses, exact coordinates,
-              accounts, or IP addresses are stored by this form.
-            </p>
-          </div>
-        </header>
+      <Hero />
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,430px)]">
-          <form className="flex flex-col gap-7" onSubmit={submitQuiz}>
-            <section className="border-b border-[var(--border)] pb-7">
-              <label
-                htmlFor="location"
-                className="text-base font-semibold text-[var(--foreground)]"
-              >
-                State or metro
-              </label>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-                Use the broadest bucket that still feels useful for planning.
-              </p>
-              <select
-                id="location"
-                value={location}
-                onChange={(event) => {
-                  setLocation(event.target.value as LocationKey);
-                  setResult(null);
-                  setSaveState("idle");
-                }}
-                className="mt-4 min-h-12 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 text-base text-[var(--foreground)] shadow-sm transition-colors duration-150 ease-out hover:border-[var(--accent)]"
-              >
-                <optgroup label="Metro areas">
-                  {locationGroups.metro.map((item) => (
-                    <option key={item.key} value={item.key}>
-                      {item.label}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="States">
-                  {locationGroups.state.map((item) => (
-                    <option key={item.key} value={item.key}>
-                      {item.label}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Other">
-                  {locationGroups.fallback.map((item) => (
-                    <option key={item.key} value={item.key}>
-                      {item.label}
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
-            </section>
+      <Ornament />
 
-            <fieldset className="border-b border-[var(--border)] pb-7">
-              <legend className="text-base font-semibold text-[var(--foreground)]">
-                Role
-              </legend>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {quizConfig.roleOptions.map((option) => (
-                  <label
-                    key={option.key}
-                    className={`flex min-h-24 cursor-pointer items-start gap-3 rounded-lg border p-4 transition duration-150 ease-out ${
-                      role === option.key
-                        ? "border-[var(--accent)] bg-[var(--accent-soft)]"
-                        : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)]"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="role"
-                      value={option.key}
-                      checked={role === option.key}
-                      onChange={() => {
-                        setRole(option.key);
-                        setResult(null);
-                        setSaveState("idle");
-                      }}
-                      className="mt-1 h-4 w-4 accent-[var(--accent)]"
-                    />
-                    <span>
-                      <span className="block font-medium text-[var(--foreground)]">
-                        {option.label}
-                      </span>
-                      <span className="mt-1 block text-sm leading-6 text-[var(--muted)]">
-                        {option.rationale}
-                      </span>
-                    </span>
-                  </label>
+      <form onSubmit={submitQuiz} className="mt-12">
+        <Section index={0} heading="Where the event is">
+          <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
+            Use the broadest bucket that still feels useful. Polaris does not
+            ask for an address, a venue, or coordinates.
+          </p>
+
+          <label htmlFor="location" className="sr-only">
+            State or metro
+          </label>
+          <select
+            id="location"
+            value={location}
+            onChange={(event) => {
+              setLocation(event.target.value as LocationKey);
+              clearResult();
+            }}
+            className="select-native mt-5 h-12 w-full rounded-md border border-[var(--rule)] px-4 text-[1rem] text-[var(--ink)] transition-colors duration-150 ease-out hover:border-[var(--rule-strong)] focus:border-[var(--clay)]"
+          >
+            <option value="other_us">Choose a state or metro</option>
+            <optgroup label="Metro areas">
+              {locationGroups.metro.map((item) => (
+                <option key={item.key} value={item.key}>
+                  {item.label}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="States">
+              {locationGroups.state.map((item) => (
+                <option key={item.key} value={item.key}>
+                  {item.label}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Other">
+              {locationGroups.fallback
+                .filter((item) => item.key !== "other_us")
+                .map((item) => (
+                  <option key={item.key} value={item.key}>
+                    {item.label}
+                  </option>
                 ))}
-              </div>
-            </fieldset>
+            </optgroup>
+          </select>
+        </Section>
 
-            <fieldset className="pb-2">
-              <legend className="text-base font-semibold text-[var(--foreground)]">
-                Event types
-              </legend>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-                Select every type that applies.
-              </p>
-              <div className="mt-4 grid gap-3">
-                {quizConfig.eventTypes.map((option) => {
-                  const checked = eventTypes.includes(option.key);
+        <Section index={1} heading="Your role">
+          <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
+            Attending and organizing call for slightly different plans.
+          </p>
 
-                  return (
-                    <label
-                      key={option.key}
-                      className={`grid cursor-pointer grid-cols-[auto_1fr_auto] items-start gap-3 rounded-lg border p-4 transition duration-150 ease-out ${
-                        checked
-                          ? "border-[var(--accent)] bg-[var(--accent-soft)]"
-                          : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)]"
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        value={option.key}
-                        checked={checked}
-                        onChange={() => toggleEventType(option.key)}
-                        className="mt-1 h-4 w-4 accent-[var(--accent)]"
-                      />
-                      <span>
-                        <span className="block font-medium text-[var(--foreground)]">
-                          {option.label}
-                        </span>
-                        <span className="mt-1 block text-sm leading-6 text-[var(--muted)]">
-                          {option.description}
-                        </span>
-                      </span>
-                      {checked ? (
-                        <Check
-                          className="mt-1 h-5 w-5 text-[var(--accent-strong)]"
-                          aria-hidden="true"
-                        />
-                      ) : null}
-                    </label>
-                  );
-                })}
-              </div>
-            </fieldset>
-
-            <div className="flex flex-col gap-3 border-t border-[var(--border)] pt-6 sm:flex-row sm:items-center">
-              <button
-                type="submit"
-                className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[var(--accent-strong)] px-5 text-sm font-semibold text-[oklch(96%_0.009_150)] shadow-sm transition duration-150 ease-out hover:bg-[var(--accent)]"
-              >
-                See plan
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={resetQuiz}
-                className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[var(--border)] bg-[var(--surface)] px-5 text-sm font-semibold text-[var(--foreground)] transition duration-150 ease-out hover:border-[var(--accent)]"
-              >
-                <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                Start over
-              </button>
-            </div>
-          </form>
-
-          <aside className="flex flex-col gap-5 lg:sticky lg:top-6 lg:self-start">
-            <section className="rounded-lg border border-[var(--border)] bg-[var(--panel)] p-5">
-              <p className="text-sm font-semibold text-[var(--foreground)]">
-                Current inputs
-              </p>
-              <dl className="mt-4 grid gap-3 text-sm">
-                <div className="flex justify-between gap-4">
-                  <dt className="text-[var(--muted)]">Location</dt>
-                  <dd className="text-right font-medium text-[var(--foreground)]">
-                    {selectedLocation?.label}
-                  </dd>
-                </div>
-                <div className="flex justify-between gap-4">
-                  <dt className="text-[var(--muted)]">Role</dt>
-                  <dd className="text-right font-medium text-[var(--foreground)]">
-                    {selectedRole?.shortLabel}
-                  </dd>
-                </div>
-                <div className="flex justify-between gap-4">
-                  <dt className="text-[var(--muted)]">Planning band</dt>
-                  <dd className="text-right font-medium text-[var(--foreground)]">
-                    {currentResult.riskLabel}
-                  </dd>
-                </div>
-              </dl>
-            </section>
-
-            {result ? (
-              <ResultPanel
-                result={result}
-                saveState={saveState}
-                onRevise={() => {
-                  setResult(null);
-                  setSaveState("idle");
-                }}
-              />
-            ) : (
-              <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5">
-                <ShieldCheck
-                  className="h-5 w-5 text-[var(--accent-strong)]"
-                  aria-hidden="true"
+          <fieldset className="mt-5">
+            <legend className="sr-only">Role</legend>
+            <ChoiceList>
+              {quizConfig.roleOptions.map((option) => (
+                <ChoiceRow
+                  key={option.key}
+                  type="radio"
+                  name="role"
+                  value={option.key}
+                  checked={role === option.key}
+                  onChange={() => {
+                    setRole(option.key);
+                    clearResult();
+                  }}
+                  label={option.label}
+                  description={option.rationale}
                 />
-                <p className="mt-4 text-sm font-semibold text-[var(--foreground)]">
-                  The plan appears here
-                </p>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                  Answer the quiz to see a prioritized action list for event
-                  safety and identity protection.
-                </p>
-              </section>
-            )}
-          </aside>
+              ))}
+            </ChoiceList>
+          </fieldset>
+        </Section>
+
+        <Section index={2} heading="What kind of event">
+          <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
+            Select every type that applies. The more honest the picture, the
+            more useful the plan.
+          </p>
+
+          <fieldset className="mt-5">
+            <legend className="sr-only">Event types</legend>
+            <ChoiceList>
+              {quizConfig.eventTypes.map((option) => (
+                <ChoiceRow
+                  key={option.key}
+                  type="checkbox"
+                  value={option.key}
+                  checked={eventTypes.includes(option.key)}
+                  onChange={() => toggleEventType(option.key)}
+                  label={option.label}
+                  description={option.description}
+                />
+              ))}
+            </ChoiceList>
+          </fieldset>
+        </Section>
+
+        <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <button
+            type="submit"
+            className="inline-flex h-11 items-center gap-3 rounded-md bg-[var(--clay)] px-5 text-[0.92rem] font-medium tracking-wide text-[var(--paper)] transition-colors duration-150 ease-out hover:bg-[var(--clay-deep)] focus:bg-[var(--clay-deep)]"
+          >
+            See the plan
+            <span aria-hidden="true" className="text-base leading-none">
+              ›
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={resetQuiz}
+            className="text-[0.9rem] text-[var(--ink-3)] underline decoration-[var(--rule-strong)] decoration-[1px] underline-offset-[6px] transition-colors duration-150 ease-out hover:text-[var(--ink)] hover:decoration-[var(--ink-3)]"
+          >
+            Start over
+          </button>
         </div>
-      </div>
+      </form>
+
+      <div id="plan-anchor" />
+      {result ? (
+        <ResultPanel
+          result={result}
+          saveState={saveState}
+          onRevise={clearResult}
+        />
+      ) : (
+        <PlaceholderPlan />
+      )}
+
+      <Colophon />
     </main>
+  );
+}
+
+function Masthead() {
+  return (
+    <header className="flex items-center justify-between border-b border-[var(--rule)] pb-5">
+      <div className="flex items-center gap-3">
+        <StarMark className="h-3.5 w-3.5 text-[var(--clay)]" />
+        <span className="wordmark text-[0.78rem] text-[var(--ink)]">
+          Polaris
+        </span>
+      </div>
+      <span className="text-[0.72rem] tracking-[0.18em] text-[var(--ink-3)] uppercase">
+        A planning tool
+      </span>
+    </header>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="mt-12">
+      <h1 className="display max-w-[18ch] text-[2.25rem] leading-[1.1] text-[var(--ink)] sm:text-[2.75rem]">
+        Plan ahead with a steady hand.
+      </h1>
+
+      <div className="mt-8 grid gap-x-12 gap-y-7 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)]">
+        <p className="max-w-[60ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
+          Polaris is a quiet way to think through your plans for a community
+          event. Answer three broad questions; receive a short, considered
+          list of practical steps. Your answers stay on this page. Nothing
+          identifying is stored.
+        </p>
+
+        <aside className="display border-t border-[var(--rule-strong)] pt-4 text-[0.95rem] leading-[1.6] text-[var(--ink-2)] sm:mt-2">
+          <p className="italic">
+            <span className="not-italic numeral mr-2 text-[var(--clay)]">
+              §
+            </span>
+            A planning aid, not a verdict. No names, addresses, accounts, or
+            coordinates leave this page.
+          </p>
+        </aside>
+      </div>
+    </section>
+  );
+}
+
+function Ornament() {
+  return (
+    <div
+      className="mt-16 flex items-center justify-center gap-5 text-[var(--clay)]"
+      aria-hidden="true"
+    >
+      <span className="h-px w-12 bg-[var(--rule-strong)]" />
+      <StarMark className="h-2.5 w-2.5" />
+      <span className="h-px w-12 bg-[var(--rule-strong)]" />
+    </div>
+  );
+}
+
+function Section({
+  index,
+  heading,
+  children,
+}: {
+  readonly index: number;
+  readonly heading: string;
+  readonly children: React.ReactNode;
+}) {
+  return (
+    <section className="mt-14 first:mt-0">
+      <div className="mb-5 flex items-baseline gap-4 border-t border-[var(--rule)] pt-7">
+        <span className="numeral text-[0.95rem] text-[var(--clay-deep)]">
+          {numerals[index]}
+        </span>
+        <h2 className="display text-[1.5rem] leading-tight text-[var(--ink)]">
+          {heading}
+        </h2>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function ChoiceList({ children }: { readonly children: React.ReactNode }) {
+  return (
+    <ul className="border-t border-[var(--rule)]">{children}</ul>
+  );
+}
+
+function ChoiceRow({
+  type,
+  name,
+  value,
+  checked,
+  onChange,
+  label,
+  description,
+}: {
+  readonly type: "radio" | "checkbox";
+  readonly name?: string;
+  readonly value: string;
+  readonly checked: boolean;
+  readonly onChange: () => void;
+  readonly label: string;
+  readonly description: string;
+}) {
+  return (
+    <li className="border-b border-[var(--rule)]">
+      <label
+        className={`group grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 gap-y-1 px-3 py-4 transition-colors duration-150 ease-out -mx-3 ${
+          checked
+            ? "bg-[var(--clay-soft)]"
+            : "hover:bg-[var(--paper-deep)]"
+        }`}
+      >
+        <span className="relative mt-[3px] flex h-5 w-5 items-center justify-center">
+          <input
+            type={type}
+            name={name}
+            value={value}
+            checked={checked}
+            onChange={onChange}
+            className="peer absolute inset-0 cursor-pointer opacity-0"
+          />
+          <span
+            aria-hidden="true"
+            className={`flex h-5 w-5 items-center justify-center border transition-colors duration-150 ease-out ${
+              type === "radio" ? "rounded-full" : "rounded-[3px]"
+            } ${
+              checked
+                ? "border-[var(--clay)] bg-[var(--clay)]"
+                : "border-[var(--rule-strong)] bg-[var(--paper-inset)] group-hover:border-[var(--ink-3)]"
+            } peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--focus)]`}
+          >
+            {checked ? (
+              type === "radio" ? (
+                <span className="h-2 w-2 rounded-full bg-[var(--paper)]" />
+              ) : (
+                <svg
+                  viewBox="0 0 16 16"
+                  className="h-3 w-3 text-[var(--paper)]"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3.5 8.5 L6.5 11.5 L12.5 4.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )
+            ) : null}
+          </span>
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[1rem] font-medium text-[var(--ink)]">
+            {label}
+          </span>
+          <span className="mt-1 block max-w-[58ch] text-[0.92rem] leading-relaxed text-[var(--ink-2)]">
+            {description}
+          </span>
+        </span>
+      </label>
+    </li>
+  );
+}
+
+function PlaceholderPlan() {
+  return (
+    <section className="mt-16 border-t border-[var(--rule)] pt-10">
+      <p className="numeral text-[0.78rem] tracking-[0.18em] text-[var(--ink-3)] uppercase">
+        Your plan
+      </p>
+      <p className="mt-4 max-w-[58ch] text-[1.0625rem] leading-[1.7] text-[var(--ink-3)] italic">
+        Once you answer the three questions above, a short prioritized list of
+        practical steps will appear here.
+      </p>
+    </section>
   );
 }
 
@@ -354,81 +440,104 @@ function ResultPanel({
 }) {
   return (
     <section
-      className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5"
+      className="mt-16 border-t-2 border-[var(--ink)] pt-10"
       aria-live="polite"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-[var(--foreground)]">
-            Result
-          </p>
-          <p className="mt-1 text-2xl font-semibold text-[var(--foreground)]">
-            {result.riskLabel} planning band
-          </p>
-        </div>
-        <span
-          className={`rounded-full border px-3 py-1 text-sm font-semibold ${bandTone[result.riskBand]}`}
-        >
-          {result.riskLabel}
-        </span>
-      </div>
+      <p className="numeral text-[0.78rem] tracking-[0.18em] text-[var(--clay-deep)] uppercase">
+        Your plan
+      </p>
 
-      <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
+      <h2 className="display mt-3 max-w-[20ch] text-[2rem] leading-[1.15] text-[var(--ink)] sm:text-[2.25rem]">
+        {result.riskLabel} planning band.
+      </h2>
+
+      <p className="mt-6 max-w-[60ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
         {result.rationale}
       </p>
 
-      <div className="mt-6 flex flex-col gap-5">
+      <div className="mt-12 grid gap-12">
         {result.guidanceGroups.map((group) => (
-          <section key={group.key}>
-            <h2 className="text-base font-semibold text-[var(--foreground)]">
-              {group.title}
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+          <div key={group.key}>
+            <div className="flex items-baseline gap-3">
+              <StarMark className="h-2.5 w-2.5 text-[var(--clay)]" />
+              <h3 className="display text-[1.25rem] leading-tight text-[var(--ink)]">
+                {group.title}
+              </h3>
+            </div>
+            <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
               {group.description}
             </p>
-            <ol className="mt-3 grid gap-3">
+            <ol className="mt-6 grid gap-7">
               {group.items.map((item, index) => (
                 <li
                   key={item.id}
-                  className="grid grid-cols-[2rem_1fr] gap-3 rounded-lg border border-[var(--border)] bg-[var(--panel)] p-3"
+                  className="grid grid-cols-[2.25rem_1fr] gap-x-4"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface)] text-sm font-semibold text-[var(--accent-strong)]">
-                    {index + 1}
+                  <span className="numeral pt-[2px] text-[0.95rem] tabular-nums text-[var(--clay-deep)]">
+                    {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span>
-                    <span className="block text-sm font-semibold text-[var(--foreground)]">
+                  <div>
+                    <p className="text-[1rem] font-medium text-[var(--ink)]">
                       {item.title}
-                    </span>
-                    <span className="mt-1 block text-sm leading-6 text-[var(--muted)]">
+                    </p>
+                    <p className="mt-1.5 max-w-[58ch] text-[0.95rem] leading-[1.65] text-[var(--ink-2)]">
                       {item.body}
-                    </span>
-                  </span>
+                    </p>
+                  </div>
                 </li>
               ))}
             </ol>
-          </section>
+          </div>
         ))}
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-14 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 border-t border-[var(--rule)] pt-6">
         <button
           type="button"
           onClick={onRevise}
-          className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 text-sm font-semibold text-[var(--foreground)] transition duration-150 ease-out hover:border-[var(--accent)]"
+          className="text-[0.92rem] text-[var(--ink)] underline decoration-[var(--rule-strong)] decoration-[1px] underline-offset-[6px] transition-colors duration-150 ease-out hover:decoration-[var(--ink-2)]"
         >
-          <RotateCcw className="h-4 w-4" aria-hidden="true" />
-          Revise answers
+          Revise your answers
         </button>
-        <p className="text-xs leading-5 text-[var(--muted)]">
-          {saveState === "saving"
-            ? "Saving anonymous aggregate result."
-            : saveState === "saved"
-              ? "Anonymous aggregate result saved."
-              : saveState === "skipped"
-                ? "Result shown. Analytics were not saved."
-                : "Result ready."}
+        <p className="text-[0.78rem] leading-relaxed text-[var(--ink-3)]">
+          {saveStateCopy(saveState)}
         </p>
       </div>
     </section>
+  );
+}
+
+function saveStateCopy(state: SaveState): string {
+  switch (state) {
+    case "saving":
+      return "Saving an anonymous aggregate of this result.";
+    case "saved":
+      return "Anonymous aggregate saved. No identifying details left this page.";
+    case "skipped":
+      return "Plan ready. Nothing was saved.";
+    default:
+      return "Plan ready.";
+  }
+}
+
+function Colophon() {
+  return (
+    <footer className="mt-24 border-t border-[var(--rule)] pt-10">
+      <div className="flex items-center gap-3">
+        <StarMark className="h-3 w-3 text-[var(--clay)]" />
+        <span className="wordmark text-[0.7rem] text-[var(--ink-2)]">
+          Polaris
+        </span>
+      </div>
+      <p className="mt-4 max-w-[58ch] text-[0.875rem] leading-[1.7] text-[var(--ink-3)]">
+        A planning tool, not a verdict. Polaris offers structure for thinking
+        through ordinary preparations. Your circumstances will always have
+        details this tool cannot see.
+      </p>
+      <p className="mt-3 max-w-[58ch] text-[0.8rem] leading-[1.7] text-[var(--ink-3)]">
+        What stays here: your answers. What leaves: nothing identifying. No
+        names, accounts, addresses, or coordinates are stored by this form.
+      </p>
+    </footer>
   );
 }
