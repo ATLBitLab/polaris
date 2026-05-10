@@ -33,7 +33,6 @@ export type IncidentBlindingSource = {
   readonly narrativeText: string;
   readonly transcriptText: string;
   readonly people: readonly IncidentPerson[];
-  readonly analysisMetadata: unknown;
 };
 
 export type IncidentBlindingOutput = {
@@ -72,7 +71,6 @@ export function buildIncidentBlindingSourceFingerprint(
       source: person.source,
       confidence: person.confidence ?? null,
     })),
-    analysisMetadata: source.analysisMetadata ?? null,
   };
 
   return createHash("sha256")

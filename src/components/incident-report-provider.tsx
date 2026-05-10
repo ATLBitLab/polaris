@@ -11,7 +11,6 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import type {
-  IncidentChecklistItem,
   IncidentClientReport,
   IncidentDraft,
   IncidentLocationSource,
@@ -69,14 +68,10 @@ type IncidentReportContextValue = {
   readonly addPerson: () => void;
   readonly updatePerson: (index: number, person: IncidentPerson) => void;
   readonly removePerson: (index: number) => void;
-  readonly updateChecklist: (
-    checklist: readonly IncidentChecklistItem[],
-  ) => void;
   readonly updateContact: (
     consent: boolean,
     methods?: readonly { readonly type: string; readonly value: string }[],
   ) => void;
-  readonly updatePartnerSharing: (consent: boolean) => void;
   readonly markReportSubmitted: () => void;
   readonly requestReportBlinding: () => Promise<void>;
   readonly flushPendingPatches: () => Promise<void>;
@@ -669,13 +664,6 @@ export function IncidentReportProvider({
     [updatePeopleFromCurrent],
   );
 
-  const updateChecklist = useCallback(
-    (checklist: readonly IncidentChecklistItem[]) => {
-      updateDraft((draft) => ({ ...draft, checklist }), { checklist });
-    },
-    [updateDraft],
-  );
-
   const updateContact = useCallback(
     (
       consent: boolean,
@@ -693,23 +681,6 @@ export function IncidentReportProvider({
           contact: {
             consent,
             methods: consent ? currentMethods : [],
-          },
-        },
-      );
-    },
-    [updateDraft],
-  );
-
-  const updatePartnerSharing = useCallback(
-    (consent: boolean) => {
-      updateDraft(
-        (draft) => ({
-          ...draft,
-          partnerSharingConsent: consent,
-        }),
-        {
-          partnerSharing: {
-            consent,
           },
         },
       );
@@ -744,11 +715,7 @@ export function IncidentReportProvider({
     const currentReport = reportRef.current;
     const currentDeviceSource = deviceSourceRef.current;
 
-    if (
-      !currentReport ||
-      !currentDeviceSource ||
-      currentReport.draft.partnerSharingConsent !== true
-    ) {
+    if (!currentReport || !currentDeviceSource) {
       return;
     }
 
@@ -807,9 +774,7 @@ export function IncidentReportProvider({
       addPerson,
       updatePerson,
       removePerson,
-      updateChecklist,
       updateContact,
-      updatePartnerSharing,
       markReportSubmitted,
       requestReportBlinding,
       flushPendingPatches,
@@ -836,9 +801,7 @@ export function IncidentReportProvider({
       addPerson,
       updatePerson,
       removePerson,
-      updateChecklist,
       updateContact,
-      updatePartnerSharing,
       markReportSubmitted,
       requestReportBlinding,
       flushPendingPatches,

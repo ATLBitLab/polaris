@@ -4,15 +4,10 @@ import { createHash, createHmac } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   applyIncidentPatch,
-  buildIncidentChecklist,
-  calculateIncidentQuality,
-  emptyIncidentDraft,
-  fallbackIncidentAnalysis,
   isValidDeviceSource,
   isValidReportId,
   parseIncidentPatch,
   type IncidentAnalysis,
-  type IncidentChecklistItem,
   type IncidentClientReport,
   type IncidentDraft,
   type IncidentPerson,
@@ -44,16 +39,10 @@ type IncidentReportRow = {
   readonly location_accuracy_meters: number | null;
   readonly narrative_text: string | null;
   readonly transcript_text: string | null;
-  readonly quality_score: number | null;
-  readonly quality_feedback: unknown;
-  readonly checklist_state: unknown;
   readonly contact_consent: boolean | null;
   readonly contact_decided_at: string | null;
   readonly contact_consented_at: string | null;
   readonly contact_methods: unknown;
-  readonly partner_sharing_consent: boolean | null;
-  readonly partner_sharing_decided_at: string | null;
-  readonly partner_sharing_consented_at: string | null;
   readonly submitted_at: string | null;
   readonly device_source_hash: string;
 };
@@ -83,16 +72,10 @@ const reportSelect = `
   location_accuracy_meters,
   narrative_text,
   transcript_text,
-  quality_score,
-  quality_feedback,
-  checklist_state,
   contact_consent,
   contact_decided_at,
   contact_consented_at,
   contact_methods,
-  partner_sharing_consent,
-  partner_sharing_decided_at,
-  partner_sharing_consented_at,
   submitted_at,
   device_source_hash
 `;
@@ -125,15 +108,10 @@ export async function createIncidentReport(
     return { ok: false, status: 400, error: "Missing device continuity token" };
   }
 
-  const draft = emptyIncidentDraft();
-  const quality = calculateIncidentQuality(draft);
   const { data, error } = await supabase.value
     .from("incident_reports")
     .insert({
       device_source_hash: hashDeviceSource(deviceSource),
-      quality_score: quality.score,
-      quality_feedback: quality.feedback,
-      checklist_state: draft.checklist,
     })
     .select(reportSelect)
     .single();
@@ -197,8 +175,6 @@ export async function updateIncidentReport(
   const { supabase, row, people } = loaded.value;
   const current = toDraft(row, people);
   const nextDraft = applyIncidentPatch(current, patch);
-  const quality = calculateIncidentQuality(nextDraft);
-  const checklist = nextDraft.checklist;
   const now = new Date().toISOString();
 
   const { data, error } = await supabase
@@ -214,9 +190,6 @@ export async function updateIncidentReport(
       location_accuracy_meters: nextDraft.locationAccuracyMeters,
       narrative_text: nextDraft.narrativeText,
       transcript_text: nextDraft.transcriptText,
-      quality_score: quality.score,
-      quality_feedback: quality.feedback,
-      checklist_state: checklist,
       contact_consent: nextDraft.contactConsent === true,
       contact_decided_at:
         patch.contact === undefined ? row.contact_decided_at : now,
@@ -225,15 +198,6 @@ export async function updateIncidentReport(
           ? row.contact_consented_at ?? now
           : null,
       contact_methods: nextDraft.contactConsent === true ? nextDraft.contactMethods : [],
-      partner_sharing_consent: nextDraft.partnerSharingConsent === true,
-      partner_sharing_decided_at:
-        patch.partnerSharing === undefined
-          ? row.partner_sharing_decided_at
-          : now,
-      partner_sharing_consented_at:
-        nextDraft.partnerSharingConsent === true
-          ? row.partner_sharing_consented_at ?? now
-          : null,
       last_autosaved_at: now,
       updated_at: now,
       autosave_version: row.autosave_version + 1,
@@ -289,10 +253,6 @@ export async function saveTranscript(
   }
 
   const { supabase, row, people } = loaded.value;
-  const current = toDraft(row, people);
-  const nextDraft = { ...current, transcriptText: transcript.text };
-  const quality = calculateIncidentQuality(nextDraft);
-  const checklist = buildIncidentChecklist(nextDraft, current.checklist);
   const now = new Date().toISOString();
 
   const { data, error } = await supabase
@@ -302,9 +262,6 @@ export async function saveTranscript(
       transcript_model: transcript.model,
       transcript_language: transcript.language,
       transcript_updated_at: now,
-      quality_score: quality.score,
-      quality_feedback: quality.feedback,
-      checklist_state: checklist,
       last_autosaved_at: now,
       updated_at: now,
       autosave_version: row.autosave_version + 1,
@@ -355,28 +312,12 @@ export async function saveIncidentAnalysis(
     return { ok: false, status: 409, error: "Report already submitted" };
   }
 
-  const { supabase, row, people } = loaded.value;
-  const current = toDraft(row, people);
-  const nextDraft: IncidentDraft = {
-    ...current,
-    people: analysis.people,
-    checklist: analysis.checklist,
-  };
-  const quality =
-    analysis.quality.feedback.length > 0
-      ? analysis.quality
-      : fallbackIncidentAnalysis(nextDraft).quality;
+  const { supabase, row } = loaded.value;
   const now = new Date().toISOString();
 
   const { data, error } = await supabase
     .from("incident_reports")
     .update({
-      quality_score: quality.score,
-      quality_feedback: quality.feedback,
-      checklist_state: analysis.checklist,
-      analysis_metadata: {
-        analyzed_at: now,
-      },
       last_autosaved_at: now,
       updated_at: now,
       autosave_version: row.autosave_version + 1,
@@ -567,12 +508,6 @@ function toClientReport(
   row: IncidentReportRow,
   people: readonly IncidentPerson[],
 ): IncidentClientReport {
-  const draft = toDraft(row, people);
-  const quality = {
-    score: row.quality_score ?? calculateIncidentQuality(draft).score,
-    feedback: parseStringArray(row.quality_feedback),
-  };
-
   return {
     id: row.id,
     createdAt: row.created_at,
@@ -580,8 +515,7 @@ function toClientReport(
     lastAutosavedAt: row.last_autosaved_at,
     autosaveVersion: row.autosave_version,
     submittedAt: row.submitted_at,
-    draft,
-    quality,
+    draft: toDraft(row, people),
   };
 }
 
@@ -589,8 +523,6 @@ function toDraft(
   row: IncidentReportRow,
   people: readonly IncidentPerson[],
 ): IncidentDraft {
-  const fallback = emptyIncidentDraft();
-  const checklist = parseChecklistState(row.checklist_state);
   const contactMethods = parseContactMethods(row.contact_methods);
 
   return {
@@ -609,47 +541,10 @@ function toDraft(
     narrativeText: row.narrative_text ?? "",
     transcriptText: row.transcript_text ?? "",
     people,
-    checklist: checklist.length > 0 ? checklist : fallback.checklist,
     contactConsent:
       row.contact_decided_at === null ? null : row.contact_consent === true,
     contactMethods,
-    partnerSharingConsent:
-      row.partner_sharing_decided_at === null
-        ? null
-        : row.partner_sharing_consent === true,
   };
-}
-
-function parseChecklistState(value: unknown): IncidentChecklistItem[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value
-    .map((item) => {
-      if (!item || typeof item !== "object") {
-        return null;
-      }
-
-      const candidate = item as Record<string, unknown>;
-
-      if (
-        typeof candidate.id !== "string" ||
-        typeof candidate.label !== "string" ||
-        typeof candidate.completed !== "boolean"
-      ) {
-        return null;
-      }
-
-      return {
-        id: candidate.id,
-        label: candidate.label,
-        rationale:
-          typeof candidate.rationale === "string" ? candidate.rationale : "",
-        completed: candidate.completed,
-      };
-    })
-    .filter((item): item is IncidentChecklistItem => Boolean(item));
 }
 
 function parseContactMethods(value: unknown) {
@@ -686,14 +581,6 @@ function parseContactMethods(value: unknown) {
       ): item is { readonly type: string; readonly value: string; readonly label?: string } =>
         Boolean(item),
     );
-}
-
-function parseStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value.filter((item): item is string => typeof item === "string");
 }
 
 function isIncidentTimeKind(value: unknown): value is IncidentDraft["incidentTimeKind"] {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -38,10 +38,7 @@ export default function ReportDonePage() {
       });
     }
 
-    if (
-      report?.draft.partnerSharingConsent === true &&
-      blindingRequestedRef.current !== report.id
-    ) {
+    if (report && blindingRequestedRef.current !== report.id) {
       blindingRequestedRef.current = report.id;
       void requestReportBlinding();
     }
@@ -71,52 +68,11 @@ export default function ReportDonePage() {
         breath. You did good work putting words to a hard moment.
       </p>
 
-      {report ? (
-        <div className="mt-12 border-t-2 border-[var(--ink)] pt-7">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-            <p className="display text-[1.5rem] leading-tight text-[var(--ink)]">
-              Quality score
-            </p>
-            <p className="display text-[2rem] leading-none text-[var(--ink)]">
-              {report.quality.score}
-              <span className="text-[1rem] text-[var(--ink-3)]">/100</span>
-            </p>
-          </div>
-          <div
-            className="mt-5 h-2 w-full overflow-hidden rounded-full bg-[var(--paper-deep)]"
-            aria-hidden="true"
-          >
-            <div
-              className="h-full bg-[var(--clay)] transition-[width] duration-150 ease-out"
-              style={{ width: `${report.quality.score}%` }}
-            />
-          </div>
-          {report.quality.feedback.length > 0 ? (
-            <>
-              <p className="mt-7 text-[0.82rem] tracking-[0.16em] text-[var(--ink-3)] uppercase">
-                Things you could still add
-              </p>
-              <ul className="mt-4 grid gap-3">
-                {report.quality.feedback.map((item) => (
-                  <li
-                    key={item}
-                    className="grid grid-cols-[1.5rem_1fr] gap-3 text-[0.95rem] leading-relaxed text-[var(--ink-2)]"
-                  >
-                    <Check
-                      className="mt-1 h-4 w-4 text-[var(--clay)]"
-                      aria-hidden="true"
-                    />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </>
-          ) : (
-            <p className="mt-6 max-w-[58ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-              No suggested additions. The record reads as a solid first draft.
-            </p>
-          )}
-        </div>
+      {report?.draft.contactConsent === true ? (
+        <p className="mt-5 max-w-[58ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
+          One of our representatives will reach out to you soon to discuss
+          next steps for your case.
+        </p>
       ) : null}
 
       <div className="mt-14 flex flex-wrap items-center gap-3">

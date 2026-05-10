@@ -65,8 +65,14 @@ export default function ReportWhoPage() {
           Add person
         </Button>
         {analysisState === "running" ? (
-          <p className="text-[0.86rem] text-[var(--ink-3)]">
-            Reviewing your account.
+          <p
+            className="text-[0.86rem] text-[var(--ink-3)]"
+            role="status"
+            aria-live="polite"
+          >
+            <span>Reviewing your story</span>
+            <span className="loading-dots" aria-hidden="true" />
+            <span className="sr-only">Loading</span>
           </p>
         ) : null}
       </div>

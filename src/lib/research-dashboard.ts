@@ -48,8 +48,8 @@ export type PrivateResearchIncidentSourceRow = {
   readonly physical_confrontation: boolean | null;
   readonly model: string | null;
   readonly incident_reports?:
-    | { readonly partner_sharing_consent?: boolean | null }
-    | readonly { readonly partner_sharing_consent?: boolean | null }[]
+    | { readonly submitted_at?: string | null }
+    | readonly { readonly submitted_at?: string | null }[]
     | null;
 };
 
@@ -74,7 +74,7 @@ export function normalizePrivateResearchIncidentRows(
 ): PrivateResearchIncident[] {
   return rows
     .filter((row) => row.status === "completed")
-    .filter((row) => hasPartnerSharingConsent(row.incident_reports))
+    .filter((row) => hasSubmittedReport(row.incident_reports))
     .map((row) => ({
       reportId: row.report_id,
       completedAt: row.completed_at,
@@ -108,7 +108,7 @@ export function dangerLevelLabel(value: BlindingDangerLevel): string {
   }
 }
 
-function hasPartnerSharingConsent(
+function hasSubmittedReport(
   value: PrivateResearchIncidentSourceRow["incident_reports"],
 ): boolean {
   if (!value) {
@@ -117,13 +117,12 @@ function hasPartnerSharingConsent(
 
   if (Array.isArray(value)) {
     return (
-      value as readonly { readonly partner_sharing_consent?: boolean | null }[]
-    ).some((item) => item.partner_sharing_consent === true);
+      value as readonly { readonly submitted_at?: string | null }[]
+    ).some((item) => Boolean(item.submitted_at));
   }
 
-  return (
-    (value as { readonly partner_sharing_consent?: boolean | null })
-      .partner_sharing_consent === true
+  return Boolean(
+    (value as { readonly submitted_at?: string | null }).submitted_at,
   );
 }
 

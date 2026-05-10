@@ -45,7 +45,7 @@ type IncidentPeopleRow = {
 type IncidentReportCandidateRow = {
   readonly id: string;
   readonly updated_at: string;
-  readonly partner_sharing_consent: boolean | null;
+  readonly submitted_at: string | null;
   readonly incident_time_kind: string | null;
   readonly incident_occurred_at: string | null;
   readonly incident_time_note: string | null;
@@ -55,7 +55,6 @@ type IncidentReportCandidateRow = {
   readonly location_longitude: number | null;
   readonly narrative_text: string | null;
   readonly transcript_text: string | null;
-  readonly analysis_metadata: unknown;
   readonly device_source_hash: string;
   readonly incident_people?: readonly IncidentPeopleRow[] | null;
   readonly incident_report_blindings?:
@@ -80,13 +79,13 @@ const privateDashboardSelect = `
   evidence_present,
   physical_confrontation,
   model,
-  incident_reports!inner(partner_sharing_consent)
+  incident_reports!inner(submitted_at)
 `;
 
 const blindingCandidateSelect = `
   id,
   updated_at,
-  partner_sharing_consent,
+  submitted_at,
   incident_time_kind,
   incident_occurred_at,
   incident_time_note,
@@ -96,7 +95,6 @@ const blindingCandidateSelect = `
   location_longitude,
   narrative_text,
   transcript_text,
-  analysis_metadata,
   device_source_hash,
   incident_people(
     display_name,
@@ -125,7 +123,7 @@ export async function loadPrivateResearchIncidents(
     .from("incident_report_blindings")
     .select(privateDashboardSelect)
     .eq("status", "completed")
-    .eq("incident_reports.partner_sharing_consent", true);
+    .not("incident_reports.submitted_at", "is", null);
 
   if (filters.dateFrom) {
     query = query.gte(
@@ -197,7 +195,7 @@ export async function processIncidentBlindingBatch(
   const { data, error } = await supabase
     .from("incident_reports")
     .select(blindingCandidateSelect)
-    .eq("partner_sharing_consent", true)
+    .not("submitted_at", "is", null)
     .order("updated_at", { ascending: true })
     .limit(scanLimit);
 
@@ -265,7 +263,7 @@ export async function processIncidentBlindingForReport(
     return { ok: false, status: 404, error: "Report not found" };
   }
 
-  if (row.partner_sharing_consent !== true) {
+  if (row.submitted_at === null) {
     return {
       ok: true,
       value: { processed: 0, skipped: 1, failed: 0 },
@@ -425,7 +423,6 @@ function toBlindingSource(
     narrativeText: row.narrative_text ?? "",
     transcriptText: row.transcript_text ?? "",
     people: toIncidentPeople(row.incident_people ?? []),
-    analysisMetadata: row.analysis_metadata ?? {},
   };
 }
 

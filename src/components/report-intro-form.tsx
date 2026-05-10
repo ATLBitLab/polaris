@@ -86,7 +86,12 @@ export function ReportIntroForm() {
       </p>
       <p className="mt-4 max-w-[62ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
         Report your TNR incident here. Your progress is saved as you continue
-        through the report. Your information is kept entirely confidential.
+        through the report. Your information is kept entirely confidential. We
+        will only share strictly anonymized information about your incident
+        with trusted human rights groups. This anonymized information will
+        have no personally identifiable information. If you choose to provide
+        us with contact information, one of our representatives will follow up
+        with you to offer assistance.
       </p>
 
       {hasExistingDraft ? (

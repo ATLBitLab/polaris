@@ -26,7 +26,6 @@ const baseSource: IncidentBlindingSource = {
       source: "user",
     },
   ],
-  analysisMetadata: { danger_level: "not_immediate_danger" },
 };
 
 describe("parseIncidentBlindingResponse", () => {
@@ -85,10 +84,10 @@ describe("buildIncidentBlindingSourceFingerprint", () => {
 });
 
 describe("normalizePrivateResearchIncidentRows", () => {
-  it("excludes unshared reports and incomplete blindings", () => {
+  it("only surfaces completed blindings tied to submitted reports", () => {
     const rows = normalizePrivateResearchIncidentRows([
       {
-        report_id: "shared-complete",
+        report_id: "submitted-complete",
         status: "completed",
         completed_at: "2026-05-10T04:00:00.000Z",
         updated_at: "2026-05-10T04:00:00.000Z",
@@ -103,10 +102,10 @@ describe("normalizePrivateResearchIncidentRows", () => {
         evidence_present: null,
         physical_confrontation: null,
         model: "model",
-        incident_reports: { partner_sharing_consent: true },
+        incident_reports: { submitted_at: "2026-05-10T04:00:00.000Z" },
       },
       {
-        report_id: "unshared-complete",
+        report_id: "draft-complete",
         status: "completed",
         completed_at: null,
         updated_at: "2026-05-10T04:00:00.000Z",
@@ -121,10 +120,10 @@ describe("normalizePrivateResearchIncidentRows", () => {
         evidence_present: null,
         physical_confrontation: null,
         model: "",
-        incident_reports: { partner_sharing_consent: false },
+        incident_reports: { submitted_at: null },
       },
       {
-        report_id: "shared-processing",
+        report_id: "submitted-processing",
         status: "processing",
         completed_at: null,
         updated_at: "2026-05-10T04:00:00.000Z",
@@ -139,10 +138,10 @@ describe("normalizePrivateResearchIncidentRows", () => {
         evidence_present: null,
         physical_confrontation: null,
         model: "",
-        incident_reports: { partner_sharing_consent: true },
+        incident_reports: { submitted_at: "2026-05-10T04:00:00.000Z" },
       },
     ]);
 
-    expect(rows.map((row) => row.reportId)).toEqual(["shared-complete"]);
+    expect(rows.map((row) => row.reportId)).toEqual(["submitted-complete"]);
   });
 });
