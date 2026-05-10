@@ -14,7 +14,7 @@ alter table public.incident_reports
   );
 
 comment on column public.incident_reports.partner_sharing_consent is
-  'Explicit consent for authenticated partner NPO access to a blinded version of this incident. Existing and undecided reports default to false.';
+  'Explicit consent for authenticated researcher access to a blinded version of this incident. Existing and undecided reports default to false.';
 
 create table public.incident_report_blindings (
   report_id uuid primary key references public.incident_reports(id) on delete cascade,
@@ -64,7 +64,7 @@ create table public.incident_report_blindings (
 );
 
 comment on table public.incident_report_blindings is
-  'One blinded NPO-facing incident record per raw report. Raw contact details and exact identifiers stay in incident_reports and incident_people.';
+  'One blinded research-facing incident record per raw report. Raw contact details and exact identifiers stay in incident_reports and incident_people.';
 comment on column public.incident_report_blindings.source_fingerprint is
   'Hash of the raw shareable fields used for blinding. Contact methods are excluded.';
 comment on column public.incident_report_blindings.blinded_search_text is

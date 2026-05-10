@@ -106,10 +106,10 @@ export function PolarisHome() {
           what you choose to share.
         </p>
         <Link
-          href="/npo/login"
+          href="/research/login"
           className="mt-5 inline-block text-[0.82rem] text-[var(--ink-3)] underline decoration-[var(--rule-strong)] underline-offset-[6px] hover:text-[var(--ink-2)]"
         >
-          NPO access
+          Researcher access
         </Link>
       </footer>
     </main>

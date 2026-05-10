@@ -4,7 +4,7 @@ import {
   parseIncidentBlindingResponse,
   type IncidentBlindingSource,
 } from "./incident-blinding";
-import { normalizePrivateNpoIncidentRows } from "./npo-dashboard";
+import { normalizePrivateResearchIncidentRows } from "./research-dashboard";
 
 const baseSource: IncidentBlindingSource = {
   reportId: "11111111-1111-4111-8111-111111111111",
@@ -84,9 +84,9 @@ describe("buildIncidentBlindingSourceFingerprint", () => {
   });
 });
 
-describe("normalizePrivateNpoIncidentRows", () => {
+describe("normalizePrivateResearchIncidentRows", () => {
   it("excludes unshared reports and incomplete blindings", () => {
-    const rows = normalizePrivateNpoIncidentRows([
+    const rows = normalizePrivateResearchIncidentRows([
       {
         report_id: "shared-complete",
         status: "completed",

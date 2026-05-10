@@ -47,10 +47,10 @@ export default function ReportContactPage() {
           <div className="mt-10 border-t border-[var(--rule)] pt-7">
             <fieldset>
               <legend className="text-[0.86rem] font-medium text-[var(--ink)]">
-                Partner NPO access
+                Researcher access
               </legend>
               <p className="mt-2 max-w-[62ch] text-[0.92rem] leading-relaxed text-[var(--ink-2)]">
-                If you allow this, approved partner NPO staff may see a blinded
+                If you allow this, approved researchers may see a blinded
                 version after names, contact clues, exact addresses, and unique
                 identifying details are removed. Your contact methods are never
                 shown there.

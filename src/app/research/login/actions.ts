@@ -1,14 +1,14 @@
 "use server";
 
 import { headers } from "next/headers";
-import { buildNpoOtpRequest } from "@/lib/npo-auth";
+import { buildResearchOtpRequest } from "@/lib/research-auth";
 import { createClient } from "@/lib/supabase/server";
-import type { NpoLoginState } from "./state";
+import type { ResearchLoginState } from "./state";
 
-export async function requestNpoMagicLink(
-  _state: NpoLoginState,
+export async function requestResearchMagicLink(
+  _state: ResearchLoginState,
   formData: FormData,
-): Promise<NpoLoginState> {
+): Promise<ResearchLoginState> {
   const email = normalizeEmail(formData.get("email"));
 
   if (!email) {
@@ -24,27 +24,27 @@ export async function requestNpoMagicLink(
   ) {
     return {
       status: "error",
-      message: "NPO access is not configured.",
+      message: "Researcher access is not configured.",
     };
   }
 
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.signInWithOtp(
-      buildNpoOtpRequest(email, await buildNpoEmailRedirectTo()),
+      buildResearchOtpRequest(email, await buildResearchEmailRedirectTo()),
     );
 
     if (error) {
-      console.warn("Unable to request NPO magic link", error);
+      console.warn("Unable to request researcher magic link", error);
     }
 
     return {
       status: "sent",
       message:
-        "If that address has NPO access, a sign-in link will arrive shortly.",
+        "If that address has researcher access, a sign-in link will arrive shortly.",
     };
   } catch (error) {
-    console.error("NPO magic link request failed", error);
+    console.error("Researcher magic link request failed", error);
     return {
       status: "error",
       message: "Unable to request a sign-in link right now.",
@@ -52,7 +52,7 @@ export async function requestNpoMagicLink(
   }
 }
 
-async function buildNpoEmailRedirectTo(): Promise<string> {
+async function buildResearchEmailRedirectTo(): Promise<string> {
   const headerStore = await headers();
   const origin =
     headerStore.get("origin") ??
@@ -60,7 +60,7 @@ async function buildNpoEmailRedirectTo(): Promise<string> {
       headerStore.get("x-forwarded-host") ?? headerStore.get("host")
     }`;
 
-  return new URL("/auth/callback?next=/npo", origin).toString();
+  return new URL("/auth/callback?next=/research", origin).toString();
 }
 
 function normalizeEmail(value: FormDataEntryValue | null): string | null {

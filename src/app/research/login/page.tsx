@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StarMark } from "@/components/incident-report-chrome";
-import { NpoLoginForm } from "./login-form";
+import { ResearchLoginForm } from "./login-form";
 
 export const metadata: Metadata = {
-  title: "NPO Access · Polaris",
-  description: "Private Polaris access for approved NPO partners.",
+  title: "Researcher Access · Polaris",
+  description: "Private Polaris access for approved researchers.",
 };
 
-export default function NpoLoginPage() {
+export default function ResearchLoginPage() {
   return (
     <main className="mx-auto w-full max-w-[44rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
       <header className="flex items-center justify-between border-b border-[var(--rule)] pb-5">
@@ -22,7 +22,7 @@ export default function NpoLoginPage() {
           </span>
         </Link>
         <span className="wordmark text-[0.7rem] text-[var(--ink-3)]">
-          NPO access
+          Researcher access
         </span>
       </header>
 
@@ -31,15 +31,15 @@ export default function NpoLoginPage() {
           Private
         </p>
         <h1 className="display mt-3 max-w-[16ch] text-[2.25rem] leading-[1.1] text-[var(--ink)] sm:text-[2.75rem]">
-          Partner sign-in.
+          Researcher sign-in.
         </h1>
         <p className="mt-7 max-w-[62ch] text-[1.02rem] leading-[1.75] text-[var(--ink-2)]">
-          Approved NPO partners receive a one-time sign-in link by email.
-          Access is limited to reports that were explicitly shared for partner
+          Approved researchers receive a one-time sign-in link by email.
+          Access is limited to reports that were explicitly shared for research
           review and have completed blinding.
         </p>
 
-        <NpoLoginForm />
+        <ResearchLoginForm />
       </section>
     </main>
   );

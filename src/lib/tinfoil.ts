@@ -125,7 +125,7 @@ export async function analyzeIncidentDraft(
   }
 }
 
-export async function blindIncidentForNpo(
+export async function blindIncidentForResearch(
   source: IncidentBlindingSource,
 ): Promise<IncidentBlindingOutput & { readonly model: string }> {
   const client = getTinfoilClient();
@@ -141,7 +141,7 @@ export async function blindIncidentForNpo(
       {
         role: "system",
         content:
-          "Blind incident documentation for approved partner NPO staff. Return JSON only. Remove names, contact details, exact addresses, precise coordinates, unique biographical details, usernames, account handles, employer or school specifics, and any detail that could identify a reporter, witness, target, or subject. Preserve incident type, rough chronology, rough geography, risk signals, evidence signals, and usefulness for response. Do not include email addresses, phone numbers, social handles, or contact methods.",
+          "Blind incident documentation for approved researchers. Return JSON only. Remove names, contact details, exact addresses, precise coordinates, unique biographical details, usernames, account handles, employer or school specifics, and any detail that could identify a reporter, witness, target, or subject. Preserve incident type, rough chronology, rough geography, risk signals, evidence signals, and usefulness for response. Do not include email addresses, phone numbers, social handles, or contact methods.",
       },
       {
         role: "user",

@@ -6,22 +6,22 @@ import { StarMark } from "@/components/incident-report-chrome";
 import { Button } from "@/components/ui/button";
 import {
   dangerLevelLabel,
-  parseNpoDashboardFilters,
-  type NpoDashboardFilters,
-  type PrivateNpoIncident,
-} from "@/lib/npo-dashboard";
-import { loadPrivateNpoIncidents } from "@/lib/npo-store";
+  parseResearchDashboardFilters,
+  type ResearchDashboardFilters,
+  type PrivateResearchIncident,
+} from "@/lib/research-dashboard";
+import { loadPrivateResearchIncidents } from "@/lib/research-store";
 import { createClient } from "@/lib/supabase/server";
-import { signOutNpo } from "./actions";
+import { signOutResearch } from "./actions";
 
 export const metadata: Metadata = {
-  title: "NPO Dashboard · Polaris",
-  description: "Private partner dashboard for blinded Polaris incidents.",
+  title: "Research Dashboard · Polaris",
+  description: "Private research dashboard for blinded Polaris incidents.",
 };
 
 export const dynamic = "force-dynamic";
 
-export default async function NpoDashboardPage({
+export default async function ResearchDashboardPage({
   searchParams,
 }: {
   readonly searchParams?: Promise<
@@ -32,20 +32,22 @@ export default async function NpoDashboardPage({
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
     !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
   ) {
-    redirect("/npo/login");
+    redirect("/research/login");
   }
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
 
   if (error || !data?.claims) {
-    redirect("/npo/login");
+    redirect("/research/login");
   }
 
-  const filters = parseNpoDashboardFilters((await searchParams) ?? {});
-  const incidents = await loadPrivateNpoIncidents(filters);
+  const filters = parseResearchDashboardFilters((await searchParams) ?? {});
+  const incidents = await loadPrivateResearchIncidents(filters);
   const email =
-    typeof data.claims.email === "string" ? data.claims.email : "NPO user";
+    typeof data.claims.email === "string"
+      ? data.claims.email
+      : "Research user";
 
   return (
     <main className="mx-auto w-full max-w-[86rem] px-5 pt-8 pb-20 sm:px-8 sm:pt-10">
@@ -63,7 +65,7 @@ export default async function NpoDashboardPage({
           <p className="max-w-[16rem] truncate text-right text-[0.78rem] text-[var(--ink-3)]">
             {email}
           </p>
-          <form action={signOutNpo}>
+          <form action={signOutResearch}>
             <Button
               type="submit"
               variant="secondary"
@@ -78,7 +80,7 @@ export default async function NpoDashboardPage({
       <section className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,24rem)]">
         <div>
           <p className="numeral text-[0.78rem] tracking-[0.18em] text-[var(--clay-deep)] uppercase">
-            Partner dashboard
+            Research dashboard
           </p>
           <h1 className="display mt-3 text-[2rem] leading-tight text-[var(--ink)] sm:text-[2.45rem]">
             Blinded shared incidents.
@@ -115,7 +117,7 @@ export default async function NpoDashboardPage({
   );
 }
 
-function FilterBar({ filters }: { readonly filters: NpoDashboardFilters }) {
+function FilterBar({ filters }: { readonly filters: ResearchDashboardFilters }) {
   return (
     <form
       method="get"
@@ -228,7 +230,7 @@ function Field({
 function IncidentTable({
   incidents,
 }: {
-  readonly incidents: readonly PrivateNpoIncident[];
+  readonly incidents: readonly PrivateResearchIncident[];
 }) {
   return (
     <div className="overflow-x-auto border-y border-[var(--rule)]">

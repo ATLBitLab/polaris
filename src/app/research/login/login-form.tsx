@@ -3,13 +3,13 @@
 import { MailCheck, Send } from "lucide-react";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import { requestNpoMagicLink } from "./actions";
-import { initialNpoLoginState } from "./state";
+import { requestResearchMagicLink } from "./actions";
+import { initialResearchLoginState } from "./state";
 
-export function NpoLoginForm() {
+export function ResearchLoginForm() {
   const [state, formAction, pending] = useActionState(
-    requestNpoMagicLink,
-    initialNpoLoginState,
+    requestResearchMagicLink,
+    initialResearchLoginState,
   );
 
   return (

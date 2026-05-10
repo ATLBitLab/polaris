@@ -19,12 +19,12 @@ export async function GET(request: NextRequest) {
     console.warn("Unable to exchange Supabase auth code", error);
   }
 
-  return NextResponse.redirect(new URL("/npo/login", url.origin));
+  return NextResponse.redirect(new URL("/research/login", url.origin));
 }
 
 function safeNextPath(value: string | null): string {
   if (!value || !value.startsWith("/") || value.startsWith("//")) {
-    return "/npo";
+    return "/research";
   }
 
   return value;

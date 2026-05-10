@@ -1,4 +1,4 @@
-export function buildNpoOtpRequest(email: string, emailRedirectTo: string) {
+export function buildResearchOtpRequest(email: string, emailRedirectTo: string) {
   return {
     email,
     options: {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDeviceSourceFromRequest } from "@/lib/incident-store";
-import { processIncidentBlindingForReport } from "@/lib/npo-store";
+import { processIncidentBlindingForReport } from "@/lib/research-store";
 import { hasTinfoilConfig } from "@/lib/tinfoil";
 
 export const runtime = "nodejs";

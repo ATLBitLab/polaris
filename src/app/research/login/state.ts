@@ -1,9 +1,9 @@
-export type NpoLoginState = {
+export type ResearchLoginState = {
   readonly status: "idle" | "sent" | "error";
   readonly message: string;
 };
 
-export const initialNpoLoginState: NpoLoginState = {
+export const initialResearchLoginState: ResearchLoginState = {
   status: "idle",
   message: "",
 };

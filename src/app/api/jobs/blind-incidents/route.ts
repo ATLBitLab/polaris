@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAuthorizedBlindingJobRequest } from "@/lib/blinding-job-auth";
-import { processIncidentBlindingBatch } from "@/lib/npo-store";
+import { processIncidentBlindingBatch } from "@/lib/research-store";
 import { hasTinfoilConfig } from "@/lib/tinfoil";
 
 export const runtime = "nodejs";

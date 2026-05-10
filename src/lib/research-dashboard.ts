@@ -4,7 +4,7 @@ import {
   type BlindingDangerLevel,
 } from "./incident-blinding";
 
-export type NpoDashboardFilters = {
+export type ResearchDashboardFilters = {
   readonly dateFrom: string;
   readonly dateTo: string;
   readonly region: string;
@@ -14,7 +14,7 @@ export type NpoDashboardFilters = {
   readonly q: string;
 };
 
-export type PrivateNpoIncident = {
+export type PrivateResearchIncident = {
   readonly reportId: string;
   readonly completedAt: string | null;
   readonly updatedAt: string;
@@ -31,7 +31,7 @@ export type PrivateNpoIncident = {
   readonly model: string;
 };
 
-export type PrivateNpoIncidentSourceRow = {
+export type PrivateResearchIncidentSourceRow = {
   readonly report_id: string;
   readonly status: string;
   readonly completed_at: string | null;
@@ -55,9 +55,9 @@ export type PrivateNpoIncidentSourceRow = {
 
 const dangerLevelSet = new Set<string>(blindingDangerLevels);
 
-export function parseNpoDashboardFilters(
+export function parseResearchDashboardFilters(
   searchParams: Record<string, string | readonly string[] | undefined>,
-): NpoDashboardFilters {
+): ResearchDashboardFilters {
   return {
     dateFrom: normalizeDateParam(first(searchParams.from)),
     dateTo: normalizeDateParam(first(searchParams.to)),
@@ -69,9 +69,9 @@ export function parseNpoDashboardFilters(
   };
 }
 
-export function normalizePrivateNpoIncidentRows(
-  rows: readonly PrivateNpoIncidentSourceRow[],
-): PrivateNpoIncident[] {
+export function normalizePrivateResearchIncidentRows(
+  rows: readonly PrivateResearchIncidentSourceRow[],
+): PrivateResearchIncident[] {
   return rows
     .filter((row) => row.status === "completed")
     .filter((row) => hasPartnerSharingConsent(row.incident_reports))
@@ -109,7 +109,7 @@ export function dangerLevelLabel(value: BlindingDangerLevel): string {
 }
 
 function hasPartnerSharingConsent(
-  value: PrivateNpoIncidentSourceRow["incident_reports"],
+  value: PrivateResearchIncidentSourceRow["incident_reports"],
 ): boolean {
   if (!value) {
     return false;

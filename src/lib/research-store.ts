@@ -9,13 +9,13 @@ import {
 import { isValidReportId, type IncidentPerson } from "./incident-report";
 import { hashDeviceSource } from "./incident-store";
 import {
-  normalizePrivateNpoIncidentRows,
-  type NpoDashboardFilters,
-  type PrivateNpoIncident,
-  type PrivateNpoIncidentSourceRow,
-} from "./npo-dashboard";
+  normalizePrivateResearchIncidentRows,
+  type ResearchDashboardFilters,
+  type PrivateResearchIncident,
+  type PrivateResearchIncidentSourceRow,
+} from "./research-dashboard";
 import { getSupabaseAdminClient } from "./supabase-server";
-import { blindIncidentForNpo } from "./tinfoil";
+import { blindIncidentForResearch } from "./tinfoil";
 
 export type BlindingJobResult = {
   readonly processed: number;
@@ -113,9 +113,9 @@ const blindingCandidateSelect = `
   )
 `;
 
-export async function loadPrivateNpoIncidents(
-  filters: NpoDashboardFilters,
-): Promise<readonly PrivateNpoIncident[]> {
+export async function loadPrivateResearchIncidents(
+  filters: ResearchDashboardFilters,
+): Promise<readonly PrivateResearchIncident[]> {
   const supabase = requireSupabase();
   if (!supabase) {
     return [];
@@ -174,13 +174,13 @@ export async function loadPrivateNpoIncidents(
 
   if (error || !data) {
     if (error) {
-      console.error("Unable to load private NPO incidents", error);
+      console.error("Unable to load private research incidents", error);
     }
     return [];
   }
 
-  return normalizePrivateNpoIncidentRows(
-    data as PrivateNpoIncidentSourceRow[],
+  return normalizePrivateResearchIncidentRows(
+    data as PrivateResearchIncidentSourceRow[],
   );
 }
 
@@ -344,7 +344,7 @@ async function processSingleIncidentBlinding(
   }
 
   try {
-    const blinding = await blindIncidentForNpo(source);
+    const blinding = await blindIncidentForResearch(source);
     const searchText = buildBlindedSearchText(blinding);
     const completedAt = new Date().toISOString();
     const { error } = await supabase
