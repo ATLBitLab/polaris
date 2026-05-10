@@ -74,6 +74,7 @@ type IncidentReportContextValue = {
     consent: boolean,
     methods?: readonly { readonly type: string; readonly value: string }[],
   ) => void;
+  readonly updatePartnerSharing: (consent: boolean) => void;
   readonly flushPendingPatches: () => Promise<void>;
   readonly resetReport: () => void;
 };
@@ -689,6 +690,23 @@ export function IncidentReportProvider({
     [updateDraft],
   );
 
+  const updatePartnerSharing = useCallback(
+    (consent: boolean) => {
+      updateDraft(
+        (draft) => ({
+          ...draft,
+          partnerSharingConsent: consent,
+        }),
+        {
+          partnerSharing: {
+            consent,
+          },
+        },
+      );
+    },
+    [updateDraft],
+  );
+
   const resetReport = useCallback(() => {
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(reportIdStorageKey);
@@ -735,6 +753,7 @@ export function IncidentReportProvider({
       removePerson,
       updateChecklist,
       updateContact,
+      updatePartnerSharing,
       flushPendingPatches,
       resetReport,
     }),
@@ -760,6 +779,7 @@ export function IncidentReportProvider({
       removePerson,
       updateChecklist,
       updateContact,
+      updatePartnerSharing,
       flushPendingPatches,
       resetReport,
     ],

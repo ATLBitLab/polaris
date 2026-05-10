@@ -7,10 +7,16 @@ import {
   type IncidentAnalysis,
   type IncidentDraft,
 } from "./incident-report";
+import {
+  parseIncidentBlindingResponse,
+  type IncidentBlindingOutput,
+  type IncidentBlindingSource,
+} from "./incident-blinding";
 import { splitWavUpload, type TinfoilAudioUpload } from "./audio-format";
 
 const transcriptionModel = "whisper-large-v3-turbo";
 const defaultAnalysisModel = "llama3-3-70b";
+const defaultBlindingModel = "llama3-3-70b";
 const transcriptionChunkSeconds = 25;
 
 let cachedClient: TinfoilAI | null | undefined;
@@ -119,6 +125,50 @@ export async function analyzeIncidentDraft(
   }
 }
 
+export async function blindIncidentForNpo(
+  source: IncidentBlindingSource,
+): Promise<IncidentBlindingOutput & { readonly model: string }> {
+  const client = getTinfoilClient();
+  const model =
+    process.env.TINFOIL_BLINDING_MODEL ??
+    process.env.TINFOIL_ANALYSIS_MODEL ??
+    defaultBlindingModel;
+
+  const response = await client.chat.completions.create({
+    model,
+    temperature: 0,
+    messages: [
+      {
+        role: "system",
+        content:
+          "Blind incident documentation for approved partner NPO staff. Return JSON only. Remove names, contact details, exact addresses, precise coordinates, unique biographical details, usernames, account handles, employer or school specifics, and any detail that could identify a reporter, witness, target, or subject. Preserve incident type, rough chronology, rough geography, risk signals, evidence signals, and usefulness for response. Do not include email addresses, phone numbers, social handles, or contact methods.",
+      },
+      {
+        role: "user",
+        content: `Raw incident source for blinding:\n${JSON.stringify(
+          sourceForModel(source),
+        )}`,
+      },
+    ],
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        name: "incident_blinding",
+        schema: incidentBlindingSchema,
+      },
+    },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  const parsed = parseIncidentBlindingResponse(content);
+
+  if (!parsed) {
+    throw new Error("Tinfoil returned malformed blinding JSON");
+  }
+
+  return { ...parsed, model };
+}
+
 function getTinfoilClient(): TinfoilAI {
   if (cachedClient) {
     return cachedClient;
@@ -133,6 +183,34 @@ function getTinfoilClient(): TinfoilAI {
   });
 
   return cachedClient;
+}
+
+function sourceForModel(source: IncidentBlindingSource) {
+  return {
+    reportId: source.reportId,
+    incidentTimeKind: source.incidentTimeKind,
+    incidentOccurredAt: source.incidentOccurredAt,
+    incidentTimeNote: source.incidentTimeNote,
+    locationSource: source.locationSource,
+    locationLabel: source.locationLabel,
+    coordinates:
+      source.latitude === null || source.longitude === null
+        ? null
+        : {
+            latitude: source.latitude,
+            longitude: source.longitude,
+          },
+    narrativeText: source.narrativeText,
+    transcriptText: source.transcriptText,
+    people: source.people.map((person) => ({
+      displayName: person.displayName,
+      role: person.role,
+      description: person.description,
+      source: person.source,
+      confidence: person.confidence ?? null,
+    })),
+    analysisMetadata: source.analysisMetadata,
+  };
 }
 
 const incidentAnalysisSchema = {
@@ -183,6 +261,56 @@ const incidentAnalysisSchema = {
           items: { type: "string" },
         },
       },
+    },
+  },
+} as const;
+
+const incidentBlindingSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "blindedNarrative",
+    "blindedTranscript",
+    "blindedPeople",
+    "blindedLocationLabel",
+    "coarseRegion",
+    "dangerLevel",
+    "evidencePresent",
+    "physicalConfrontation",
+  ],
+  properties: {
+    blindedNarrative: { type: "string" },
+    blindedTranscript: { type: "string" },
+    blindedPeople: {
+      type: "array",
+      maxItems: 12,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["label", "role", "description"],
+        properties: {
+          label: { type: "string" },
+          role: { type: "string" },
+          description: { type: "string" },
+        },
+      },
+    },
+    blindedLocationLabel: { type: "string" },
+    coarseRegion: { type: "string" },
+    dangerLevel: {
+      type: "string",
+      enum: [
+        "immediate_attention_needed",
+        "danger_expected_within_a_week",
+        "not_immediate_danger",
+        "unknown",
+      ],
+    },
+    evidencePresent: {
+      anyOf: [{ type: "boolean" }, { type: "null" }],
+    },
+    physicalConfrontation: {
+      anyOf: [{ type: "boolean" }, { type: "null" }],
     },
   },
 } as const;

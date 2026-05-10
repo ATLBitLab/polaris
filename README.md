@@ -28,11 +28,19 @@ Copy `.env.example` to `.env.local` for local work.
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SECRET_KEY=
+BLINDING_JOB_SECRET=
+TINFOIL_API_KEY=
+TINFOIL_ANALYSIS_MODEL=
+TINFOIL_BLINDING_MODEL=
 ```
 
 `SUPABASE_SECRET_KEY` is server-only and is used by `src/app/api/quiz-events/route.ts` to insert anonymous analytics. It must never use a `NEXT_PUBLIC_` prefix. If your Supabase project still uses a service role key instead of a secret key, `SUPABASE_SERVICE_ROLE_KEY` is supported as a fallback.
 
-The public publishable key is documented for Vercel and future client-side Supabase use, but the current quiz does not send Supabase credentials to the browser.
+The public publishable key is also used by Supabase Auth SSR for the private NPO surface. The server-only Supabase key is still required for writes, overview aggregation, blinding jobs, and private dashboard data loading.
+
+`BLINDING_JOB_SECRET` protects `POST /api/jobs/blind-incidents` with `Authorization: Bearer <secret>`. The endpoint accepts an optional JSON body such as `{"limit":5}` and returns counts for `processed`, `skipped`, and `failed`.
+
+`TINFOIL_API_KEY` enables voice transcription, incident analysis, and private NPO blinding. `TINFOIL_BLINDING_MODEL` can override the default blinding model; otherwise the app falls back to `TINFOIL_ANALYSIS_MODEL` and then the built-in default.
 
 ## Supabase
 
@@ -44,6 +52,12 @@ Schema changes live in `supabase/migrations`. The analytics table is `public.qui
 - `created_at`
 
 It does not store names, contact info, street addresses, exact coordinates, user accounts, free text, or IP addresses. RLS is enabled and no browser-facing insert policy is defined, so writes are performed only by the server route with a server-side credential.
+
+The private NPO dashboard uses Supabase Auth magic links. Pre-create approved NPO users in Supabase Auth; the app requests magic links with `shouldCreateUser: false`, so unknown email addresses are not enrolled by the app. Configure Supabase Auth URL settings to allow the app origin plus `/auth/callback` for local, preview, and production deployments.
+
+Email delivery for magic links should be configured in Supabase Auth custom SMTP. For Mailgun, use Mailgun's SMTP host, port, username, password, sender address, and sender name in the Supabase Dashboard. The app does not call the Mailgun API directly.
+
+Partner NPO sharing is explicit per report via `partner_sharing_consent`. Existing reports default to not shared. Authenticated NPO users only see rows from `incident_report_blindings` where the raw report still has consent and the blinding status is `completed`; raw narratives, exact locations, people rows, and contact methods are not rendered in the NPO dashboard.
 
 The Supabase CLI is available in this workspace (`supabase --version` reported `2.98.2` on May 9, 2026). Local migration verification passed with:
 

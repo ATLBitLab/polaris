@@ -9,7 +9,7 @@ import {
 } from "@/components/incident-report-chrome";
 
 export default function ReportContactPage() {
-  const { report, updateContact } = useIncidentReport();
+  const { report, updateContact, updatePartnerSharing } = useIncidentReport();
   const draft = report?.draft;
 
   return (
@@ -43,6 +43,32 @@ export default function ReportContactPage() {
               onChange={(methods) => updateContact(true, methods)}
             />
           ) : null}
+
+          <div className="mt-10 border-t border-[var(--rule)] pt-7">
+            <fieldset>
+              <legend className="text-[0.86rem] font-medium text-[var(--ink)]">
+                Partner NPO access
+              </legend>
+              <p className="mt-2 max-w-[62ch] text-[0.92rem] leading-relaxed text-[var(--ink-2)]">
+                If you allow this, approved partner NPO staff may see a blinded
+                version after names, contact clues, exact addresses, and unique
+                identifying details are removed. Your contact methods are never
+                shown there.
+              </p>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                <ConsentButton
+                  active={draft.partnerSharingConsent === true}
+                  onClick={() => updatePartnerSharing(true)}
+                  label="Share blinded report"
+                />
+                <ConsentButton
+                  active={draft.partnerSharingConsent === false}
+                  onClick={() => updatePartnerSharing(false)}
+                  label="Do not share"
+                />
+              </div>
+            </fieldset>
+          </div>
         </>
       ) : (
         <p className="mt-6 text-[0.95rem] leading-relaxed text-[var(--ink-2)]">

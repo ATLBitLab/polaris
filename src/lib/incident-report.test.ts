@@ -46,6 +46,26 @@ describe("parseIncidentPatch", () => {
       }),
     ).toBeNull();
   });
+
+  it("parses partner-sharing consent separately from contact consent", () => {
+    const patch = parseIncidentPatch({
+      contact: { consent: false, methods: [] },
+      partnerSharing: { consent: true },
+    });
+
+    expect(patch).toEqual({
+      contact: { consent: false, methods: [] },
+      partnerSharing: { consent: true },
+    });
+
+    const draft = applyIncidentPatch(emptyIncidentDraft(), patch!);
+    expect(draft.contactConsent).toBe(false);
+    expect(draft.partnerSharingConsent).toBe(true);
+  });
+
+  it("defaults new drafts to no partner-sharing decision", () => {
+    expect(emptyIncidentDraft().partnerSharingConsent).toBeNull();
+  });
 });
 
 describe("calculateIncidentQuality", () => {
