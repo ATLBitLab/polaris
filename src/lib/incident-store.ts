@@ -170,7 +170,7 @@ export async function updateIncidentReport(
   const current = toDraft(row, people);
   const nextDraft = applyIncidentPatch(current, patch);
   const quality = calculateIncidentQuality(nextDraft);
-  const checklist = patch.checklist ?? buildIncidentChecklist(nextDraft, current.checklist);
+  const checklist = nextDraft.checklist;
   const now = new Date().toISOString();
 
   const { data, error } = await supabase

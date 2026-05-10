@@ -94,6 +94,26 @@ describe("checklist tailoring", () => {
 
     expect(draft.checklist.map((item) => item.id)).toContain("digital-records");
   });
+
+  it("preserves AI-tailored checklist items when contact consent changes", () => {
+    const draft = {
+      ...emptyIncidentDraft(),
+      checklist: [
+        {
+          id: "ai-witness-detail",
+          label: "Add the witness description from the voice note.",
+          rationale: "The AI suggested this from the report narrative.",
+          completed: false,
+        },
+      ],
+    };
+
+    const next = applyIncidentPatch(draft, {
+      contact: { consent: false, methods: [] },
+    });
+
+    expect(next.checklist).toEqual(draft.checklist);
+  });
 });
 
 describe("normalizeContactMethods", () => {

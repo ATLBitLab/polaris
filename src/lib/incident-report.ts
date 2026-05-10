@@ -229,8 +229,18 @@ export function applyIncidentPatch(
 
   return {
     ...next,
-    checklist: patch.checklist ?? buildIncidentChecklist(next, draft.checklist),
+    checklist:
+      patch.checklist ??
+      (shouldRebuildIncidentChecklist(patch)
+        ? buildIncidentChecklist(next, draft.checklist)
+        : draft.checklist),
   };
+}
+
+export function shouldRebuildIncidentChecklist(
+  patch: IncidentReportPatch,
+): boolean {
+  return patch.narrativeText !== undefined || patch.transcriptText !== undefined;
 }
 
 export function calculateIncidentQuality(
