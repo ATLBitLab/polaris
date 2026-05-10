@@ -51,19 +51,17 @@ export function SiteFooter() {
     >
       <div className="mx-auto w-full max-w-[46rem] px-6 py-8 sm:px-10 sm:py-9">
         <p className="text-[0.8125rem] leading-relaxed text-[var(--ink-2)]">
-          <span className="font-medium text-[var(--ink)]">Polaris:</span>{" "}
+          <span className="font-bold italic text-[var(--ink)]">Polaris</span>
+          {": "}
           Guidance, protection, and impact minimization for diaspora communities
           in the United States facing transnational repression by the Chinese
           government.
         </p>
 
         <p className="mt-4 text-[0.8125rem] leading-relaxed text-[var(--ink-2)]">
-          Maintained by Joey Siu.
-        </p>
-
-        <p className="mt-3 text-[0.8125rem] leading-relaxed text-[var(--ink-2)]">
-          This project was built in the context of a May 2026 hackathon in
-          Nashville supported by the Human Rights Foundation.
+          Built during AI Hack for Freedom in Nashville, TN, May 9–10, 2026,
+          supported by the Human Rights Foundation. Maintained by Hong Kong
+          activist Joey Siu.
         </p>
 
         <div className="mt-6 border-t border-[var(--rule)] pt-6">
