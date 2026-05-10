@@ -23,6 +23,18 @@
 
   /* Focus — slightly more saturated clay so it reads against everything. */
   --focus: oklch(56% 0.142 38);
+
+  /* Risk bands — used only on the public overview dashboard map. Tuned to
+     sit inside the parchment palette: muted sage, warm amber that harmonizes
+     with clay, and a deeper rust that stays distinct from the clay accent. */
+  --risk-low: oklch(58% 0.072 145);
+  --risk-low-soft: oklch(90% 0.038 145);
+  --risk-mid: oklch(64% 0.118 65);
+  --risk-mid-soft: oklch(91% 0.052 70);
+  --risk-high: oklch(50% 0.158 32);
+  --risk-high-soft: oklch(89% 0.060 32);
+  --risk-untriaged: oklch(56% 0.018 245);
+  --risk-untriaged-soft: oklch(93% 0.010 245);
 }
 
 @theme inline {
@@ -240,6 +252,38 @@ textarea {
   font-optical-sizing: auto;
   font-variation-settings: "opsz" 30;
   letter-spacing: -0.01em;
+}
+
+/* Surface card used on the public overview dashboard. The rest of the
+   product is intentionally cardless; this is a deliberate departure scoped
+   to the dashboard layout. */
+.card {
+  background: var(--paper-inset);
+  border: 1px solid var(--rule);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+/* Map marker labels are hidden by default and revealed on hover or focus.
+   Keyboard focus on the marker group reveals the same label, so the label
+   is reachable without a pointer. */
+.region-marker {
+  outline: none;
+  cursor: default;
+}
+
+.region-marker .region-label {
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.region-marker:hover .region-label,
+.region-marker:focus-visible .region-label {
+  opacity: 1;
+}
+
+.region-marker:focus-visible circle {
+  stroke-width: 2.5;
 }
 
 @media (prefers-reduced-motion: reduce) {

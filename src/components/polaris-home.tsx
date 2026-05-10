@@ -1,6 +1,7 @@
 "use client";
 
 import { ClipboardPenLine, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { IncidentReportFlow } from "./incident-report-flow";
 import { SafetyQuiz } from "./safety-quiz";
@@ -68,7 +69,7 @@ export function PolarisHome() {
         </div>
       </section>
 
-      <section className="mt-20 grid gap-10 border-t border-[var(--rule)] pt-8 sm:grid-cols-2">
+      <section className="mt-20 grid gap-10 border-t border-[var(--rule)] pt-8 sm:grid-cols-2 lg:grid-cols-3">
         <div>
           <p className="numeral text-[0.86rem] text-[var(--clay-deep)]">
             I.
@@ -92,6 +93,24 @@ export function PolarisHome() {
             Ten short questions about your situation, with a calm read of your
             exposure and a few practical steps to consider next.
           </p>
+        </div>
+        <div>
+          <p className="numeral text-[0.86rem] text-[var(--clay-deep)]">
+            III.
+          </p>
+          <h2 className="display mt-2 text-[1.35rem] leading-tight text-[var(--ink)]">
+            See the public overview
+          </h2>
+          <p className="mt-3 text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
+            An aggregate map and a few summary statistics drawn from
+            community reports. No individual report or location is shown.
+          </p>
+          <Link
+            href="/overview"
+            className="mt-4 inline-block text-[0.92rem] text-[var(--clay-deep)] underline decoration-[var(--rule-strong)] underline-offset-[6px] hover:text-[var(--clay)]"
+          >
+            Open the overview &rarr;
+          </Link>
         </div>
       </section>
 
