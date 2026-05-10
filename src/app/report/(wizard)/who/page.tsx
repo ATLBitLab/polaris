@@ -138,6 +138,14 @@ function PeopleEditor({
             <span className="block text-[0.82rem] font-medium text-[var(--ink)]">
               Details
             </span>
+            <p
+              className="mt-1 text-[0.82rem] leading-relaxed text-[var(--ink-3)]"
+              id={`person-details-hint-${index}`}
+            >
+              Provide any identifying information that may be helpful, such as
+              distinguishing scars or tattoos, hair color, voice characteristics,
+              clothing, body shape, posture, etc.
+            </p>
             <textarea
               value={person.description}
               onChange={(event) =>
@@ -147,6 +155,7 @@ function PeopleEditor({
                 })
               }
               rows={2}
+              aria-describedby={`person-details-hint-${index}`}
               className="mt-2 w-full resize-y rounded-md border border-[var(--rule)] bg-[var(--paper-inset)] px-3 py-2 text-[0.95rem] leading-relaxed transition-colors duration-150 ease-out hover:border-[var(--rule-strong)]"
             />
           </label>
