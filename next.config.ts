@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         hostname: "freedomhouse.org",
         pathname: "/themes/**",
       },
+      {
+        protocol: "https",
+        hostname: "www.amnesty.org",
+        pathname: "/en/wp-content/**",
+      },
     ],
   },
 };
