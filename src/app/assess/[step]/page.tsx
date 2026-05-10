@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { use, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { QuizHero, toRomanNumeral } from "@/components/safety-quiz-chrome";
+import { toRomanNumeral } from "@/components/safety-quiz-chrome";
 import {
   totalQuestionCount,
   useSafetyQuiz,
@@ -75,9 +75,7 @@ export default function AssessQuestionPage({
 
   return (
     <>
-      <QuizHero />
-
-      <p className="mt-12 text-[0.78rem] tracking-[0.16em] text-[var(--ink-3)] uppercase">
+      <p className="mt-10 text-[0.78rem] tracking-[0.16em] text-[var(--ink-3)] uppercase">
         Question {stepIndex} of {totalQuestionCount}
       </p>
 

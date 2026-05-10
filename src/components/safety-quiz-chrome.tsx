@@ -25,24 +25,6 @@ export function QuizMasthead() {
   );
 }
 
-export function QuizHero() {
-  return (
-    <section className="mt-12">
-      <p className="numeral text-[0.78rem] tracking-[0.18em] text-[var(--clay-deep)] uppercase">
-        Assess your risk
-      </p>
-      <h1 className="display mt-3 max-w-[18ch] text-[2.25rem] leading-[1.1] text-[var(--ink)] sm:text-[2.75rem]">
-        Plan ahead with a steady hand.
-      </h1>
-      <p className="mt-7 max-w-[60ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
-        One question at a time. Answer ten short prompts; receive a short,
-        considered list of practical steps. Only anonymous answer letters and
-        the planning band may be saved for aggregate analytics.
-      </p>
-    </section>
-  );
-}
-
 export function QuizColophon() {
   return (
     <footer className="mt-24 border-t border-[var(--rule)] pt-10">
