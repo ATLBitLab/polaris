@@ -18,29 +18,6 @@ export function QuizMasthead() {
   );
 }
 
-export function QuizColophon() {
-  return (
-    <footer className="mt-24 border-t border-[var(--rule)] pt-10">
-      <div className="flex items-center gap-3">
-        <StarMark className="h-3 w-3 text-[var(--clay)]" />
-        <span className="wordmark text-[0.7rem] text-[var(--ink-2)]">
-          Polaris
-        </span>
-      </div>
-      <p className="mt-4 max-w-[58ch] text-[0.875rem] leading-[1.7] text-[var(--ink-3)]">
-        A planning tool, not a verdict. Polaris offers structure for thinking
-        through ordinary preparations. Your circumstances will always have
-        details this tool cannot see.
-      </p>
-      <p className="mt-3 max-w-[58ch] text-[0.8rem] leading-[1.7] text-[var(--ink-3)]">
-        What may leave: anonymous answer letters, score, and planning band.
-        What does not: names, accounts, addresses, coordinates, or written
-        details about you.
-      </p>
-    </footer>
-  );
-}
-
 export function StarMark({ className = "" }: { readonly className?: string }) {
   return (
     <svg

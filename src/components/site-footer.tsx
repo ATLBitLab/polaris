@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const FBI_SEAL =
   "https://upload.wikimedia.org/wikipedia/commons/d/da/Seal_of_the_Federal_Bureau_of_Investigation.svg";
@@ -62,9 +63,26 @@ export function SiteFooter() {
 
         <p className="mt-4 text-[0.8125rem] leading-relaxed text-[var(--ink-2)]">
           Built during AI Hack for Freedom in Nashville, TN, May 9–10, 2026,
-          supported by the Human Rights Foundation. Maintained by Hong Kong
-          activist Joey Siu.
+          supported by{" "}
+          <a
+            href="https://hrf.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-[var(--rule-strong)] underline-offset-[4px] hover:text-[var(--ink)]"
+          >
+            the Human Rights Foundation
+          </a>
+          . Maintained by Hong Kong activist Joey Siu.
         </p>
+
+        <div className="mt-4 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-[0.78rem] text-[var(--ink-3)]">
+          <Link
+            href="/research"
+            className="underline decoration-[var(--rule-strong)] underline-offset-[4px] hover:text-[var(--ink-2)]"
+          >
+            Researcher access
+          </Link>
+        </div>
 
         <div className="mt-6 border-t border-[var(--rule)] pt-6">
           <p className="text-[0.75rem] font-medium uppercase tracking-[0.06em] text-[var(--ink-3)]">
