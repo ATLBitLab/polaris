@@ -95,6 +95,7 @@ export type IncidentClientReport = {
   readonly updatedAt: string;
   readonly lastAutosavedAt: string | null;
   readonly autosaveVersion: number;
+  readonly submittedAt: string | null;
   readonly draft: IncidentDraft;
   readonly quality: IncidentQuality;
 };

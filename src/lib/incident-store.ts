@@ -54,6 +54,7 @@ type IncidentReportRow = {
   readonly partner_sharing_consent: boolean | null;
   readonly partner_sharing_decided_at: string | null;
   readonly partner_sharing_consented_at: string | null;
+  readonly submitted_at: string | null;
   readonly device_source_hash: string;
 };
 
@@ -92,6 +93,7 @@ const reportSelect = `
   partner_sharing_consent,
   partner_sharing_decided_at,
   partner_sharing_consented_at,
+  submitted_at,
   device_source_hash
 `;
 
@@ -188,6 +190,10 @@ export async function updateIncidentReport(
     return loaded;
   }
 
+  if (loaded.value.row.submitted_at !== null) {
+    return { ok: false, status: 409, error: "Report already submitted" };
+  }
+
   const { supabase, row, people } = loaded.value;
   const current = toDraft(row, people);
   const nextDraft = applyIncidentPatch(current, patch);
@@ -278,6 +284,10 @@ export async function saveTranscript(
     return loaded;
   }
 
+  if (loaded.value.row.submitted_at !== null) {
+    return { ok: false, status: 409, error: "Report already submitted" };
+  }
+
   const { supabase, row, people } = loaded.value;
   const current = toDraft(row, people);
   const nextDraft = { ...current, transcriptText: transcript.text };
@@ -341,6 +351,10 @@ export async function saveIncidentAnalysis(
     return loaded;
   }
 
+  if (loaded.value.row.submitted_at !== null) {
+    return { ok: false, status: 409, error: "Report already submitted" };
+  }
+
   const { supabase, row, people } = loaded.value;
   const current = toDraft(row, people);
   const nextDraft: IncidentDraft = {
@@ -390,6 +404,39 @@ export async function saveIncidentAnalysis(
     ok: true,
     value: toClientReport(data as IncidentReportRow, analysis.people),
   };
+}
+
+export async function markIncidentReportSubmitted(
+  reportId: string,
+  deviceSource: string | null,
+): Promise<StoreResult<IncidentClientReport>> {
+  const loaded = await loadAuthorizedReport(reportId, deviceSource);
+
+  if (!loaded.ok) {
+    return loaded;
+  }
+
+  const { supabase, row, people } = loaded.value;
+
+  if (row.submitted_at !== null) {
+    return { ok: true, value: toClientReport(row, people) };
+  }
+
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("incident_reports")
+    .update({ submitted_at: now, updated_at: now })
+    .eq("id", reportId)
+    .is("submitted_at", null)
+    .select(reportSelect)
+    .single();
+
+  if (error || !data) {
+    console.error("Unable to mark incident report submitted", error);
+    return { ok: false, status: 500, error: "Unable to submit report" };
+  }
+
+  return { ok: true, value: toClientReport(data as IncidentReportRow, people) };
 }
 
 function requireSupabase(): StoreResult<SupabaseClient> {
@@ -532,6 +579,7 @@ function toClientReport(
     updatedAt: row.updated_at,
     lastAutosavedAt: row.last_autosaved_at,
     autosaveVersion: row.autosave_version,
+    submittedAt: row.submitted_at,
     draft,
     quality,
   };

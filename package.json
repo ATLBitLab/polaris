@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.5.2",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
     "d3-geo": "^3.1.1",

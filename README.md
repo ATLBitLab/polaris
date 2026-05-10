@@ -33,6 +33,8 @@ CRON_SECRET=
 TINFOIL_API_KEY=
 TINFOIL_ANALYSIS_MODEL=
 TINFOIL_BLINDING_MODEL=
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+TURNSTILE_SECRET_KEY=
 ```
 
 `SUPABASE_SECRET_KEY` is server-only and is used by `src/app/api/quiz-events/route.ts` to insert anonymous analytics. It must never use a `NEXT_PUBLIC_` prefix. If your Supabase project still uses a service role key instead of a secret key, `SUPABASE_SERVICE_ROLE_KEY` is supported as a fallback.
@@ -44,6 +46,8 @@ The public publishable key is also used by Supabase Auth SSR for the private res
 `CRON_SECRET` protects the Vercel Cron `GET /api/jobs/blind-incidents` invocation and can be set to the same value as `BLINDING_JOB_SECRET`. `vercel.json` runs this catch-up job once daily against the production deployment. Preview deployments still rely on the report-submission trigger or manual POST calls.
 
 `TINFOIL_API_KEY` enables voice transcription, incident analysis, and private research blinding. `TINFOIL_BLINDING_MODEL` can override the default blinding model; otherwise the app falls back to `TINFOIL_ANALYSIS_MODEL` and then the built-in default.
+
+`NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` gate draft creation on `/report` with a Cloudflare Turnstile challenge. Provision a free site at https://dash.cloudflare.com/ for production; for local development use Cloudflare's [always-pass test keys](https://developers.cloudflare.com/turnstile/troubleshooting/testing/) (`1x00000000000000000000AA` / `1x0000000000000000000000000000000AA`). When `TURNSTILE_SECRET_KEY` is unset, the API rejects draft creation with 503 in production and warns then bypasses verification in non-production.
 
 ## Supabase
 
