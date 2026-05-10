@@ -33,6 +33,7 @@ export async function recordQuizCompletion(
   });
 
   const { error } = await supabase.from("quiz_events").insert({
+    role: input.role,
     answers: input.answers,
     score,
     risk_band: riskBand,

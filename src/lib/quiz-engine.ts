@@ -1,6 +1,10 @@
 import {
   answerKeys,
   answerScores,
+  getQuestionKeysForRole,
+  getQuestionsForRole,
+  getThresholdsForRole,
+  isQuizRole,
   questionKeys,
   quizConfig,
   riskBandRank,
@@ -10,14 +14,14 @@ import {
   type GuidanceTrigger,
   type QuestionKey,
   type QuizQuestion,
+  type QuizRole,
   type RiskBand,
 } from "./quiz-config";
 
-export type QuizAnswers = {
-  readonly [key in QuestionKey]: AnswerKey;
-};
+export type QuizAnswers = Partial<Record<QuestionKey, AnswerKey>>;
 
 export type QuizInput = {
+  readonly role: QuizRole;
   readonly answers: QuizAnswers;
 };
 
@@ -66,7 +70,11 @@ export function parseQuizInput(value: unknown): QuizInput | null {
     return null;
   }
 
-  const candidate = value as { answers?: unknown };
+  const candidate = value as { role?: unknown; answers?: unknown };
+
+  if (typeof candidate.role !== "string" || !isQuizRole(candidate.role)) {
+    return null;
+  }
 
   if (
     !candidate.answers ||
@@ -76,34 +84,46 @@ export function parseQuizInput(value: unknown): QuizInput | null {
     return null;
   }
 
+  const role = candidate.role;
+  const expectedKeys = getQuestionKeysForRole(role);
+  const expectedKeySet = new Set<QuestionKey>(expectedKeys);
   const rawAnswers = candidate.answers as Record<string, unknown>;
   const keys = Object.keys(rawAnswers);
 
-  if (keys.length !== questionKeys.length) {
+  if (keys.length !== expectedKeys.length) {
     return null;
   }
 
-  if (!keys.every(isQuestionKey)) {
+  if (!keys.every((key) => isQuestionKey(key) && expectedKeySet.has(key))) {
     return null;
   }
 
-  const answers = {} as Record<QuestionKey, AnswerKey>;
+  const answers: QuizAnswers = {};
 
-  for (const questionKey of questionKeys) {
+  for (const questionKey of expectedKeys) {
     const answer = rawAnswers[questionKey];
 
     if (typeof answer !== "string" || !isAnswerKey(answer)) {
       return null;
     }
 
+    const question = getQuestionsForRole(role).find(
+      (item) => item.key === questionKey,
+    );
+
+    if (!question || !question.answers.some((option) => option.key === answer)) {
+      return null;
+    }
+
     answers[questionKey] = answer;
   }
 
-  return { answers };
+  return { role, answers };
 }
 
-export function getRiskBandForScore(score: number): RiskBand {
-  const threshold = quizConfig.thresholds.find((item) => {
+export function getRiskBandForScore(score: number, role: QuizRole): RiskBand {
+  const thresholds = getThresholdsForRole(role);
+  const threshold = thresholds.find((item) => {
     return (
       score >= item.minScore &&
       (item.maxScore === null || score <= item.maxScore)
@@ -123,8 +143,8 @@ export function scoreQuiz(input: QuizInput): QuizResult {
     return total + answer.points;
   }, 0);
 
-  const riskBand = getRiskBandForScore(score);
-  const riskConfig = quizConfig.thresholds.find(
+  const riskBand = getRiskBandForScore(score, input.role);
+  const riskConfig = getThresholdsForRole(input.role).find(
     (threshold) => threshold.band === riskBand,
   );
 
@@ -150,8 +170,13 @@ export function scoreQuiz(input: QuizInput): QuizResult {
 }
 
 function getScoredAnswers(input: QuizInput): ScoredAnswer[] {
-  return quizConfig.questions.map((question) => {
+  return getQuestionsForRole(input.role).map((question) => {
     const answerKey = input.answers[question.key];
+
+    if (!answerKey) {
+      throw new Error("Invalid quiz input");
+    }
+
     const answer = question.answers.find((item) => item.key === answerKey);
 
     if (!answer) {
@@ -172,6 +197,7 @@ function getGuidanceGroups(input: QuizInput, riskBand: RiskBand): GuidanceGroup[
     .map((category) => {
       const items = guidanceItems
         .filter((item) => item.category === category.key)
+        .filter((item) => item.applicableRoles.includes(input.role))
         .filter((item) => riskBandRank[riskBand] >= riskBandRank[item.minBand])
         .filter((item) => !item.triggers || matchesAnyTrigger(input, item.triggers))
         .sort((left, right) => left.priority - right.priority)
@@ -197,6 +223,10 @@ function matchesAnyTrigger(
   triggers: readonly GuidanceTrigger[],
 ): boolean {
   return triggers.some((trigger) => {
-    return answerScores[input.answers[trigger.question]] >= answerScores[trigger.minAnswer];
+    const answer = input.answers[trigger.question];
+    if (!answer) {
+      return false;
+    }
+    return answerScores[answer] >= answerScores[trigger.minAnswer];
   });
 }
