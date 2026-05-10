@@ -1,30 +1,7 @@
-"use client";
-
 import { ClipboardPenLine, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { IncidentReportFlow } from "./incident-report-flow";
-import { SafetyQuiz } from "./safety-quiz";
-import { Button } from "./ui/button";
-
-type Mode = "home" | "incident" | "quiz";
 
 export function PolarisHome() {
-  const [mode, setMode] = useState<Mode>("home");
-
-  if (mode === "incident") {
-    return (
-      <IncidentReportFlow
-        onBack={() => setMode("home")}
-        onAssessRisk={() => setMode("quiz")}
-      />
-    );
-  }
-
-  if (mode === "quiz") {
-    return <SafetyQuiz onBack={() => setMode("home")} />;
-  }
-
   return (
     <main className="mx-auto w-full max-w-[46rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
       <header className="flex items-center border-b border-[var(--rule)] pb-5">
@@ -51,21 +28,18 @@ export function PolarisHome() {
         </p>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
-          <Button
-            type="button"
-            onClick={() => setMode("incident")}
-            iconBefore={<ClipboardPenLine className="h-4 w-4" />}
-          >
-            Report an incident
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setMode("quiz")}
-            iconBefore={<ShieldCheck className="h-4 w-4" />}
-          >
-            Assess your risk
-          </Button>
+          <Link href="/report" className="button button-primary">
+            <span className="button-icon" aria-hidden="true">
+              <ClipboardPenLine className="h-4 w-4" />
+            </span>
+            <span>Report an incident</span>
+          </Link>
+          <Link href="/assess" className="button button-secondary">
+            <span className="button-icon" aria-hidden="true">
+              <ShieldCheck className="h-4 w-4" />
+            </span>
+            <span>Assess your risk</span>
+          </Link>
         </div>
       </section>
 
@@ -79,7 +53,8 @@ export function PolarisHome() {
           </h2>
           <p className="mt-3 text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
             A place to put down what happened: when, where, and what you
-            remember. You decide whether to share contact details for follow-up.
+            remember, one section at a time. You decide whether to share
+            contact details for follow-up.
           </p>
         </div>
         <div>
@@ -90,8 +65,9 @@ export function PolarisHome() {
             Assess your risk
           </h2>
           <p className="mt-3 text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-            Ten short questions about your situation, with a calm read of your
-            exposure and a few practical steps to consider next.
+            Ten short questions about your situation, asked one at a time,
+            with a calm read of your exposure and a few practical steps to
+            consider next.
           </p>
         </div>
         <div>
