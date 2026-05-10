@@ -68,16 +68,7 @@ export function PolarisHome() {
         </div>
       </section>
 
-      <div
-        className="mt-16 flex items-center justify-center gap-5 text-[var(--clay)]"
-        aria-hidden="true"
-      >
-        <span className="h-px w-12 bg-[var(--rule-strong)]" />
-        <StarMark className="h-2.5 w-2.5" />
-        <span className="h-px w-12 bg-[var(--rule-strong)]" />
-      </div>
-
-      <section className="mt-14 grid gap-10 border-t border-[var(--rule)] pt-8 sm:grid-cols-2">
+      <section className="mt-20 grid gap-10 border-t border-[var(--rule)] pt-8 sm:grid-cols-2">
         <div>
           <p className="numeral text-[0.86rem] text-[var(--clay-deep)]">
             I.
