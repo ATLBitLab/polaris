@@ -1,6 +1,8 @@
 "use client";
 
 import { type FormEvent, useMemo, useState } from "react";
+import { ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   quizConfig,
   type EventTypeKey,
@@ -212,22 +214,19 @@ export function SafetyQuiz() {
         </Section>
 
         <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <button
+          <Button
             type="submit"
-            className="inline-flex h-11 items-center gap-3 rounded-md bg-[var(--clay)] px-5 text-[0.92rem] font-medium tracking-wide text-[var(--paper)] transition-colors duration-150 ease-out hover:bg-[var(--clay-deep)] focus:bg-[var(--clay-deep)]"
+            iconAfter={<ChevronRight strokeWidth={1.75} />}
           >
             See the plan
-            <span aria-hidden="true" className="text-base leading-none">
-              ›
-            </span>
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="text"
             onClick={resetQuiz}
-            className="text-[0.9rem] text-[var(--ink-3)] underline decoration-[var(--rule-strong)] decoration-[1px] underline-offset-[6px] transition-colors duration-150 ease-out hover:text-[var(--ink)] hover:decoration-[var(--ink-3)]"
           >
             Start over
-          </button>
+          </Button>
         </div>
       </form>
 
@@ -492,13 +491,13 @@ function ResultPanel({
       </div>
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 border-t border-[var(--rule)] pt-6">
-        <button
+        <Button
           type="button"
+          variant="text"
           onClick={onRevise}
-          className="text-[0.92rem] text-[var(--ink)] underline decoration-[var(--rule-strong)] decoration-[1px] underline-offset-[6px] transition-colors duration-150 ease-out hover:decoration-[var(--ink-2)]"
         >
           Revise your answers
-        </button>
+        </Button>
         <p className="text-[0.78rem] leading-relaxed text-[var(--ink-3)]">
           {saveStateCopy(saveState)}
         </p>
