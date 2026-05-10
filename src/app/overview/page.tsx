@@ -11,6 +11,7 @@ import { IncidentMap } from "@/components/overview/incident-map";
 import { RecentBars } from "@/components/overview/recent-bars";
 import { RegionList } from "@/components/overview/region-list";
 import { StatCard } from "@/components/overview/stat-card";
+import { SiteFooter } from "@/components/site-footer";
 import { shouldShowFakeIncidentReports } from "@/lib/fake-incident-reports";
 import { loadOverviewData } from "@/lib/incident-overview";
 import {
@@ -219,23 +220,7 @@ export default async function OverviewPage({
         </div>
       </section>
 
-      <footer className="mt-24 border-t border-[var(--rule)] pt-10">
-        <div className="flex items-center gap-3">
-          <StarMark className="h-3 w-3 text-[var(--clay)]" />
-          <span className="wordmark text-[0.7rem] text-[var(--ink-2)]">
-            Polaris
-          </span>
-        </div>
-        <p className="mt-4 max-w-[60ch] text-[0.875rem] leading-[1.7] text-[var(--ink-3)]">
-          This overview shows aggregate counts only. No individual report,
-          identity, or address is published. To contribute a report or assess
-          your own risk, return to{" "}
-          <Link href="/" className="text-[var(--ink-2)] underline">
-            the Polaris home page
-          </Link>
-          .
-        </p>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }
