@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useMemo, useState } from "react";
+import { ChevronLeft } from "lucide-react";
 import {
   quizConfig,
   type EventTypeKey,
@@ -35,7 +36,7 @@ function StarMark({ className = "" }: { className?: string }) {
   );
 }
 
-export function SafetyQuiz() {
+export function SafetyQuiz({ onBack }: { readonly onBack?: () => void }) {
   const [location, setLocation] = useState<LocationKey>(defaultInput.location);
   const [role, setRole] = useState<RoleKey>(defaultInput.role);
   const [eventTypes, setEventTypes] = useState<EventTypeKey[]>(
@@ -108,7 +109,7 @@ export function SafetyQuiz() {
 
   return (
     <main className="mx-auto w-full max-w-[44rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
-      <Masthead />
+      <Masthead onBack={onBack} />
 
       <Hero />
 
@@ -247,7 +248,7 @@ export function SafetyQuiz() {
   );
 }
 
-function Masthead() {
+function Masthead({ onBack }: { readonly onBack?: () => void }) {
   return (
     <header className="flex items-center justify-between border-b border-[var(--rule)] pb-5">
       <div className="flex items-center gap-3">
@@ -256,9 +257,20 @@ function Masthead() {
           Polaris
         </span>
       </div>
-      <span className="text-[0.72rem] tracking-[0.18em] text-[var(--ink-3)] uppercase">
-        A planning tool
-      </span>
+      {onBack ? (
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-2 text-[0.82rem] text-[var(--ink-3)] underline decoration-[var(--rule-strong)] underline-offset-[6px] transition-colors duration-150 ease-out hover:text-[var(--ink)]"
+        >
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          Home
+        </button>
+      ) : (
+        <span className="text-[0.72rem] tracking-[0.18em] text-[var(--ink-3)] uppercase">
+          A planning tool
+        </span>
+      )}
     </header>
   );
 }
@@ -274,8 +286,8 @@ function Hero() {
         <p className="max-w-[60ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
           Polaris is a quiet way to think through your plans for a community
           event. Answer three broad questions; receive a short, considered
-          list of practical steps. Your answers stay on this page. Nothing
-          identifying is stored.
+          list of practical steps. This quiz asks for broad choices only and
+          stores no identifying details.
         </p>
 
         <aside className="display border-t border-[var(--rule-strong)] pt-4 text-[0.95rem] leading-[1.6] text-[var(--ink-2)] sm:mt-2">
@@ -283,8 +295,8 @@ function Hero() {
             <span className="not-italic numeral mr-2 text-[var(--clay)]">
               §
             </span>
-            A planning aid, not a verdict. No names, addresses, accounts, or
-            coordinates leave this page.
+            A planning aid, not a verdict. This quiz does not ask for names,
+            addresses, accounts, or coordinates.
           </p>
         </aside>
       </div>
@@ -512,7 +524,7 @@ function saveStateCopy(state: SaveState): string {
     case "saving":
       return "Saving an anonymous aggregate of this result.";
     case "saved":
-      return "Anonymous aggregate saved. No identifying details left this page.";
+      return "Anonymous aggregate saved. No identifying details were stored.";
     case "skipped":
       return "Plan ready. Nothing was saved.";
     default:
@@ -535,8 +547,9 @@ function Colophon() {
         details this tool cannot see.
       </p>
       <p className="mt-3 max-w-[58ch] text-[0.8rem] leading-[1.7] text-[var(--ink-3)]">
-        What stays here: your answers. What leaves: nothing identifying. No
-        names, accounts, addresses, or coordinates are stored by this form.
+        What stays here: your exact answers. What may leave: an anonymous
+        aggregate if analytics is configured. No names, accounts, addresses, or
+        coordinates are stored by this quiz.
       </p>
     </footer>
   );
