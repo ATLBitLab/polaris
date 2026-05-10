@@ -35,7 +35,7 @@ export default function ReportWherePage() {
               onClick={requestBrowserLocation}
               iconBefore={<LocateFixed className="h-4 w-4" />}
             >
-              Use browser location
+              Use my location
             </Button>
           </div>
           <div className="mt-5 grid gap-4">
