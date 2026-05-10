@@ -48,7 +48,7 @@ export function ReportMasthead() {
 export function ReportStatusBar() {
   const { saveState, error, report } = useIncidentReport();
   return (
-    <section className="mt-8 border-y border-[var(--rule)] py-4">
+    <section className="mt-8 border-b border-[var(--rule)] py-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-[0.84rem] font-medium text-[var(--ink)]">
           {statusCopy(saveState)}
