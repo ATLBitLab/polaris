@@ -8,7 +8,7 @@ export default function ReportLayout({
 }) {
   return (
     <IncidentReportProvider>
-      <main className="mx-auto w-full max-w-[48rem] px-6 pt-8 pb-24 sm:px-10 sm:pt-12">
+      <main className="mx-auto w-full max-w-[46rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
         <ReportMasthead />
         {children}
       </main>

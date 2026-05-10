@@ -22,7 +22,7 @@ export type ReportStepSlug = (typeof reportSteps)[number]["slug"];
 
 export function ReportMasthead() {
   return (
-    <header className="flex items-center justify-between border-b border-[var(--rule)] pb-5">
+    <header className="flex items-center border-b border-[var(--rule)] pb-5">
       <Link
         href="/"
         className="flex items-center gap-3 rounded-sm transition-opacity duration-150 ease-out hover:opacity-80"
@@ -31,15 +31,6 @@ export function ReportMasthead() {
         <span className="wordmark text-[0.78rem] text-[var(--ink)]">
           Polaris
         </span>
-      </Link>
-      <Link
-        href="/"
-        className="button button-link"
-      >
-        <span className="button-icon" aria-hidden="true">
-          <ChevronLeft className="h-4 w-4" />
-        </span>
-        <span>Home</span>
       </Link>
     </header>
   );

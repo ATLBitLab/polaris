@@ -52,6 +52,8 @@
 
 html {
   background: var(--paper);
+  /* Reserve scrollbar width so centered columns do not jump when overflow toggles. */
+  scrollbar-gutter: stable;
 }
 
 body {
