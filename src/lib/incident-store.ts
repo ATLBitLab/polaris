@@ -155,6 +155,22 @@ export async function patchIncidentReport(
   return updateIncidentReport(reportId, deviceSource, patch);
 }
 
+export async function getIncidentReport(
+  reportId: string,
+  deviceSource: string | null,
+): Promise<StoreResult<IncidentClientReport>> {
+  const loaded = await loadAuthorizedReport(reportId, deviceSource);
+
+  if (!loaded.ok) {
+    return loaded;
+  }
+
+  return {
+    ok: true,
+    value: toClientReport(loaded.value.row, loaded.value.people),
+  };
+}
+
 export async function updateIncidentReport(
   reportId: string,
   deviceSource: string | null,
