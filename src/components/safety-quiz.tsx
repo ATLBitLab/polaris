@@ -1,25 +1,22 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { type FormEvent, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   quizConfig,
-  type EventTypeKey,
-  type LocationKey,
-  type RoleKey,
+  type AnswerKey,
+  type QuestionKey,
 } from "@/lib/quiz-config";
-import { scoreQuiz, type QuizResult } from "@/lib/quiz-engine";
-
-const defaultInput = {
-  location: "other_us" as LocationKey,
-  role: "community_member" as RoleKey,
-  eventTypes: ["low_key_social"] as EventTypeKey[],
-};
+import {
+  parseQuizInput,
+  scoreQuiz,
+  type QuizAnswers,
+  type QuizResult,
+} from "@/lib/quiz-engine";
 
 type SaveState = "idle" | "saving" | "saved" | "skipped";
-
-const numerals = ["I.", "II.", "III."] as const;
+type PartialAnswers = Partial<QuizAnswers>;
 
 function StarMark({ className = "" }: { className?: string }) {
   return (
@@ -37,45 +34,37 @@ function StarMark({ className = "" }: { className?: string }) {
   );
 }
 
-export function SafetyQuiz() {
-  const [location, setLocation] = useState<LocationKey>(defaultInput.location);
-  const [role, setRole] = useState<RoleKey>(defaultInput.role);
-  const [eventTypes, setEventTypes] = useState<EventTypeKey[]>(
-    defaultInput.eventTypes,
-  );
+export function SafetyQuiz({ onBack }: { readonly onBack?: () => void }) {
+  const [answers, setAnswers] = useState<PartialAnswers>({});
   const [result, setResult] = useState<QuizResult | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
-
-  const locationGroups = useMemo(
-    () => ({
-      metro: quizConfig.locationBuckets.filter((item) => item.kind === "metro"),
-      state: quizConfig.locationBuckets.filter((item) => item.kind === "state"),
-      fallback: quizConfig.locationBuckets.filter(
-        (item) => item.kind === "fallback",
-      ),
-    }),
-    [],
-  );
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
   function clearResult() {
     setResult(null);
     setSaveState("idle");
+    setValidationMessage(null);
   }
 
-  function toggleEventType(eventType: EventTypeKey) {
-    setEventTypes((current) => {
-      if (current.includes(eventType)) {
-        const next = current.filter((item) => item !== eventType);
-        return next.length > 0 ? next : current;
-      }
-      return [...current, eventType];
-    });
+  function updateAnswer(questionKey: QuestionKey, answerKey: AnswerKey) {
+    setAnswers((current) => ({
+      ...current,
+      [questionKey]: answerKey,
+    }));
     clearResult();
   }
 
   async function submitQuiz(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const nextResult = scoreQuiz({ location, role, eventTypes });
+
+    const input = parseQuizInput({ answers });
+
+    if (!input) {
+      setValidationMessage("Answer each question before seeing the plan.");
+      return;
+    }
+
+    const nextResult = scoreQuiz(input);
     setResult(nextResult);
     setSaveState("saving");
 
@@ -83,7 +72,7 @@ export function SafetyQuiz() {
       const response = await fetch("/api/quiz-events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location, role, eventTypes }),
+        body: JSON.stringify(input),
       });
       const payload = (await response.json()) as { saved?: boolean };
       setSaveState(response.ok && payload.saved ? "saved" : "skipped");
@@ -102,116 +91,51 @@ export function SafetyQuiz() {
   }
 
   function resetQuiz() {
-    setLocation(defaultInput.location);
-    setRole(defaultInput.role);
-    setEventTypes(defaultInput.eventTypes);
+    setAnswers({});
     clearResult();
   }
 
   return (
     <main className="mx-auto w-full max-w-[44rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
-      <Masthead />
+      <Masthead onBack={onBack} />
 
       <Hero />
 
       <Ornament />
 
       <form onSubmit={submitQuiz} className="mt-12">
-        <Section index={0} heading="Where the event is">
-          <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-            Use the broadest bucket that still feels useful. Polaris does not
-            ask for an address, a venue, or coordinates.
-          </p>
+        {quizConfig.questions.map((question, index) => (
+          <Section key={question.key} index={index} heading={question.prompt}>
+            <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
+              {question.helper}
+            </p>
 
-          <label htmlFor="location" className="sr-only">
-            State or metro
-          </label>
-          <select
-            id="location"
-            value={location}
-            onChange={(event) => {
-              setLocation(event.target.value as LocationKey);
-              clearResult();
-            }}
-            className="select-native mt-5 h-12 w-full rounded-md border border-[var(--rule)] px-4 text-[1rem] text-[var(--ink)] transition-colors duration-150 ease-out hover:border-[var(--rule-strong)] focus:border-[var(--clay)]"
-          >
-            <option value="other_us">Choose a state or metro</option>
-            <optgroup label="Metro areas">
-              {locationGroups.metro.map((item) => (
-                <option key={item.key} value={item.key}>
-                  {item.label}
-                </option>
-              ))}
-            </optgroup>
-            <optgroup label="States">
-              {locationGroups.state.map((item) => (
-                <option key={item.key} value={item.key}>
-                  {item.label}
-                </option>
-              ))}
-            </optgroup>
-            <optgroup label="Other">
-              {locationGroups.fallback
-                .filter((item) => item.key !== "other_us")
-                .map((item) => (
-                  <option key={item.key} value={item.key}>
-                    {item.label}
-                  </option>
+            <fieldset className="mt-5">
+              <legend className="sr-only">{question.prompt}</legend>
+              <ChoiceList>
+                {question.answers.map((option) => (
+                  <ChoiceRow
+                    key={option.key}
+                    name={question.key}
+                    value={option.key}
+                    checked={answers[question.key] === option.key}
+                    onChange={() => updateAnswer(question.key, option.key)}
+                    answerKey={option.key}
+                    label={option.label}
+                    description={option.description}
+                    required
+                  />
                 ))}
-            </optgroup>
-          </select>
-        </Section>
+              </ChoiceList>
+            </fieldset>
+          </Section>
+        ))}
 
-        <Section index={1} heading="Your role">
-          <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-            Attending and organizing call for slightly different plans.
+        {validationMessage ? (
+          <p className="mt-8 max-w-[58ch] text-[0.9rem] leading-relaxed text-[var(--clay-deep)]">
+            {validationMessage}
           </p>
-
-          <fieldset className="mt-5">
-            <legend className="sr-only">Role</legend>
-            <ChoiceList>
-              {quizConfig.roleOptions.map((option) => (
-                <ChoiceRow
-                  key={option.key}
-                  type="radio"
-                  name="role"
-                  value={option.key}
-                  checked={role === option.key}
-                  onChange={() => {
-                    setRole(option.key);
-                    clearResult();
-                  }}
-                  label={option.label}
-                  description={option.rationale}
-                />
-              ))}
-            </ChoiceList>
-          </fieldset>
-        </Section>
-
-        <Section index={2} heading="What kind of event">
-          <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-            Select every type that applies. The more honest the picture, the
-            more useful the plan.
-          </p>
-
-          <fieldset className="mt-5">
-            <legend className="sr-only">Event types</legend>
-            <ChoiceList>
-              {quizConfig.eventTypes.map((option) => (
-                <ChoiceRow
-                  key={option.key}
-                  type="checkbox"
-                  value={option.key}
-                  checked={eventTypes.includes(option.key)}
-                  onChange={() => toggleEventType(option.key)}
-                  label={option.label}
-                  description={option.description}
-                />
-              ))}
-            </ChoiceList>
-          </fieldset>
-        </Section>
+        ) : null}
 
         <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3">
           <Button
@@ -246,7 +170,7 @@ export function SafetyQuiz() {
   );
 }
 
-function Masthead() {
+function Masthead({ onBack }: { readonly onBack?: () => void }) {
   return (
     <header className="flex items-center justify-between border-b border-[var(--rule)] pb-5">
       <div className="flex items-center gap-3">
@@ -255,9 +179,20 @@ function Masthead() {
           Polaris
         </span>
       </div>
-      <span className="text-[0.72rem] tracking-[0.18em] text-[var(--ink-3)] uppercase">
-        A planning tool
-      </span>
+      {onBack ? (
+        <Button
+          type="button"
+          variant="text"
+          onClick={onBack}
+          iconBefore={<ChevronLeft className="h-4 w-4" />}
+        >
+          Home
+        </Button>
+      ) : (
+        <span className="text-[0.72rem] tracking-[0.18em] text-[var(--ink-3)] uppercase">
+          A planning tool
+        </span>
+      )}
     </header>
   );
 }
@@ -272,9 +207,9 @@ function Hero() {
       <div className="mt-8 grid gap-x-12 gap-y-7 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)]">
         <p className="max-w-[60ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
           Polaris is a quiet way to think through your plans for a community
-          event. Answer three broad questions; receive a short, considered
-          list of practical steps. Your answers stay on this page. Nothing
-          identifying is stored.
+          event. Answer ten short questions; receive a short, considered list
+          of practical steps. Only anonymous answer letters and the planning
+          band may be saved for aggregate analytics.
         </p>
 
         <aside className="display border-t border-[var(--rule-strong)] pt-4 text-[0.95rem] leading-[1.6] text-[var(--ink-2)] sm:mt-2">
@@ -282,8 +217,8 @@ function Hero() {
             <span className="not-italic numeral mr-2 text-[var(--clay)]">
               §
             </span>
-            A planning aid, not a verdict. No names, addresses, accounts, or
-            coordinates leave this page.
+            A planning aid, not a verdict. This quiz does not ask for names,
+            addresses, accounts, or coordinates.
           </p>
         </aside>
       </div>
@@ -316,8 +251,8 @@ function Section({
   return (
     <section className="mt-14 first:mt-0">
       <div className="mb-5 flex items-baseline gap-4 border-t border-[var(--rule)] pt-7">
-        <span className="numeral text-[0.95rem] text-[var(--clay-deep)]">
-          {numerals[index]}
+        <span className="numeral min-w-[2.5rem] text-[0.95rem] text-[var(--clay-deep)]">
+          {toRomanNumeral(index + 1)}.
         </span>
         <h2 className="display text-[1.5rem] leading-tight text-[var(--ink)]">
           {heading}
@@ -329,77 +264,60 @@ function Section({
 }
 
 function ChoiceList({ children }: { readonly children: React.ReactNode }) {
-  return (
-    <ul className="border-t border-[var(--rule)]">{children}</ul>
-  );
+  return <ul className="border-t border-[var(--rule)]">{children}</ul>;
 }
 
 function ChoiceRow({
-  type,
   name,
   value,
   checked,
   onChange,
+  answerKey,
   label,
   description,
+  required,
 }: {
-  readonly type: "radio" | "checkbox";
-  readonly name?: string;
+  readonly name: string;
   readonly value: string;
   readonly checked: boolean;
   readonly onChange: () => void;
+  readonly answerKey: AnswerKey;
   readonly label: string;
   readonly description: string;
+  readonly required?: boolean;
 }) {
   return (
     <li className="border-b border-[var(--rule)]">
       <label
-        className={`group grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 gap-y-1 px-3 py-4 transition-colors duration-150 ease-out -mx-3 ${
-          checked
-            ? "bg-[var(--clay-soft)]"
-            : "hover:bg-[var(--paper-deep)]"
+        className={`group -mx-3 grid cursor-pointer grid-cols-[auto_auto_1fr] items-start gap-x-4 gap-y-1 px-3 py-4 transition-colors duration-150 ease-out ${
+          checked ? "bg-[var(--clay-soft)]" : "hover:bg-[var(--paper-deep)]"
         }`}
       >
         <span className="relative mt-[3px] flex h-5 w-5 items-center justify-center">
           <input
-            type={type}
+            type="radio"
             name={name}
             value={value}
             checked={checked}
             onChange={onChange}
+            required={required}
             className="peer absolute inset-0 cursor-pointer opacity-0"
           />
           <span
             aria-hidden="true"
-            className={`flex h-5 w-5 items-center justify-center border transition-colors duration-150 ease-out ${
-              type === "radio" ? "rounded-full" : "rounded-[3px]"
-            } ${
+            className={`flex h-5 w-5 items-center justify-center rounded-full border transition-colors duration-150 ease-out ${
               checked
                 ? "border-[var(--clay)] bg-[var(--clay)]"
                 : "border-[var(--rule-strong)] bg-[var(--paper-inset)] group-hover:border-[var(--ink-3)]"
             } peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--focus)]`}
           >
             {checked ? (
-              type === "radio" ? (
-                <span className="h-2 w-2 rounded-full bg-[var(--paper)]" />
-              ) : (
-                <svg
-                  viewBox="0 0 16 16"
-                  className="h-3 w-3 text-[var(--paper)]"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M3.5 8.5 L6.5 11.5 L12.5 4.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              )
+              <span className="h-2 w-2 rounded-full bg-[var(--paper)]" />
             ) : null}
           </span>
+        </span>
+        <span className="numeral mt-[1px] w-5 text-[0.95rem] text-[var(--clay-deep)]">
+          {answerKey}.
         </span>
         <span className="min-w-0">
           <span className="block text-[1rem] font-medium text-[var(--ink)]">
@@ -421,7 +339,7 @@ function PlaceholderPlan() {
         Your plan
       </p>
       <p className="mt-4 max-w-[58ch] text-[1.0625rem] leading-[1.7] text-[var(--ink-3)] italic">
-        Once you answer the three questions above, a short prioritized list of
+        Once you answer the ten questions above, a short prioritized list of
         practical steps will appear here.
       </p>
     </section>
@@ -509,9 +427,9 @@ function ResultPanel({
 function saveStateCopy(state: SaveState): string {
   switch (state) {
     case "saving":
-      return "Saving an anonymous aggregate of this result.";
+      return "Saving anonymous answer letters and this result.";
     case "saved":
-      return "Anonymous aggregate saved. No identifying details left this page.";
+      return "Anonymous answer letters saved. No identifying details left this page.";
     case "skipped":
       return "Plan ready. Nothing was saved.";
     default:
@@ -534,9 +452,40 @@ function Colophon() {
         details this tool cannot see.
       </p>
       <p className="mt-3 max-w-[58ch] text-[0.8rem] leading-[1.7] text-[var(--ink-3)]">
-        What stays here: your answers. What leaves: nothing identifying. No
-        names, accounts, addresses, or coordinates are stored by this form.
+        What may leave: anonymous answer letters, score, and planning band.
+        What does not: names, accounts, addresses, coordinates, or written
+        details about you.
       </p>
     </footer>
   );
+}
+
+function toRomanNumeral(value: number): string {
+  const numerals = [
+    ["M", 1000],
+    ["CM", 900],
+    ["D", 500],
+    ["CD", 400],
+    ["C", 100],
+    ["XC", 90],
+    ["L", 50],
+    ["XL", 40],
+    ["X", 10],
+    ["IX", 9],
+    ["V", 5],
+    ["IV", 4],
+    ["I", 1],
+  ] as const;
+
+  let remaining = value;
+  let output = "";
+
+  for (const [numeral, amount] of numerals) {
+    while (remaining >= amount) {
+      output += numeral;
+      remaining -= amount;
+    }
+  }
+
+  return output || String(value);
 }

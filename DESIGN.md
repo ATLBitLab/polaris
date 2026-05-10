@@ -49,7 +49,7 @@ Reading order top to bottom:
 1. Masthead: small star mark, wordmark, right-aligned tracked label.
 2. Hero: display h1 (max 18ch), then a two-column block (standfirst on the left at ~60ch, italic marginalia note on the right with a top rule). On mobile, these stack.
 3. Centered ornament: hairline rule, star mark, hairline rule.
-4. Three numbered sections (I., II., III.). Each section starts with a top hairline, a Roman numeral baseline-aligned with a serif h2, then helper copy and the control.
+4. Ten numbered sections (I. through X.). Each section starts with a top hairline, a Roman numeral baseline-aligned with a serif h2, then helper copy and the control.
 5. Action row: clay primary button plus a subtle text-link reset.
 6. Result panel (or placeholder before submit). Uses a 2px ink top rule to mark its weight.
 7. Colophon: hairline rule, small wordmark, two short paragraphs of plainly stated stance.
@@ -63,7 +63,9 @@ Spacing rhythm uses larger vertical gaps between sections (3.5rem) and tighter s
 - **Native select**: full-width, height 3rem, `appearance: none`, custom inline-SVG chevron, paper-inset background, hairline border, clay focus border. The 50+ states use `<optgroup>` for "Metro areas," "States," and "Other."
 - **Choice row** (radio or checkbox): `<li>` with hairline top and bottom borders, full-width tap target, custom-rendered control box (5x5) keyed off the real input via `peer-*` and `:checked`. Selected rows take the clay-soft wash; hovered rows take the paper-deep wash. The control fills clay when checked, with a paper-color glyph (radio dot or checkmark SVG).
 - **Primary button**: use the shared `Button` component with `variant="primary"`. It is 2.75rem tall, clay background, clay-on text, rounded-md, with a small chevron icon trailing the label. Hover and focus both deepen the background to clay-deep while preserving clay-on foreground. Primary buttons must never rely on inherited text color or raw `bg-[var(--clay)]` utilities without the `--clay-on` foreground.
-- **Text-link button** (reset, revise): plain ink-3 text with a hairline underline at 6px offset; hover deepens to ink and the underline darkens.
+- **Secondary button**: use the shared `Button` component with `variant="secondary"`. It is 2.75rem tall, paper-inset background, ink text, rounded-md, and a rule border. Hover and focus move to paper-deep and rule-strong.
+- **Strong button**: use the shared `Button` component with `variant="strong"` only for momentary dark-ink actions such as stopping a recording. It uses clay-on text on ink so dark backgrounds never inherit dark text.
+- **Text-link button** (reset, revise, back links): use the shared `Button` component with `variant="text"`. Plain ink-3 text with a hairline underline at 6px offset; hover deepens to ink and the underline darkens.
 - **Result panel**: top rule is 2px ink, marking the panel's weight. Eyebrow ("Your plan") in tracked uppercase serif, then a serif display h2 with the band sentence ("Elevated planning band."), then a body paragraph (60ch), then two grouped guidance sections, each with a star mark + serif subhead and a numbered list (01, 02, ...) where the counter is serif, italic-feeling, in clay-deep.
 - **Placeholder plan**: same eyebrow + an italic body paragraph in ink-3.
 - **Marginalia note**: italic Newsreader, with a non-italic clay § as a leading mark, top hairline above the block.
@@ -82,4 +84,4 @@ Transitions are 150ms ease-out and limited to color changes on hover, focus, and
 - Stack: Next.js App Router, React, Tailwind CSS v4, system fonts plus Newsreader and Inter via `next/font/google`.
 - Token strategy: design tokens as CSS custom properties in `globals.css`, referenced with Tailwind arbitrary values (`bg-[var(--paper)]`, `text-[var(--ink-2)]`, etc.). Avoid Tailwind opacity modifiers on CSS-variable backgrounds; use a dedicated soft token instead.
 - Fonts are exposed as CSS variables (`--font-display`, `--font-sans`) and applied via Tailwind's `font-sans` default. Utility classes `.wordmark`, `.numeral`, and `.display` opt specific elements into the serif.
-- Button strategy: all app buttons should render through `src/components/ui/button.tsx`. The component uses `.button-primary` and `.button-link` classes in `globals.css` so contrast-critical foreground colors live with the component state styles.
+- Button strategy: command buttons should render through `src/components/ui/button.tsx`. The component uses `.button-primary`, `.button-secondary`, `.button-strong`, and `.button-link` classes in `globals.css` so contrast-critical foreground colors live with the component state styles. Segmented choice controls may keep local selected-state styles when they are not command buttons.

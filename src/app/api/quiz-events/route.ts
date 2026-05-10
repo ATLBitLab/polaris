@@ -20,7 +20,11 @@ export async function POST(request: Request) {
   }
 
   const result = scoreQuiz(input);
-  const analytics = await recordQuizCompletion(input, result.riskBand);
+  const analytics = await recordQuizCompletion(
+    input,
+    result.riskBand,
+    result.score,
+  );
 
   return NextResponse.json({
     saved: analytics.saved,

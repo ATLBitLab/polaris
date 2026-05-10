@@ -1,5 +1,5 @@
-import { SafetyQuiz } from "@/components/safety-quiz";
+import { PolarisHome } from "@/components/polaris-home";
 
 export default function Home() {
-  return <SafetyQuiz />;
+  return <PolarisHome />;
 }
