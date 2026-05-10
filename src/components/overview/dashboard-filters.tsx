@@ -59,39 +59,39 @@ export function DashboardFilters({
     <form
       method="GET"
       action="/overview"
-      className="card p-5 sm:p-6"
+      className="flex h-full flex-col"
       aria-label="Dashboard filters"
     >
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)]">
-        <Fieldset legend="Regions">
-          <ul className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-6 border-t border-[var(--rule)]">
-            {regionKeys.map((key) => (
-              <CheckRow
-                key={key}
-                name="regions"
-                value={key}
-                label={regionCentroids[key].label}
-                defaultChecked={regionsSelected.has(key)}
-              />
-            ))}
-          </ul>
-        </Fieldset>
-
-        <Fieldset legend="Danger level">
-          <ul className="border-t border-[var(--rule)]">
-            {dangerBuckets.map((bucket) => (
-              <CheckRow
-                key={bucket}
-                name="danger"
-                value={bucket}
-                label={dangerLabels[bucket]}
-                defaultChecked={dangerSelected.has(bucket)}
-              />
-            ))}
-          </ul>
-        </Fieldset>
-
+      <div className="flex-1 overflow-y-auto px-5 pt-5 pb-6 sm:px-6">
         <div className="flex flex-col gap-7">
+          <Fieldset legend="Regions">
+            <ul className="border-t border-[var(--rule)]">
+              {regionKeys.map((key) => (
+                <CheckRow
+                  key={key}
+                  name="regions"
+                  value={key}
+                  label={regionCentroids[key].label}
+                  defaultChecked={regionsSelected.has(key)}
+                />
+              ))}
+            </ul>
+          </Fieldset>
+
+          <Fieldset legend="Danger level">
+            <ul className="border-t border-[var(--rule)]">
+              {dangerBuckets.map((bucket) => (
+                <CheckRow
+                  key={bucket}
+                  name="danger"
+                  value={bucket}
+                  label={dangerLabels[bucket]}
+                  defaultChecked={dangerSelected.has(bucket)}
+                />
+              ))}
+            </ul>
+          </Fieldset>
+
           <Fieldset legend="Date range">
             <ul className="border-t border-[var(--rule)]">
               {datePresets.map((preset) => (
@@ -155,7 +155,7 @@ export function DashboardFilters({
         </div>
       </div>
 
-      <div className="mt-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-[var(--rule)] pt-5">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-[var(--rule)] bg-[var(--paper)] px-5 py-4 sm:px-6">
         <Link href="/overview" className="button button-link">
           Clear all
         </Link>
@@ -240,14 +240,14 @@ export function ActiveFiltersSummary({
   const reportWord = totalShown === 1 ? "report" : "reports";
 
   return (
-    <div className="mt-4 border-t border-[var(--rule)] pt-4">
+    <div className="min-w-0 max-w-full">
       <p className="text-[0.86rem] leading-[1.6] text-[var(--ink-3)]">
         Showing{" "}
         <span className="numeral text-[var(--ink-2)]">{totalShown}</span> of{" "}
         <span className="numeral text-[var(--ink-2)]">{totalAll}</span>{" "}
         {reportWord}.
       </p>
-      <ul className="mt-3 flex flex-wrap items-center gap-2">
+      <ul className="mt-2 flex flex-wrap items-center gap-2">
         {chips.map((chip) => (
           <li key={chip.key}>
             <Link

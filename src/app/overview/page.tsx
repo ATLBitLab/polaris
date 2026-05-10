@@ -6,6 +6,7 @@ import {
   DashboardFilters,
 } from "@/components/overview/dashboard-filters";
 import { DangerBars } from "@/components/overview/danger-bars";
+import { FilterDrawer } from "@/components/overview/filter-drawer";
 import { IncidentMap } from "@/components/overview/incident-map";
 import { RecentBars } from "@/components/overview/recent-bars";
 import { RegionList } from "@/components/overview/region-list";
@@ -13,6 +14,7 @@ import { StatCard } from "@/components/overview/stat-card";
 import { shouldShowFakeIncidentReports } from "@/lib/fake-incident-reports";
 import { loadOverviewData } from "@/lib/incident-overview";
 import {
+  activeFilterCount,
   parseOverviewFilters,
   type DatePreset,
   type OverviewFilters,
@@ -57,6 +59,7 @@ export default async function OverviewPage({
   const regionsForList =
     filters.regions.length > 0 ? data.allRegions : data.topRegions;
   const recentCopy = recentActivityCopy(filters.datePreset);
+  const filtersActiveCount = activeFilterCount(filters, { demoEnvEnabled });
 
   return (
     <main className="mx-auto w-full max-w-[78rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
@@ -105,11 +108,13 @@ export default async function OverviewPage({
         </aside>
       </section>
 
-      <section className="mt-10">
-        <DashboardFilters
-          filters={filters}
-          demoEnvEnabled={demoEnvEnabled}
-        />
+      <section className="mt-10 flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+        <FilterDrawer activeCount={filtersActiveCount}>
+          <DashboardFilters
+            filters={filters}
+            demoEnvEnabled={demoEnvEnabled}
+          />
+        </FilterDrawer>
         <ActiveFiltersSummary
           filters={filters}
           totalShown={data.totalReports}
@@ -118,7 +123,7 @@ export default async function OverviewPage({
         />
       </section>
 
-      <section className="mt-12">
+      <section className="mt-8">
         <div className="card overflow-hidden p-4 sm:p-6">
           <IncidentMap regions={data.allRegions} />
         </div>

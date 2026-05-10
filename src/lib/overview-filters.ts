@@ -118,13 +118,21 @@ export function hasActiveFilters(
   filters: OverviewFilters,
   options: { readonly demoEnvEnabled: boolean },
 ): boolean {
-  if (filters.regions.length > 0) return true;
-  if (filters.danger.length > 0) return true;
-  if (filters.datePreset !== "all") return true;
-  if (filters.violence !== "any") return true;
-  if (filters.evidence !== "any") return true;
-  if (options.demoEnvEnabled && !filters.includeDemo) return true;
-  return false;
+  return activeFilterCount(filters, options) > 0;
+}
+
+export function activeFilterCount(
+  filters: OverviewFilters,
+  options: { readonly demoEnvEnabled: boolean },
+): number {
+  let count = 0;
+  if (filters.regions.length > 0) count += 1;
+  if (filters.danger.length > 0) count += 1;
+  if (filters.datePreset !== "all") count += 1;
+  if (filters.violence !== "any") count += 1;
+  if (filters.evidence !== "any") count += 1;
+  if (options.demoEnvEnabled && !filters.includeDemo) count += 1;
+  return count;
 }
 
 export function filterHref(
