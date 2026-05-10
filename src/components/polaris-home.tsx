@@ -26,40 +26,26 @@ export function PolarisHome() {
 
   return (
     <main className="mx-auto w-full max-w-[46rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
-      <header className="flex items-center justify-between border-b border-[var(--rule)] pb-5">
+      <header className="flex items-center border-b border-[var(--rule)] pb-5">
         <div className="flex items-center gap-3">
           <StarMark className="h-3.5 w-3.5 text-[var(--clay)]" />
           <span className="wordmark text-[0.78rem] text-[var(--ink)]">
             Polaris
           </span>
         </div>
-        <span className="text-[0.72rem] tracking-[0.18em] text-[var(--ink-3)] uppercase">
-          Public tools
-        </span>
       </header>
 
       <section className="mt-12">
-        <h1 className="display max-w-[18ch] text-[2.25rem] leading-[1.1] text-[var(--ink)] sm:text-[2.75rem]">
-          Report an incident, or plan before one.
+        <h1 className="display max-w-[22ch] text-[2.25rem] leading-[1.1] text-[var(--ink)] sm:text-[2.75rem]">
+          Transnational repression, on the record.
         </h1>
 
-        <div className="mt-8 grid gap-x-12 gap-y-7 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)]">
-          <p className="max-w-[62ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
-            Polaris now starts with incident documentation. You can begin
-            without an account, autosave partial details from this browser, and
-            choose whether follow-up contact is allowed.
-          </p>
-
-          <aside className="display border-t border-[var(--rule-strong)] pt-4 text-[0.95rem] leading-[1.6] text-[var(--ink-2)] sm:mt-2">
-            <p className="italic">
-              <span className="not-italic numeral mr-2 text-[var(--clay)]">
-                §
-              </span>
-              The safety quiz is still available when you want broad planning
-              guidance without names, addresses, or coordinates.
-            </p>
-          </aside>
-        </div>
+        <p className="mt-8 max-w-[62ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
+          Polaris is a place to document what happened and assess your own
+          exposure. Built for members of the Hong Kong, Tibetan, Uyghur, and
+          mainland Chinese communities, and for allies of pro-democracy
+          advocates from China.
+        </p>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <Button
@@ -67,7 +53,7 @@ export function PolarisHome() {
             onClick={() => setMode("incident")}
             iconBefore={<ClipboardPenLine className="h-4 w-4" />}
           >
-            Report incident
+            Report an incident
           </Button>
           <Button
             type="button"
@@ -95,11 +81,11 @@ export function PolarisHome() {
             I.
           </p>
           <h2 className="display mt-2 text-[1.35rem] leading-tight text-[var(--ink)]">
-            Incident reporting
+            Report an incident
           </h2>
           <p className="mt-3 text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-            Capture time, place, narrative, involved people, evidence prompts,
-            documentation quality, and explicit follow-up consent.
+            A place to put down what happened: when, where, and what you
+            remember. You decide whether to share contact details for follow-up.
           </p>
         </div>
         <div>
@@ -107,11 +93,11 @@ export function PolarisHome() {
             II.
           </p>
           <h2 className="display mt-2 text-[1.35rem] leading-tight text-[var(--ink)]">
-            Safety quiz
+            Assess your risk
           </h2>
           <p className="mt-3 text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-            Answer ten exposure questions and receive practical planning steps.
-            The quiz stores no identifying details.
+            Ten short questions about your situation, with a calm read of your
+            exposure and a few practical steps to consider next.
           </p>
         </div>
       </section>
@@ -124,9 +110,9 @@ export function PolarisHome() {
           </span>
         </div>
         <p className="mt-4 max-w-[60ch] text-[0.875rem] leading-[1.7] text-[var(--ink-3)]">
-          Incident reports and safety planning have different privacy shapes.
-          Reports can contain details you choose to provide; the quiz remains a
-          broad, no-identifying-detail planning aid.
+          Polaris does not require an account. The risk assessment collects no
+          names, addresses, or coordinates. An incident report contains only
+          what you choose to share.
         </p>
       </footer>
     </main>
