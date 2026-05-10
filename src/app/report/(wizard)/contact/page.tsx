@@ -103,12 +103,20 @@ function ContactMethodsEditor({
         label="Email"
         value={email}
         onChange={(value) => update("email", value)}
+        type="email"
+        autoComplete="email"
+        inputMode="email"
+        name="email"
       />
       <IconInput
         icon={<Phone className="h-4 w-4" aria-hidden="true" />}
         label="Phone"
         value={phone}
         onChange={(value) => update("phone", value)}
+        type="tel"
+        autoComplete="tel"
+        inputMode="tel"
+        name="tel"
       />
     </div>
   );
@@ -119,11 +127,19 @@ function IconInput({
   label,
   value,
   onChange,
+  type,
+  autoComplete,
+  inputMode,
+  name,
 }: {
   readonly icon: React.ReactNode;
   readonly label: string;
   readonly value: string;
   readonly onChange: (value: string) => void;
+  readonly type?: React.HTMLInputTypeAttribute;
+  readonly autoComplete?: string;
+  readonly inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  readonly name?: string;
 }) {
   return (
     <label className="block">
@@ -135,6 +151,10 @@ function IconInput({
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}
+          type={type}
+          autoComplete={autoComplete}
+          inputMode={inputMode}
+          name={name}
           className="h-full min-w-0 border-0 bg-transparent outline-none"
         />
       </span>
