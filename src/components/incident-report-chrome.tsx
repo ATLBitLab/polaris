@@ -14,7 +14,7 @@ export const reportSteps = [
   { slug: "where", index: "II.", heading: "Where did this occur?" },
   { slug: "what", index: "III.", heading: "What happened?" },
   { slug: "who", index: "IV.", heading: "Who was involved?" },
-  { slug: "next", index: "V.", heading: "What next" },
+  { slug: "evidence", index: "V.", heading: "Provide evidence" },
   { slug: "contact", index: "VI.", heading: "Contact opt-in" },
 ] as const;
 

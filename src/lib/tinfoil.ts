@@ -95,7 +95,7 @@ export async function analyzeIncidentDraft(
         {
           role: "system",
           content:
-            "Extract incident documentation metadata. Return JSON only. Do not infer protected traits. Use unknown roles when names are unclear. Keep advice practical and evidence-focused.",
+            "Extract people mentioned in this incident account. Return JSON only. Do not infer protected traits. Use unknown roles when names are unclear.",
         },
         {
           role: "user",
@@ -112,7 +112,7 @@ export async function analyzeIncidentDraft(
     });
 
     const content = response.choices[0]?.message?.content;
-    const parsed = parseIncidentAnalysisResponse(content, draft);
+    const parsed = parseIncidentAnalysisResponse(content);
 
     if (!parsed) {
       return { ...fallbackIncidentAnalysis(draft), aiUsed: false };
@@ -209,14 +209,13 @@ function sourceForModel(source: IncidentBlindingSource) {
       source: person.source,
       confidence: person.confidence ?? null,
     })),
-    analysisMetadata: source.analysisMetadata,
   };
 }
 
 const incidentAnalysisSchema = {
   type: "object",
   additionalProperties: false,
-  required: ["people", "checklist", "quality"],
+  required: ["people"],
   properties: {
     people: {
       type: "array",
@@ -231,34 +230,6 @@ const incidentAnalysisSchema = {
           description: { type: "string" },
           source: { type: "string", enum: ["ai"] },
           confidence: { type: "number", minimum: 0, maximum: 1 },
-        },
-      },
-    },
-    checklist: {
-      type: "array",
-      maxItems: 8,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        required: ["id", "label", "rationale", "completed"],
-        properties: {
-          id: { type: "string", pattern: "^[a-z0-9][a-z0-9_-]{1,63}$" },
-          label: { type: "string" },
-          rationale: { type: "string" },
-          completed: { type: "boolean" },
-        },
-      },
-    },
-    quality: {
-      type: "object",
-      additionalProperties: false,
-      required: ["score", "feedback"],
-      properties: {
-        score: { type: "integer", minimum: 0, maximum: 100 },
-        feedback: {
-          type: "array",
-          maxItems: 5,
-          items: { type: "string" },
         },
       },
     },
