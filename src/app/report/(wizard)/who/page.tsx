@@ -103,7 +103,7 @@ function PeopleEditor({
     <ol className="mt-6 border-t border-[var(--rule)]">
       {people.map((person, index) => (
         <li
-          key={`${person.displayName}-${index}`}
+          key={index}
           className="border-b border-[var(--rule)] py-5"
         >
           <div className="grid gap-4 sm:grid-cols-[1fr_1fr_auto]">
@@ -113,7 +113,7 @@ function PeopleEditor({
               onChange={(value) =>
                 onUpdatePerson(index, {
                   ...person,
-                  displayName: value || "Unknown person",
+                  displayName: value,
                 })
               }
             />
