@@ -1,8 +1,6 @@
 import { ClipboardPenLine, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
-import { SiteFooter } from "@/components/site-footer";
-
 export function PolarisHome() {
   return (
     <main className="mx-auto w-full max-w-[46rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
@@ -141,8 +139,6 @@ export function PolarisHome() {
           <li>others</li>
         </ul>
       </section>
-
-      <SiteFooter />
     </main>
   );
 }

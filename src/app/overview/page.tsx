@@ -11,7 +11,6 @@ import { IncidentMap } from "@/components/overview/incident-map";
 import { RecentBars } from "@/components/overview/recent-bars";
 import { RegionList } from "@/components/overview/region-list";
 import { StatCard } from "@/components/overview/stat-card";
-import { SiteFooter } from "@/components/site-footer";
 import { shouldShowFakeIncidentReports } from "@/lib/fake-incident-reports";
 import { loadOverviewData } from "@/lib/incident-overview";
 import {
@@ -219,8 +218,6 @@ export default async function OverviewPage({
           />
         </div>
       </section>
-
-      <SiteFooter />
     </main>
   );
 }
