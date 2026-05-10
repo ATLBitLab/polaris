@@ -1,26 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --surface: oklch(98% 0.006 90);
-  --panel: oklch(94% 0.008 95);
-  --panel-strong: oklch(90% 0.012 92);
-  --foreground: oklch(22% 0.012 85);
-  --muted: oklch(46% 0.014 82);
-  --border: oklch(84% 0.012 88);
-  --accent: oklch(47% 0.085 165);
-  --accent-strong: oklch(34% 0.078 165);
-  --accent-soft: oklch(90% 0.042 165);
-  --caution: oklch(58% 0.085 70);
-  --caution-soft: oklch(91% 0.048 75);
-  --attention-soft: oklch(91% 0.052 48);
-  --focus: oklch(58% 0.11 180);
+  /* Surfaces — warm parchment, not white. Tinted toward warm yellow. */
+  --paper: oklch(96% 0.012 80);
+  --paper-deep: oklch(93% 0.015 78);
+  --paper-inset: oklch(98% 0.008 82);
+
+  /* Ink — deep blue-black, never pure black. */
+  --ink: oklch(22% 0.024 250);
+  --ink-2: oklch(38% 0.022 248);
+  --ink-3: oklch(56% 0.018 245);
+
+  /* Rules and seams — warm faded line, not gray. */
+  --rule: oklch(82% 0.018 80);
+  --rule-strong: oklch(70% 0.022 78);
+
+  /* Accent — grounded clay. One color, used sparingly. */
+  --clay: oklch(48% 0.108 38);
+  --clay-deep: oklch(38% 0.102 36);
+  --clay-soft: oklch(91% 0.038 42);
+
+  /* Focus — slightly more saturated clay so it reads against everything. */
+  --focus: oklch(56% 0.142 38);
 }
 
 @theme inline {
-  --color-background: var(--surface);
-  --color-foreground: var(--foreground);
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
-    sans-serif;
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
+  --font-display: var(--font-display), "Iowan Old Style", "Apple Garamond",
+    "Palatino", Georgia, serif;
 }
 
 * {
@@ -28,31 +38,70 @@
 }
 
 html {
-  background: var(--surface);
+  background: var(--paper);
 }
 
 body {
   min-width: 320px;
-  background: var(--surface);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
-    sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
 }
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
+  color: inherit;
 }
 
 ::selection {
-  background: var(--accent-soft);
-  color: var(--accent-strong);
+  background: var(--clay-soft);
+  color: var(--clay-deep);
 }
 
 :focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Native select arrow gets its own composed look. */
+.select-native {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--paper-inset);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5l5 5 5-5' fill='none' stroke='%2348413a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+/* Roman numeral labels in the section markers */
+.numeral {
+  font-family: var(--font-display), serif;
+  font-feature-settings: "lnum";
+  font-variant-numeric: lining-nums;
+  letter-spacing: 0.04em;
+}
+
+/* Editorial small-caps wordmark */
+.wordmark {
+  font-family: var(--font-display), serif;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* The serif drop-style display heading. opsz axis pulls a more open shape. */
+.display {
+  font-family: var(--font-display), serif;
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 30;
+  letter-spacing: -0.01em;
 }
 
 @media (prefers-reduced-motion: reduce) {

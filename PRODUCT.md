@@ -6,28 +6,42 @@ product
 
 ## Users
 
-Polaris is for community event organizers and community members who want a quick, privacy-preserving way to think through basic safety planning before attending or hosting civic and social events. They may be using it shortly before an event, on a phone, while trying to make a practical plan without being pushed into alarm.
+Polaris is a planning tool for community members and organizers thinking through real, sometimes politically sensitive event decisions in the U.S.
+
+The canonical persona is a Chinese pro-democracy activist living in the U.S., opening Polaris on a quiet weekday evening to think through whether and how to attend a public commemoration. Polaris should serve them well; it should also serve the broader population of community members and event organizers facing ordinary planning questions, without naming any community in the surface copy.
+
+A second audience is implicit: program officers and grant-makers at human rights and civic-tech funders who reach the page while reviewing the project. They should see craft, restraint, and a serious privacy stance immediately, without ever encountering marketing language.
 
 ## Product Purpose
 
-The Safety Quiz collects broad location, role, and event-type dimensions, then returns a calm risk band and prioritized action plan. Success means users understand the next few practical safety steps, the app avoids collecting identifying details, and anonymous aggregate analytics can help improve guidance over time.
+The Safety Quiz collects three broad dimensions, location, role, and event types, and returns a calm planning band ("Lower," "Moderate," "Elevated") plus a short, prioritized list of practical steps in two areas: personal safety at events and identity protection.
+
+Success means a user leaves with three or four concrete steps in mind, the page collected nothing identifying, and the experience felt like clear-headed planning rather than a panic checklist.
 
 ## Brand Personality
 
-Calm, practical, privacy-first. The voice should be direct and grounded, with clear language that helps users act without escalating anxiety.
+Steady. Considered. Editorially serious. Polaris reads like a page from a thoughtful field guide or paperback, not a SaaS form, a crisis app, or an NGO marketing site. The voice is direct, grounded, and treats the reader as a capable adult who is already thinking carefully.
 
 ## Anti-references
 
-Avoid fear-heavy warning screens, law-enforcement-style heat maps, precise address collection, surveillance aesthetics, marketing landing pages, decorative dashboards, and vague safety platitudes.
+- The NGO category reflex: white plus blue, sans serifs, stock photography of activists, generic hero metrics.
+- The safety-app reflex: red panic buttons, traffic-light risk colors, alarm-shaped icons, scary headings.
+- The SaaS landing reflex: gradient hero blocks, glassmorphism, large feature card grids, decorative motion.
+- AI-illustrated figurative imagery of activists or events.
+- Surveillance aesthetics: heat maps, precise locations, address fields, identity collection.
+- Vague safety platitudes and long disclaimers in place of concrete privacy behavior.
 
 ## Design Principles
 
-- Start with the task: the quiz is the first screen.
-- Ask only for dimensions needed to return useful guidance.
-- Keep risk language bounded and non-alarming.
-- Prioritize readable action plans over dramatic visual treatment.
-- Make privacy constraints visible through product behavior, not long disclaimers.
+- Treat the reader as a competent adult. The page should help them think, not warn them.
+- The risk band is a sentence, not a colored chip. Words do the work; refuse the traffic-light vocabulary.
+- One clear path. Three numbered questions, one primary action, one prioritized plan.
+- Privacy is visible through product behavior: no names, addresses, accounts, or coordinates collected. State this once, plainly.
+- Editorial restraint. Serif display type and a single warm accent are enough; no decorative motion, no card-grid mosaics, no nested panels.
+- Familiar form controls only. Native selects, real radios and checkboxes, focus rings, keyboard order.
 
 ## Accessibility & Inclusion
 
-Target WCAG AA contrast and keyboard-accessible controls. Support mobile use, reduced motion preferences, clear focus states, and plain-language copy for people scanning quickly under stress.
+WCAG AA contrast on all text. Real `<input>`, `<select>`, `<fieldset>`, and `<legend>` elements with visible focus rings. Plain language and short sentences for stress-scanning. Keyboard order matches reading order. Reduced-motion preference respected. Mobile-first layout: the marginalia note stacks under the standfirst, the ornament shrinks, choice rows remain full-width.
+
+The tool does not collect language preference and is currently English only; multilingual support is an open question for future iteration, particularly for the canonical persona.
