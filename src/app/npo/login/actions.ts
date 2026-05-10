@@ -3,16 +3,7 @@
 import { headers } from "next/headers";
 import { buildNpoOtpRequest } from "@/lib/npo-auth";
 import { createClient } from "@/lib/supabase/server";
-
-export type NpoLoginState = {
-  readonly status: "idle" | "sent" | "error";
-  readonly message: string;
-};
-
-export const initialNpoLoginState: NpoLoginState = {
-  status: "idle",
-  message: "",
-};
+import type { NpoLoginState } from "./state";
 
 export async function requestNpoMagicLink(
   _state: NpoLoginState,
@@ -61,7 +52,7 @@ export async function requestNpoMagicLink(
   }
 }
 
-export async function buildNpoEmailRedirectTo(): Promise<string> {
+async function buildNpoEmailRedirectTo(): Promise<string> {
   const headerStore = await headers();
   const origin =
     headerStore.get("origin") ??
