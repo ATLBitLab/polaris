@@ -77,6 +77,7 @@ type IncidentReportContextValue = {
   ) => void;
   readonly updatePartnerSharing: (consent: boolean) => void;
   readonly markReportSubmitted: () => void;
+  readonly requestReportBlinding: () => Promise<void>;
   readonly flushPendingPatches: () => Promise<void>;
   readonly resetReport: () => void;
 };
@@ -727,6 +728,31 @@ export function IncidentReportProvider({
     }
   }, []);
 
+  const requestReportBlinding = useCallback(async () => {
+    const currentReport = reportRef.current;
+    const currentDeviceSource = deviceSourceRef.current;
+
+    if (
+      !currentReport ||
+      !currentDeviceSource ||
+      currentReport.draft.partnerSharingConsent !== true
+    ) {
+      return;
+    }
+
+    try {
+      await fetch(`/api/incident-reports/${currentReport.id}/blind`, {
+        method: "POST",
+        headers: {
+          "x-polaris-device-source": currentDeviceSource,
+        },
+        keepalive: true,
+      });
+    } catch (error) {
+      console.warn("Unable to start incident blinding", error);
+    }
+  }, []);
+
   const resetReport = useCallback(() => {
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(reportIdStorageKey);
@@ -776,6 +802,7 @@ export function IncidentReportProvider({
       updateContact,
       updatePartnerSharing,
       markReportSubmitted,
+      requestReportBlinding,
       flushPendingPatches,
       resetReport,
     }),
@@ -803,6 +830,7 @@ export function IncidentReportProvider({
       updateContact,
       updatePartnerSharing,
       markReportSubmitted,
+      requestReportBlinding,
       flushPendingPatches,
       resetReport,
     ],

@@ -5,6 +5,23 @@ import { hasTinfoilConfig } from "@/lib/tinfoil";
 
 export const runtime = "nodejs";
 
+export async function GET(request: Request) {
+  if (!isAuthorizedCron(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!hasTinfoilConfig()) {
+    return NextResponse.json(
+      { error: "Incident blinding is not configured" },
+      { status: 503 },
+    );
+  }
+
+  const result = await processIncidentBlindingBatch(10);
+
+  return NextResponse.json(result);
+}
+
 export async function POST(request: Request) {
   if (!isAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -44,5 +61,12 @@ function isAuthorized(request: Request): boolean {
   return isAuthorizedBlindingJobRequest(
     request.headers.get("authorization"),
     process.env.BLINDING_JOB_SECRET,
+  );
+}
+
+function isAuthorizedCron(request: Request): boolean {
+  return isAuthorizedBlindingJobRequest(
+    request.headers.get("authorization"),
+    process.env.CRON_SECRET ?? process.env.BLINDING_JOB_SECRET,
   );
 }

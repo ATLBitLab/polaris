@@ -6,7 +6,8 @@ import {
   buildIncidentBlindingSourceFingerprint,
   type IncidentBlindingSource,
 } from "./incident-blinding";
-import type { IncidentPerson } from "./incident-report";
+import { isValidReportId, type IncidentPerson } from "./incident-report";
+import { hashDeviceSource } from "./incident-store";
 import {
   normalizePrivateNpoIncidentRows,
   type NpoDashboardFilters,
@@ -21,6 +22,10 @@ export type BlindingJobResult = {
   readonly skipped: number;
   readonly failed: number;
 };
+
+type BlindingProcessResult =
+  | { readonly ok: true; readonly value: BlindingJobResult }
+  | { readonly ok: false; readonly status: number; readonly error: string };
 
 type IncidentReportBlindingStatusRow = {
   readonly report_id: string;
@@ -40,6 +45,7 @@ type IncidentPeopleRow = {
 type IncidentReportCandidateRow = {
   readonly id: string;
   readonly updated_at: string;
+  readonly partner_sharing_consent: boolean | null;
   readonly incident_time_kind: string | null;
   readonly incident_occurred_at: string | null;
   readonly incident_time_note: string | null;
@@ -50,6 +56,7 @@ type IncidentReportCandidateRow = {
   readonly narrative_text: string | null;
   readonly transcript_text: string | null;
   readonly analysis_metadata: unknown;
+  readonly device_source_hash: string;
   readonly incident_people?: readonly IncidentPeopleRow[] | null;
   readonly incident_report_blindings?:
     | readonly IncidentReportBlindingStatusRow[]
@@ -79,6 +86,7 @@ const privateDashboardSelect = `
 const blindingCandidateSelect = `
   id,
   updated_at,
+  partner_sharing_consent,
   incident_time_kind,
   incident_occurred_at,
   incident_time_note,
@@ -89,6 +97,7 @@ const blindingCandidateSelect = `
   narrative_text,
   transcript_text,
   analysis_metadata,
+  device_source_hash,
   incident_people(
     display_name,
     role,
@@ -206,37 +215,102 @@ export async function processIncidentBlindingBatch(
       break;
     }
 
-    const source = toBlindingSource(row);
-    const fingerprint = buildIncidentBlindingSourceFingerprint(source);
-    const existing = firstBlinding(row.incident_report_blindings);
+    const result = await processIncidentBlindingCandidate(supabase, row);
 
-    if (
-      existing &&
-      existing.status !== "failed" &&
-      existing.source_fingerprint === fingerprint
-    ) {
-      skipped += 1;
-      continue;
-    }
-
-    const ok = await processSingleIncidentBlinding(
-      supabase,
-      source,
-      fingerprint,
-    );
-
-    if (ok) {
-      processed += 1;
-    } else {
-      failed += 1;
+    switch (result) {
+      case "processed":
+        processed += 1;
+        break;
+      case "failed":
+        failed += 1;
+        break;
+      default:
+        skipped += 1;
     }
   }
 
   return { processed, skipped, failed };
 }
 
+export async function processIncidentBlindingForReport(
+  reportId: string,
+  deviceSource: string | null,
+): Promise<BlindingProcessResult> {
+  const supabase = requireSupabase();
+  if (!supabase) {
+    return {
+      ok: false,
+      status: 503,
+      error: "Incident blinding is not configured",
+    };
+  }
+
+  if (!isValidReportId(reportId) || !deviceSource) {
+    return { ok: false, status: 404, error: "Report not found" };
+  }
+
+  const { data, error } = await supabase
+    .from("incident_reports")
+    .select(blindingCandidateSelect)
+    .eq("id", reportId)
+    .single();
+
+  if (error || !data) {
+    return { ok: false, status: 404, error: "Report not found" };
+  }
+
+  const row = data as IncidentReportCandidateRow;
+
+  if (row.device_source_hash !== hashDeviceSource(deviceSource)) {
+    return { ok: false, status: 404, error: "Report not found" };
+  }
+
+  if (row.partner_sharing_consent !== true) {
+    return {
+      ok: true,
+      value: { processed: 0, skipped: 1, failed: 0 },
+    };
+  }
+
+  const result = await processIncidentBlindingCandidate(supabase, row);
+
+  return {
+    ok: true,
+    value: {
+      processed: result === "processed" ? 1 : 0,
+      skipped: result === "skipped" ? 1 : 0,
+      failed: result === "failed" ? 1 : 0,
+    },
+  };
+}
+
 function requireSupabase(): SupabaseClient | null {
   return getSupabaseAdminClient();
+}
+
+async function processIncidentBlindingCandidate(
+  supabase: SupabaseClient,
+  row: IncidentReportCandidateRow,
+): Promise<"processed" | "skipped" | "failed"> {
+  const source = toBlindingSource(row);
+  const fingerprint = buildIncidentBlindingSourceFingerprint(source);
+  const existing = firstBlinding(row.incident_report_blindings);
+
+  if (
+    existing &&
+    existing.status !== "failed" &&
+    existing.source_fingerprint === fingerprint
+  ) {
+    return "skipped";
+  }
+
+  const ok = await processSingleIncidentBlinding(
+    supabase,
+    source,
+    fingerprint,
+  );
+
+  return ok ? "processed" : "failed";
 }
 
 async function processSingleIncidentBlinding(

@@ -29,6 +29,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SECRET_KEY=
 BLINDING_JOB_SECRET=
+CRON_SECRET=
 TINFOIL_API_KEY=
 TINFOIL_ANALYSIS_MODEL=
 TINFOIL_BLINDING_MODEL=
@@ -39,6 +40,8 @@ TINFOIL_BLINDING_MODEL=
 The public publishable key is also used by Supabase Auth SSR for the private NPO surface. The server-only Supabase key is still required for writes, overview aggregation, blinding jobs, and private dashboard data loading.
 
 `BLINDING_JOB_SECRET` protects `POST /api/jobs/blind-incidents` with `Authorization: Bearer <secret>`. The endpoint accepts an optional JSON body such as `{"limit":5}` and returns counts for `processed`, `skipped`, and `failed`.
+
+`CRON_SECRET` protects the Vercel Cron `GET /api/jobs/blind-incidents` invocation and can be set to the same value as `BLINDING_JOB_SECRET`. `vercel.json` runs this catch-up job once daily against the production deployment. Preview deployments still rely on the report-submission trigger or manual POST calls.
 
 `TINFOIL_API_KEY` enables voice transcription, incident analysis, and private NPO blinding. `TINFOIL_BLINDING_MODEL` can override the default blinding model; otherwise the app falls back to `TINFOIL_ANALYSIS_MODEL` and then the built-in default.
 
@@ -57,7 +60,7 @@ The private NPO dashboard uses Supabase Auth magic links. Pre-create approved NP
 
 Email delivery for magic links should be configured in Supabase Auth custom SMTP. For Mailgun, use Mailgun's SMTP host, port, username, password, sender address, and sender name in the Supabase Dashboard. The app does not call the Mailgun API directly.
 
-Partner NPO sharing is explicit per report via `partner_sharing_consent`. Existing reports default to not shared. Authenticated NPO users only see rows from `incident_report_blindings` where the raw report still has consent and the blinding status is `completed`; raw narratives, exact locations, people rows, and contact methods are not rendered in the NPO dashboard.
+Partner NPO sharing is explicit per report via `partner_sharing_consent`. Existing reports default to not shared. Authenticated NPO users only see rows from `incident_report_blindings` where the raw report still has consent and the blinding status is `completed`; raw narratives, exact locations, people rows, and contact methods are not rendered in the NPO dashboard. Partner-shared reports start a non-blocking blinding request when the reporter reaches `/report/done`; the protected batch job remains the fallback for retries and stale records.
 
 The Supabase CLI is available in this workspace (`supabase --version` reported `2.98.2` on May 9, 2026). Local migration verification passed with:
 

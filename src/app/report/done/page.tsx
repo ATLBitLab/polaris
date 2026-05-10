@@ -3,20 +3,34 @@
 import { Check, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useIncidentReport } from "@/components/incident-report-provider";
 import { StarMark } from "@/components/incident-report-chrome";
 
 export default function ReportDonePage() {
   const router = useRouter();
-  const { report, markReportSubmitted, resetReport } = useIncidentReport();
+  const {
+    report,
+    markReportSubmitted,
+    requestReportBlinding,
+    resetReport,
+  } = useIncidentReport();
+  const blindingRequestedRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (report) {
       markReportSubmitted();
     }
-  }, [markReportSubmitted, report]);
+
+    if (
+      report?.draft.partnerSharingConsent === true &&
+      blindingRequestedRef.current !== report.id
+    ) {
+      blindingRequestedRef.current = report.id;
+      void requestReportBlinding();
+    }
+  }, [markReportSubmitted, report, requestReportBlinding]);
 
   function startAnother() {
     resetReport();
