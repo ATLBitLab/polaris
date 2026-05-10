@@ -93,12 +93,18 @@ export function ReportIntroForm() {
         <p className="mt-8 text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
           You have a report in progress. Continue where you left off.
         </p>
-      ) : turnstileSiteKey ? (
+      ) : null}
+
+      {!hasExistingDraft && turnstileSiteKey ? (
         <div className="mt-8">
           <Turnstile
             ref={turnstileRef}
             siteKey={turnstileSiteKey}
-            options={{ theme: "light" }}
+            options={{
+              theme: "light",
+              appearance: "always",
+              size: "normal",
+            }}
             onSuccess={(nextToken) => {
               setToken(nextToken);
               setError(null);
@@ -112,11 +118,13 @@ export function ReportIntroForm() {
             }}
           />
         </div>
-      ) : (
+      ) : null}
+
+      {!hasExistingDraft && !turnstileSiteKey ? (
         <p className="mt-8 text-[0.85rem] text-[var(--ink-3)]">
           Bot verification is not configured.
         </p>
-      )}
+      ) : null}
 
       {error ? (
         <p
