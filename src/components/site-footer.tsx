@@ -10,6 +10,10 @@ const FBI_TRANSNATIONAL_REPRESSION =
 const FREEDOM_HOUSE_TR_REPORT =
   "https://freedomhouse.org/report/transnational-repression";
 
+/** Same outer box for every brand mark so link text lines up across rows. */
+const LOGO_BOX =
+  "relative h-10 w-10 shrink-0 overflow-hidden bg-[var(--paper)] ring-1 ring-[var(--rule)]";
+
 export function SiteFooter() {
   return (
     <footer
@@ -42,18 +46,18 @@ export function SiteFooter() {
                 href={FBI_TRANSNATIONAL_REPRESSION}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-start gap-3 rounded-sm text-[0.8125rem] text-[var(--ink-2)] transition-colors duration-150 hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus)]"
+                className="group flex items-center gap-3 rounded-sm text-[0.8125rem] text-[var(--ink-2)] transition-colors duration-150 hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus)]"
               >
-                <span className="relative mt-0.5 h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--paper)] ring-1 ring-[var(--rule)]">
+                <span className={`${LOGO_BOX} rounded-full`}>
                   <Image
                     src={FBI_SEAL}
                     alt=""
                     fill
-                    sizes="32px"
-                    className="object-contain p-1"
+                    sizes="40px"
+                    className="object-contain p-1.5"
                   />
                 </span>
-                <span className="min-w-0 pt-0.5 leading-snug">
+                <span className="min-w-0 leading-snug">
                   <span className="font-medium text-[var(--ink)]">FBI</span>
                   {" — "}
                   <span className="underline decoration-[var(--rule-strong)] underline-offset-2 group-hover:decoration-[var(--clay)]">
@@ -67,18 +71,18 @@ export function SiteFooter() {
                 href={FREEDOM_HOUSE_TR_REPORT}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-start gap-3 rounded-sm text-[0.8125rem] text-[var(--ink-2)] transition-colors duration-150 hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus)]"
+                className="group flex items-center gap-3 rounded-sm text-[0.8125rem] text-[var(--ink-2)] transition-colors duration-150 hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus)]"
               >
-                <span className="relative mt-0.5 flex h-8 w-[7.5rem] shrink-0 items-center justify-start">
+                <span className={`${LOGO_BOX} rounded-md`}>
                   <Image
                     src={FREEDOM_HOUSE_LOGO}
                     alt=""
-                    width={120}
-                    height={32}
-                    className="h-8 w-auto max-w-[7.5rem] object-contain object-left"
+                    fill
+                    sizes="40px"
+                    className="object-contain p-1.5"
                   />
                 </span>
-                <span className="min-w-0 pt-0.5 leading-snug">
+                <span className="min-w-0 leading-snug">
                   <span className="font-medium text-[var(--ink)]">
                     Freedom House
                   </span>
