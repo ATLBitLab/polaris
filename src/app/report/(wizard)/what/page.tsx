@@ -24,7 +24,7 @@ export default function ReportWhatPage() {
       <ReportProgress currentSlug="what" />
       <ReportStepHeading
         slug="what"
-        helper="Record a voice memo or type a plain-language account. Polaris keeps both."
+        helper="Record a voice memo or type a plain-language account. Voice transcripts drop into the written account so you can edit them."
       />
 
       {draft ? (
@@ -59,16 +59,6 @@ export default function ReportWhatPage() {
               </p>
             ) : null}
           </div>
-          {draft.transcriptText ? (
-            <div className="mt-5 border-t border-[var(--rule)] pt-4">
-              <p className="text-[0.82rem] font-medium tracking-[0.12em] text-[var(--ink-3)] uppercase">
-                Transcript
-              </p>
-              <p className="mt-2 whitespace-pre-wrap text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-                {draft.transcriptText}
-              </p>
-            </div>
-          ) : null}
           <label className="mt-5 block">
             <span className="block text-[0.86rem] font-medium text-[var(--ink)]">
               Written account

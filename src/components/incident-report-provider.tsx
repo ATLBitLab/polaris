@@ -480,8 +480,26 @@ export function IncidentReportProvider({
           throw new Error(payload.error ?? "Unable to transcribe audio");
         }
 
-        setReport(payload.report);
-        setSaveState("saved");
+        const transcriptText =
+          payload.transcript?.text ?? payload.report.draft.transcriptText ?? "";
+        const existingNarrative = currentReport.draft.narrativeText ?? "";
+        const mergedNarrative =
+          transcriptText.trim().length === 0
+            ? existingNarrative
+            : existingNarrative.trim().length === 0
+              ? transcriptText
+              : `${existingNarrative.replace(/\s+$/, "")}\n\n${transcriptText}`;
+
+        if (mergedNarrative !== payload.report.draft.narrativeText) {
+          setReport({
+            ...payload.report,
+            draft: { ...payload.report.draft, narrativeText: mergedNarrative },
+          });
+          schedulePatch({ narrativeText: mergedNarrative });
+        } else {
+          setReport(payload.report);
+          setSaveState("saved");
+        }
         setRecordingState("idle");
         setError(null);
       } catch (nextError) {
@@ -493,7 +511,7 @@ export function IncidentReportProvider({
         );
       }
     },
-    [],
+    [schedulePatch],
   );
 
   const startRecording = useCallback(async () => {

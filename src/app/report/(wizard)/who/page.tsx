@@ -1,6 +1,7 @@
 "use client";
 
-import { Plus, Trash2, Wand2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import type { IncidentPerson } from "@/lib/incident-report";
 import { Button } from "@/components/ui/button";
 import { useIncidentReport } from "@/components/incident-report-provider";
@@ -20,26 +21,40 @@ export default function ReportWhoPage() {
     removePerson,
   } = useIncidentReport();
   const people = report?.draft.people ?? [];
+  const autoExtractedRef = useRef(false);
+  const hasNarrative =
+    (report?.draft.narrativeText ?? "").trim().length > 0;
+
+  useEffect(() => {
+    if (autoExtractedRef.current) {
+      return;
+    }
+    if (!report) {
+      return;
+    }
+    if (!hasNarrative) {
+      return;
+    }
+    if (people.length > 0) {
+      autoExtractedRef.current = true;
+      return;
+    }
+    if (analysisState !== "idle") {
+      return;
+    }
+    autoExtractedRef.current = true;
+    void runAnalysis();
+  }, [report, hasNarrative, people.length, analysisState, runAnalysis]);
 
   return (
     <section>
       <ReportProgress currentSlug="who" />
       <ReportStepHeading
         slug="who"
-        helper="List witnesses, responders, or unknown roles. AI extraction works from your written account."
+        helper="Polaris reads your written account and lists people automatically. Add anyone it missed."
       />
 
-      <div className="mt-5 flex flex-wrap gap-3">
-        <Button
-          type="button"
-          onClick={() => {
-            void runAnalysis();
-          }}
-          disabled={analysisState === "running" || !report}
-          iconBefore={<Wand2 className="h-4 w-4" />}
-        >
-          {analysisState === "running" ? "Reviewing" : "Extract people"}
-        </Button>
+      <div className="mt-5 flex flex-wrap items-center gap-3">
         <Button
           type="button"
           variant="secondary"
@@ -49,6 +64,11 @@ export default function ReportWhoPage() {
         >
           Add person
         </Button>
+        {analysisState === "running" ? (
+          <p className="text-[0.86rem] text-[var(--ink-3)]">
+            Reviewing your account.
+          </p>
+        ) : null}
       </div>
 
       <PeopleEditor
