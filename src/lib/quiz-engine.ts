@@ -1,18 +1,24 @@
 import {
+  answerKeys,
+  answerScores,
+  questionKeys,
   quizConfig,
   riskBandRank,
-  type EventTypeKey,
+  type AnswerKey,
   type GuidanceCategoryKey,
   type GuidanceItem,
-  type LocationKey,
+  type GuidanceTrigger,
+  type QuestionKey,
+  type QuizQuestion,
   type RiskBand,
-  type RoleKey,
 } from "./quiz-config";
 
+export type QuizAnswers = {
+  readonly [key in QuestionKey]: AnswerKey;
+};
+
 export type QuizInput = {
-  readonly location: LocationKey;
-  readonly role: RoleKey;
-  readonly eventTypes: readonly EventTypeKey[];
+  readonly answers: QuizAnswers;
 };
 
 export type GuidanceGroup = {
@@ -36,21 +42,23 @@ export type QuizResult = {
   readonly guidanceGroups: readonly GuidanceGroup[];
 };
 
-const locationKeys = new Set(quizConfig.locationBuckets.map((item) => item.key));
-const roleKeys = new Set(quizConfig.roleOptions.map((item) => item.key));
-const eventTypeKeys = new Set(quizConfig.eventTypes.map((item) => item.key));
+const questionKeySet = new Set<QuestionKey>(questionKeys);
+const answerKeySet = new Set<AnswerKey>(answerKeys);
 const guidanceItems: readonly GuidanceItem[] = quizConfig.guidanceItems;
 
-export function isLocationKey(value: string): value is LocationKey {
-  return locationKeys.has(value as LocationKey);
+type ScoredAnswer = {
+  readonly question: QuizQuestion;
+  readonly answerKey: AnswerKey;
+  readonly points: number;
+  readonly rationale: string;
+};
+
+export function isQuestionKey(value: string): value is QuestionKey {
+  return questionKeySet.has(value as QuestionKey);
 }
 
-export function isRoleKey(value: string): value is RoleKey {
-  return roleKeys.has(value as RoleKey);
-}
-
-export function isEventTypeKey(value: string): value is EventTypeKey {
-  return eventTypeKeys.has(value as EventTypeKey);
+export function isAnswerKey(value: string): value is AnswerKey {
+  return answerKeySet.has(value as AnswerKey);
 }
 
 export function parseQuizInput(value: unknown): QuizInput | null {
@@ -58,40 +66,40 @@ export function parseQuizInput(value: unknown): QuizInput | null {
     return null;
   }
 
-  const candidate = value as {
-    location?: unknown;
-    role?: unknown;
-    eventTypes?: unknown;
-  };
+  const candidate = value as { answers?: unknown };
 
   if (
-    typeof candidate.location !== "string" ||
-    typeof candidate.role !== "string" ||
-    !Array.isArray(candidate.eventTypes)
+    !candidate.answers ||
+    typeof candidate.answers !== "object" ||
+    Array.isArray(candidate.answers)
   ) {
     return null;
   }
 
-  if (!isLocationKey(candidate.location) || !isRoleKey(candidate.role)) {
+  const rawAnswers = candidate.answers as Record<string, unknown>;
+  const keys = Object.keys(rawAnswers);
+
+  if (keys.length !== questionKeys.length) {
     return null;
   }
 
-  const eventTypes = Array.from(new Set(candidate.eventTypes));
-
-  if (
-    eventTypes.length === 0 ||
-    !eventTypes.every((eventType): eventType is EventTypeKey => {
-      return typeof eventType === "string" && isEventTypeKey(eventType);
-    })
-  ) {
+  if (!keys.every(isQuestionKey)) {
     return null;
   }
 
-  return {
-    location: candidate.location,
-    role: candidate.role,
-    eventTypes,
-  };
+  const answers = {} as Record<QuestionKey, AnswerKey>;
+
+  for (const questionKey of questionKeys) {
+    const answer = rawAnswers[questionKey];
+
+    if (typeof answer !== "string" || !isAnswerKey(answer)) {
+      return null;
+    }
+
+    answers[questionKey] = answer;
+  }
+
+  return { answers };
 }
 
 export function getRiskBandForScore(score: number): RiskBand {
@@ -110,22 +118,10 @@ export function getRiskBandForScore(score: number): RiskBand {
 }
 
 export function scoreQuiz(input: QuizInput): QuizResult {
-  const location = quizConfig.locationBuckets.find(
-    (item) => item.key === input.location,
-  );
-  const role = quizConfig.roleOptions.find((item) => item.key === input.role);
-  const selectedEvents = quizConfig.eventTypes.filter((item) =>
-    input.eventTypes.includes(item.key),
-  );
-
-  if (!location || !role || selectedEvents.length !== input.eventTypes.length) {
-    throw new Error("Invalid quiz input");
-  }
-
-  const score =
-    location.weight +
-    role.weight +
-    selectedEvents.reduce((total, eventType) => total + eventType.weight, 0);
+  const scoredAnswers = getScoredAnswers(input);
+  const score = scoredAnswers.reduce((total, answer) => {
+    return total + answer.points;
+  }, 0);
 
   const riskBand = getRiskBandForScore(score);
   const riskConfig = quizConfig.thresholds.find(
@@ -136,25 +132,39 @@ export function scoreQuiz(input: QuizInput): QuizResult {
     throw new Error("Missing risk band configuration");
   }
 
-  const highestWeightedEvent = [...selectedEvents].sort(
-    (left, right) => right.weight - left.weight,
-  )[0];
+  const highestFactors = [...scoredAnswers]
+    .filter((answer) => answer.points > 0)
+    .sort((left, right) => right.points - left.points)
+    .slice(0, 3);
 
   return {
     riskBand,
     riskLabel: riskConfig.label,
     score,
     summary: riskConfig.summary,
-    rationale: [
-      riskConfig.summary,
-      location.rationale,
-      role.rationale,
-      highestWeightedEvent?.rationale,
-    ]
+    rationale: [riskConfig.summary, ...highestFactors.map((item) => item.rationale)]
       .filter(Boolean)
       .join(" "),
     guidanceGroups: getGuidanceGroups(input, riskBand),
   };
+}
+
+function getScoredAnswers(input: QuizInput): ScoredAnswer[] {
+  return quizConfig.questions.map((question) => {
+    const answerKey = input.answers[question.key];
+    const answer = question.answers.find((item) => item.key === answerKey);
+
+    if (!answer) {
+      throw new Error("Invalid quiz input");
+    }
+
+    return {
+      question,
+      answerKey,
+      points: answer.points,
+      rationale: answer.rationale,
+    };
+  });
 }
 
 function getGuidanceGroups(input: QuizInput, riskBand: RiskBand): GuidanceGroup[] {
@@ -163,14 +173,7 @@ function getGuidanceGroups(input: QuizInput, riskBand: RiskBand): GuidanceGroup[
       const items = guidanceItems
         .filter((item) => item.category === category.key)
         .filter((item) => riskBandRank[riskBand] >= riskBandRank[item.minBand])
-        .filter((item) => !item.roles || item.roles.includes(input.role))
-        .filter(
-          (item) =>
-            !item.eventTypes ||
-            item.eventTypes.some((eventType) =>
-              input.eventTypes.includes(eventType),
-            ),
-        )
+        .filter((item) => !item.triggers || matchesAnyTrigger(input, item.triggers))
         .sort((left, right) => left.priority - right.priority)
         .map((item) => ({
           id: item.id,
@@ -187,4 +190,13 @@ function getGuidanceGroups(input: QuizInput, riskBand: RiskBand): GuidanceGroup[
       };
     })
     .filter((group) => group.items.length > 0);
+}
+
+function matchesAnyTrigger(
+  input: QuizInput,
+  triggers: readonly GuidanceTrigger[],
+): boolean {
+  return triggers.some((trigger) => {
+    return answerScores[input.answers[trigger.question]] >= answerScores[trigger.minAnswer];
+  });
 }

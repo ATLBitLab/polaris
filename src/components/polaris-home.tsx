@@ -110,7 +110,7 @@ export function PolarisHome() {
             Safety quiz
           </h2>
           <p className="mt-3 text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-            Answer three broad questions and receive practical planning steps.
+            Answer ten exposure questions and receive practical planning steps.
             The quiz stores no identifying details.
           </p>
         </div>

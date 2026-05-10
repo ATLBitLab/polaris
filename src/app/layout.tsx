@@ -18,7 +18,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Polaris",
   description:
-    "A quiet public tool for incident reporting and community safety planning.",
+    "A quiet public tool for incident reporting and ten-question community safety planning.",
 };
 
 export default function RootLayout({

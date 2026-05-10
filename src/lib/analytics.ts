@@ -14,6 +14,7 @@ type AnalyticsResult =
 export async function recordQuizCompletion(
   input: QuizInput,
   riskBand: RiskBand,
+  score: number,
 ): Promise<AnalyticsResult> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const writeKey =
@@ -32,9 +33,8 @@ export async function recordQuizCompletion(
   });
 
   const { error } = await supabase.from("quiz_events").insert({
-    location_key: input.location,
-    role: input.role,
-    event_type_keys: input.eventTypes,
+    answers: input.answers,
+    score,
     risk_band: riskBand,
   });
 

@@ -48,7 +48,7 @@ Reading order top to bottom:
 1. Masthead: small star mark, wordmark, right-aligned tracked label.
 2. Hero: display h1 (max 18ch), then a two-column block (standfirst on the left at ~60ch, italic marginalia note on the right with a top rule). On mobile, these stack.
 3. Centered ornament: hairline rule, star mark, hairline rule.
-4. Three numbered sections (I., II., III.). Each section starts with a top hairline, a Roman numeral baseline-aligned with a serif h2, then helper copy and the control.
+4. Ten numbered sections (I. through X.). Each section starts with a top hairline, a Roman numeral baseline-aligned with a serif h2, then helper copy and the control.
 5. Action row: clay primary button plus a subtle text-link reset.
 6. Result panel (or placeholder before submit). Uses a 2px ink top rule to mark its weight.
 7. Colophon: hairline rule, small wordmark, two short paragraphs of plainly stated stance.
