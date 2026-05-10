@@ -41,6 +41,7 @@ type ApiPayload = {
 
 const deviceStorageKey = "polaris.incident.device.v1";
 const reportIdStorageKey = "polaris.incident.report.v1";
+const submittedReportIdStorageKey = "polaris.incident.submitted-report.v1";
 
 type IncidentReportContextValue = {
   readonly report: IncidentClientReport | null;
@@ -75,6 +76,7 @@ type IncidentReportContextValue = {
     methods?: readonly { readonly type: string; readonly value: string }[],
   ) => void;
   readonly updatePartnerSharing: (consent: boolean) => void;
+  readonly markReportSubmitted: () => void;
   readonly flushPendingPatches: () => Promise<void>;
   readonly resetReport: () => void;
 };
@@ -226,8 +228,18 @@ export function IncidentReportProvider({
   const startReport = useCallback(async (source: string) => {
     setSaveState("starting");
     const storedId = window.localStorage.getItem(reportIdStorageKey);
+    const submittedId = window.localStorage.getItem(submittedReportIdStorageKey);
+    const shouldStartFresh =
+      storedId !== null &&
+      submittedId === storedId &&
+      window.location.pathname !== "/report/done";
 
-    if (storedId) {
+    if (shouldStartFresh) {
+      window.localStorage.removeItem(reportIdStorageKey);
+      window.localStorage.removeItem(submittedReportIdStorageKey);
+    }
+
+    if (storedId && !shouldStartFresh) {
       try {
         const response = await fetch(
           `/api/incident-reports/${storedId}`,
@@ -252,6 +264,7 @@ export function IncidentReportProvider({
         // fall through to create a fresh report
       }
       window.localStorage.removeItem(reportIdStorageKey);
+      window.localStorage.removeItem(submittedReportIdStorageKey);
     }
 
     try {
@@ -707,9 +720,17 @@ export function IncidentReportProvider({
     [updateDraft],
   );
 
+  const markReportSubmitted = useCallback(() => {
+    const currentReport = reportRef.current;
+    if (currentReport) {
+      window.localStorage.setItem(submittedReportIdStorageKey, currentReport.id);
+    }
+  }, []);
+
   const resetReport = useCallback(() => {
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(reportIdStorageKey);
+      window.localStorage.removeItem(submittedReportIdStorageKey);
     }
     pendingPatchRef.current = null;
     if (saveTimerRef.current !== null) {
@@ -754,6 +775,7 @@ export function IncidentReportProvider({
       updateChecklist,
       updateContact,
       updatePartnerSharing,
+      markReportSubmitted,
       flushPendingPatches,
       resetReport,
     }),
@@ -780,6 +802,7 @@ export function IncidentReportProvider({
       updateChecklist,
       updateContact,
       updatePartnerSharing,
+      markReportSubmitted,
       flushPendingPatches,
       resetReport,
     ],

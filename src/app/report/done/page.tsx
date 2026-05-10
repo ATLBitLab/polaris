@@ -3,13 +3,20 @@
 import { Check, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useIncidentReport } from "@/components/incident-report-provider";
 import { StarMark } from "@/components/incident-report-chrome";
 
 export default function ReportDonePage() {
   const router = useRouter();
-  const { report, resetReport } = useIncidentReport();
+  const { report, markReportSubmitted, resetReport } = useIncidentReport();
+
+  useEffect(() => {
+    if (report) {
+      markReportSubmitted();
+    }
+  }, [markReportSubmitted, report]);
 
   function startAnother() {
     resetReport();
