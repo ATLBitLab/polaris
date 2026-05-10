@@ -4,6 +4,7 @@ import { ClipboardPenLine, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { IncidentReportFlow } from "./incident-report-flow";
 import { SafetyQuiz } from "./safety-quiz";
+import { Button } from "./ui/button";
 
 type Mode = "home" | "incident" | "quiz";
 
@@ -61,22 +62,21 @@ export function PolarisHome() {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
-          <button
+          <Button
             type="button"
             onClick={() => setMode("incident")}
-            className="inline-flex h-12 items-center gap-3 rounded-md bg-[var(--clay)] px-5 text-[0.94rem] font-medium tracking-wide text-[var(--paper)] transition-colors duration-150 ease-out hover:bg-[var(--clay-deep)] focus:bg-[var(--clay-deep)]"
+            iconBefore={<ClipboardPenLine className="h-4 w-4" />}
           >
-            <ClipboardPenLine className="h-4 w-4" aria-hidden="true" />
             Report incident
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="secondary"
             onClick={() => setMode("quiz")}
-            className="inline-flex h-12 items-center gap-3 rounded-md border border-[var(--rule)] bg-[var(--paper-inset)] px-5 text-[0.94rem] font-medium text-[var(--ink)] transition-colors duration-150 ease-out hover:border-[var(--rule-strong)] hover:bg-[var(--paper-deep)]"
+            iconBefore={<ShieldCheck className="h-4 w-4" />}
           >
-            <ShieldCheck className="h-4 w-4" aria-hidden="true" />
             Assess your risk
-          </button>
+          </Button>
         </div>
       </section>
 

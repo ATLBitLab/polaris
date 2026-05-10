@@ -12,11 +12,7 @@ import {
   Trash2,
   Wand2,
 } from "lucide-react";
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   IncidentChecklistItem,
   IncidentClientReport,
@@ -26,6 +22,7 @@ import type {
   IncidentReportPatch,
   IncidentTimeKind,
 } from "@/lib/incident-report";
+import { Button } from "./ui/button";
 
 type SaveState = "idle" | "starting" | "saving" | "saved" | "error";
 type RecordingState = "idle" | "recording" | "transcribing" | "unsupported";
@@ -541,14 +538,14 @@ export function IncidentReportFlow({
             Polaris
           </span>
         </div>
-        <button
+        <Button
           type="button"
+          variant="text"
           onClick={onBack}
-          className="inline-flex items-center gap-2 text-[0.82rem] text-[var(--ink-3)] underline decoration-[var(--rule-strong)] underline-offset-[6px] transition-colors duration-150 ease-out hover:text-[var(--ink)]"
+          iconBefore={<ChevronLeft className="h-4 w-4" />}
         >
-          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           Home
-        </button>
+        </Button>
       </header>
 
       <section className="mt-10">
@@ -621,14 +618,13 @@ export function IncidentReportFlow({
 
           <IncidentSection index="II." heading="Where">
             <div className="mt-5 flex flex-wrap gap-3">
-              <button
+              <Button
                 type="button"
                 onClick={requestBrowserLocation}
-                className="inline-flex h-11 items-center gap-2 rounded-md bg-[var(--clay)] px-4 text-[0.9rem] font-medium text-[var(--paper)] transition-colors duration-150 ease-out hover:bg-[var(--clay-deep)]"
+                iconBefore={<LocateFixed className="h-4 w-4" />}
               >
-                <LocateFixed className="h-4 w-4" aria-hidden="true" />
                 Use browser location
-              </button>
+              </Button>
             </div>
             <div className="mt-5 grid gap-4">
               <label>
@@ -677,26 +673,25 @@ export function IncidentReportFlow({
           <IncidentSection index="III." heading="What happened">
             <div className="mt-5 flex flex-wrap items-center gap-3">
               {recordingState === "recording" ? (
-                <button
+                <Button
                   type="button"
+                  variant="strong"
                   onClick={stopRecording}
-                  className="inline-flex h-11 items-center gap-2 rounded-md bg-[var(--ink)] px-4 text-[0.9rem] font-medium text-[var(--paper)] transition-colors duration-150 ease-out hover:bg-[var(--ink-2)]"
+                  iconBefore={<Square className="h-4 w-4" />}
                 >
-                  <Square className="h-4 w-4" aria-hidden="true" />
                   Stop
-                </button>
+                </Button>
               ) : (
-                <button
+                <Button
                   type="button"
                   onClick={startRecording}
                   disabled={recordingState === "transcribing"}
-                  className="inline-flex h-11 items-center gap-2 rounded-md bg-[var(--clay)] px-4 text-[0.9rem] font-medium text-[var(--paper)] transition-colors duration-150 ease-out hover:bg-[var(--clay-deep)] disabled:cursor-not-allowed disabled:opacity-60"
+                  iconBefore={<Mic className="h-4 w-4" />}
                 >
-                  <Mic className="h-4 w-4" aria-hidden="true" />
                   {recordingState === "transcribing"
                     ? "Transcribing"
                     : "Record voice"}
-                </button>
+                </Button>
               )}
               {recordingState === "unsupported" ? (
                 <p className="text-[0.86rem] text-[var(--ink-3)]">
@@ -729,23 +724,22 @@ export function IncidentReportFlow({
 
           <IncidentSection index="IV." heading="Who was involved">
             <div className="mt-5 flex flex-wrap gap-3">
-              <button
+              <Button
                 type="button"
                 onClick={runAnalysis}
                 disabled={analysisState === "running"}
-                className="inline-flex h-11 items-center gap-2 rounded-md bg-[var(--clay)] px-4 text-[0.9rem] font-medium text-[var(--paper)] transition-colors duration-150 ease-out hover:bg-[var(--clay-deep)] disabled:cursor-not-allowed disabled:opacity-60"
+                iconBefore={<Wand2 className="h-4 w-4" />}
               >
-                <Wand2 className="h-4 w-4" aria-hidden="true" />
                 {analysisState === "running" ? "Reviewing" : "Extract people"}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={addPerson}
-                className="inline-flex h-11 items-center gap-2 rounded-md border border-[var(--rule)] bg-[var(--paper-inset)] px-4 text-[0.9rem] font-medium text-[var(--ink)] transition-colors duration-150 ease-out hover:border-[var(--rule-strong)]"
+                iconBefore={<Plus className="h-4 w-4" />}
               >
-                <Plus className="h-4 w-4" aria-hidden="true" />
                 Add person
-              </button>
+              </Button>
             </div>
             <PeopleEditor
               people={draft.people}
@@ -826,13 +820,13 @@ export function IncidentReportFlow({
           </IncidentSection>
 
           <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--rule)] pt-6">
-            <button
+            <Button
               type="button"
+              variant="text"
               onClick={onAssessRisk}
-              className="text-[0.92rem] text-[var(--ink)] underline decoration-[var(--rule-strong)] underline-offset-[6px] transition-colors duration-150 ease-out hover:decoration-[var(--ink-2)]"
             >
               Assess your risk instead
-            </button>
+            </Button>
             <p className="text-[0.78rem] leading-relaxed text-[var(--ink-3)]">
               Report ID: {report.id}
             </p>

@@ -25,6 +25,7 @@ OKLCH throughout. Every neutral is tinted toward warm yellow; ink is tinted towa
 - Clay (accent, primary action, selection): `oklch(48% 0.108 38)`
 - Clay deep (button hover, accent text): `oklch(38% 0.102 36)`
 - Clay soft (selected row wash): `oklch(91% 0.038 42)`
+- Clay on (primary button foreground): `oklch(98% 0.008 82)`
 - Focus ring: `oklch(56% 0.142 38)`
 
 Tokens live in `src/app/globals.css` as CSS custom properties (`--paper`, `--ink`, `--clay`, etc.) and are referenced via Tailwind's `[var(--token)]` arbitrary-value syntax.
@@ -61,8 +62,10 @@ Spacing rhythm uses larger vertical gaps between sections (3.5rem) and tighter s
 - **Section heading**: Roman numeral in clay-deep + display h2 in ink, on a single baseline, with a top hairline above the block.
 - **Native select**: full-width, height 3rem, `appearance: none`, custom inline-SVG chevron, paper-inset background, hairline border, clay focus border. The 50+ states use `<optgroup>` for "Metro areas," "States," and "Other."
 - **Choice row** (radio or checkbox): `<li>` with hairline top and bottom borders, full-width tap target, custom-rendered control box (5x5) keyed off the real input via `peer-*` and `:checked`. Selected rows take the clay-soft wash; hovered rows take the paper-deep wash. The control fills clay when checked, with a paper-color glyph (radio dot or checkmark SVG).
-- **Primary button**: 2.75rem tall, clay background, paper text, rounded-md, with a small chevron glyph trailing the label. Hover and focus both deepen the background to clay-deep.
-- **Text-link button** (reset, revise): plain ink-3 text with a hairline underline at 6px offset; hover deepens to ink and the underline darkens.
+- **Primary button**: use the shared `Button` component with `variant="primary"`. It is 2.75rem tall, clay background, clay-on text, rounded-md, with a small chevron icon trailing the label. Hover and focus both deepen the background to clay-deep while preserving clay-on foreground. Primary buttons must never rely on inherited text color or raw `bg-[var(--clay)]` utilities without the `--clay-on` foreground.
+- **Secondary button**: use the shared `Button` component with `variant="secondary"`. It is 2.75rem tall, paper-inset background, ink text, rounded-md, and a rule border. Hover and focus move to paper-deep and rule-strong.
+- **Strong button**: use the shared `Button` component with `variant="strong"` only for momentary dark-ink actions such as stopping a recording. It uses clay-on text on ink so dark backgrounds never inherit dark text.
+- **Text-link button** (reset, revise, back links): use the shared `Button` component with `variant="text"`. Plain ink-3 text with a hairline underline at 6px offset; hover deepens to ink and the underline darkens.
 - **Result panel**: top rule is 2px ink, marking the panel's weight. Eyebrow ("Your plan") in tracked uppercase serif, then a serif display h2 with the band sentence ("Elevated planning band."), then a body paragraph (60ch), then two grouped guidance sections, each with a star mark + serif subhead and a numbered list (01, 02, ...) where the counter is serif, italic-feeling, in clay-deep.
 - **Placeholder plan**: same eyebrow + an italic body paragraph in ink-3.
 - **Marginalia note**: italic Newsreader, with a non-italic clay § as a leading mark, top hairline above the block.
@@ -81,3 +84,4 @@ Transitions are 150ms ease-out and limited to color changes on hover, focus, and
 - Stack: Next.js App Router, React, Tailwind CSS v4, system fonts plus Newsreader and Inter via `next/font/google`.
 - Token strategy: design tokens as CSS custom properties in `globals.css`, referenced with Tailwind arbitrary values (`bg-[var(--paper)]`, `text-[var(--ink-2)]`, etc.). Avoid Tailwind opacity modifiers on CSS-variable backgrounds; use a dedicated soft token instead.
 - Fonts are exposed as CSS variables (`--font-display`, `--font-sans`) and applied via Tailwind's `font-sans` default. Utility classes `.wordmark`, `.numeral`, and `.display` opt specific elements into the serif.
+- Button strategy: command buttons should render through `src/components/ui/button.tsx`. The component uses `.button-primary`, `.button-secondary`, `.button-strong`, and `.button-link` classes in `globals.css` so contrast-critical foreground colors live with the component state styles. Segmented choice controls may keep local selected-state styles when they are not command buttons.
