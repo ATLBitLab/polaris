@@ -54,6 +54,7 @@ export type IncidentDraft = {
   readonly checklist: readonly IncidentChecklistItem[];
   readonly contactConsent: boolean | null;
   readonly contactMethods: readonly IncidentContactMethod[];
+  readonly partnerSharingConsent: boolean | null;
 };
 
 export type IncidentReportPatch = {
@@ -76,6 +77,9 @@ export type IncidentReportPatch = {
   readonly contact?: {
     readonly consent: boolean;
     readonly methods: readonly IncidentContactMethod[];
+  };
+  readonly partnerSharing?: {
+    readonly consent: boolean;
   };
 };
 
@@ -119,6 +123,7 @@ export function emptyIncidentDraft(): IncidentDraft {
     checklist: [],
     contactConsent: null,
     contactMethods: [],
+    partnerSharingConsent: null,
   } satisfies IncidentDraft;
 
   return {
@@ -141,6 +146,7 @@ export function parseIncidentPatch(value: unknown): IncidentReportPatch | null {
     people?: readonly IncidentPerson[];
     checklist?: readonly IncidentChecklistItem[];
     contact?: IncidentReportPatch["contact"];
+    partnerSharing?: IncidentReportPatch["partnerSharing"];
   } = {};
 
   if ("incidentTime" in candidate) {
@@ -199,6 +205,14 @@ export function parseIncidentPatch(value: unknown): IncidentReportPatch | null {
     patch.contact = contact;
   }
 
+  if ("partnerSharing" in candidate) {
+    const partnerSharing = parsePartnerSharing(candidate.partnerSharing);
+    if (!partnerSharing) {
+      return null;
+    }
+    patch.partnerSharing = partnerSharing;
+  }
+
   return patch;
 }
 
@@ -225,6 +239,8 @@ export function applyIncidentPatch(
     checklist: patch.checklist ?? draft.checklist,
     contactConsent: patch.contact?.consent ?? draft.contactConsent,
     contactMethods: patch.contact?.methods ?? draft.contactMethods,
+    partnerSharingConsent:
+      patch.partnerSharing?.consent ?? draft.partnerSharingConsent,
   };
 
   return {
@@ -569,6 +585,24 @@ function parseContact(value: unknown): IncidentReportPatch["contact"] | null {
   return {
     consent: candidate.consent,
     methods: candidate.consent ? methods : [],
+  };
+}
+
+function parsePartnerSharing(
+  value: unknown,
+): IncidentReportPatch["partnerSharing"] | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  if (typeof candidate.consent !== "boolean") {
+    return null;
+  }
+
+  return {
+    consent: candidate.consent,
   };
 }
 

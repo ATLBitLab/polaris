@@ -105,6 +105,12 @@ export function PolarisHome() {
           names, addresses, or coordinates. An incident report contains only
           what you choose to share.
         </p>
+        <Link
+          href="/research/login"
+          className="mt-5 inline-block text-[0.82rem] text-[var(--ink-3)] underline decoration-[var(--rule-strong)] underline-offset-[6px] hover:text-[var(--ink-2)]"
+        >
+          Researcher access
+        </Link>
       </footer>
     </main>
   );

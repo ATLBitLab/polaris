@@ -51,6 +51,9 @@ type IncidentReportRow = {
   readonly contact_decided_at: string | null;
   readonly contact_consented_at: string | null;
   readonly contact_methods: unknown;
+  readonly partner_sharing_consent: boolean | null;
+  readonly partner_sharing_decided_at: string | null;
+  readonly partner_sharing_consented_at: string | null;
   readonly device_source_hash: string;
 };
 
@@ -86,6 +89,9 @@ const reportSelect = `
   contact_decided_at,
   contact_consented_at,
   contact_methods,
+  partner_sharing_consent,
+  partner_sharing_decided_at,
+  partner_sharing_consented_at,
   device_source_hash
 `;
 
@@ -213,6 +219,15 @@ export async function updateIncidentReport(
           ? row.contact_consented_at ?? now
           : null,
       contact_methods: nextDraft.contactConsent === true ? nextDraft.contactMethods : [],
+      partner_sharing_consent: nextDraft.partnerSharingConsent === true,
+      partner_sharing_decided_at:
+        patch.partnerSharing === undefined
+          ? row.partner_sharing_decided_at
+          : now,
+      partner_sharing_consented_at:
+        nextDraft.partnerSharingConsent === true
+          ? row.partner_sharing_consented_at ?? now
+          : null,
       last_autosaved_at: now,
       updated_at: now,
       autosave_version: row.autosave_version + 1,
@@ -550,6 +565,10 @@ function toDraft(
     contactConsent:
       row.contact_decided_at === null ? null : row.contact_consent === true,
     contactMethods,
+    partnerSharingConsent:
+      row.partner_sharing_decided_at === null
+        ? null
+        : row.partner_sharing_consent === true,
   };
 }
 
