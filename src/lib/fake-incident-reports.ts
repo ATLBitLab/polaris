@@ -112,17 +112,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-03-14T12:00:00.000Z",
     occurredAt: "2024-03-14T12:45:00.000Z",
     whoTargeted:
-      "Agent from the Belarusian KGB, introduced himself as 'Alexei Morozov'",
-    personDisplayName: "Alexei Morozov",
-    personRole: "Belarusian KGB agent",
+      "Agent from the Chinese Ministry of State Security (MSS), introduced himself as 'Mr. Liu' (likely an alias)",
+    personDisplayName: "'Mr. Liu' (MSS agent)",
+    personRole: "Chinese Ministry of State Security operative",
     whatHappened:
-      "Man approached me outside my apartment building and showed me a photo of my sister still living in Minsk, implying he knew her location and daily schedule.",
+      "Man approached me outside my apartment building and showed me a photo of my sister still living in Lhasa, implying he knew her location and daily schedule.",
     howContacted:
       "In-person confrontation. He drove a silver sedan with diplomatic plates and left a business card with only a handwritten phone number.",
     whatDemanded:
-      "Demanded I stop participating in diaspora protests and provide names of Belarusian activists in Chicago, or 'something would happen' to my family back home.",
+      "Demanded I stop participating in Tibetan freedom protests and provide names of Tibetan activists in Chicago, or 'something would happen' to my family back home.",
     governmentConnection:
-      "Identified himself as a Belarusian government representative. Business card referenced 'Minsk coordination office'.",
+      "Identified himself as a representative of the Chinese government. Business card referenced 'Beijing liaison office'.",
     evidenceFiles: ["photo_business_card.jpg", "cctv_still_exterior.png"],
     dangerLevel: "danger_expected_within_a_week",
     whenNote:
@@ -136,17 +136,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-04-02T12:00:00.000Z",
     occurredAt: "2024-01-06T04:30:00.000Z",
     whoTargeted:
-      "Unknown caller using a spoofed number matching my brother's contact in Tehran",
+      "Unknown caller using a spoofed number matching my brother's contact in Beijing",
     personDisplayName: "Unknown spoofed caller",
-    personRole: "Iranian Ministry of Intelligence operative",
+    personRole: "Suspected Chinese MSS operator",
     whatHappened:
-      "Received a call where the caller played a recording of my brother's voice, then an unfamiliar voice warned me to cease publishing articles critical of the Iranian government.",
+      "Received a call where the caller played a recording of my brother's voice, then an unfamiliar voice warned me to cease publishing articles critical of the Chinese government.",
     howContacted:
-      "Phone call from a spoofed number (+1-313-555-0182) that appeared as my brother Dariush in my contacts. Call lasted 4 minutes 22 seconds.",
+      "Phone call from a spoofed number (+1-313-555-0182) that appeared as my brother Wei in my contacts. Call lasted 4 minutes 22 seconds.",
     whatDemanded:
-      "Told me to delete my Substack newsletter within 48 hours or my brother would face 'serious legal consequences' in Iran. Called me a 'traitor to the Republic'.",
+      "Told me to delete my Substack newsletter within 48 hours or my brother would face 'serious legal consequences' in China. Called me a 'traitor to the Party'.",
     governmentConnection:
-      "Caller referenced the Iranian Ministry of Intelligence by name and claimed to be acting on their behalf.",
+      "Caller referenced the Chinese Ministry of State Security by name and claimed to be acting on their behalf.",
     evidenceFiles: ["call_recording.m4a"],
     dangerLevel: "immediate_attention_needed",
     whenNote:
@@ -184,17 +184,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-05-07T12:00:00.000Z",
     occurredAt: "2024-02-01T09:00:00.000Z",
     whoTargeted:
-      "Social media account @patriot_voice_ru (now suspended) that sent DMs over three weeks",
-    personDisplayName: "@patriot_voice_ru",
-    personRole: "Pro-Kremlin social media operator",
+      "Social media account @loyal_huaxia_voice (now suspended) that sent DMs over three weeks",
+    personDisplayName: "@loyal_huaxia_voice",
+    personRole: "Pro-Beijing social media operator",
     whatHappened:
-      "Account sent 47 messages over three weeks, alternating threats and flattery, ultimately demanding I remove YouTube videos about Russian military actions in Ukraine.",
+      "Account sent 47 messages over three weeks, alternating threats and flattery, ultimately demanding I remove YouTube videos documenting Chinese government repression in Hong Kong.",
     howContacted:
-      "Instagram DMs from @patriot_voice_ru and Telegram from 'Igor_1984_official'. Messages arrived at irregular hours including 2–4 AM.",
+      "Instagram DMs from @loyal_huaxia_voice and Telegram from 'Wang_loyalty_2024'. Messages arrived at irregular hours including 2–4 AM.",
     whatDemanded:
-      "Threatened to 'find me wherever I am' and send location to 'people who handle traitors'. Demanded I post a video recanting anti-war statements within 7 days.",
+      "Threatened to 'find me wherever I am' and send my location to 'people who handle traitors of the motherland'. Demanded I post a video recanting anti-CCP statements within 7 days.",
     governmentConnection:
-      "Account referenced Kremlin-linked media outlets approvingly and used language consistent with Russian state propaganda. No explicit government affiliation claimed.",
+      "Account referenced CCP-linked state media approvingly and used language consistent with Chinese state propaganda. No explicit government affiliation claimed.",
     evidenceFiles: ["screenshots_instagram.pdf", "telegram_export.json"],
     dangerLevel: "danger_expected_within_a_week",
     whenNote:
@@ -208,17 +208,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-05-22T12:00:00.000Z",
     occurredAt: "2024-04-03T13:10:00.000Z",
     whoTargeted:
-      "Unknown individuals who referenced 'orders from Addis Ababa' and claimed Ethiopian security service ties",
-    personDisplayName: "Unknown Ethiopian NISS-linked actors",
-    personRole: "Ethiopian NISS-linked actors",
+      "Unknown individuals who referenced 'orders from Beijing' and claimed Chinese state security ties",
+    personDisplayName: "Unknown MSS-linked actors",
+    personRole: "Chinese Ministry of State Security–linked actors",
     whatHappened:
-      "My car tires were slashed and a note was left under the windshield wiper referencing specific details about family members still living in Ethiopia.",
+      "My car tires were slashed and a note was left under the windshield wiper referencing specific details about family members still living in China.",
     howContacted:
       "Physical typed note left on vehicle. Both tires on the driver side were punctured with a sharp instrument.",
     whatDemanded:
-      "Note said: 'Stop spreading lies or your cousins Tadesse and Mekdes face consequences. We know where you work and where your children go to school.'",
+      "Note said: 'Stop spreading lies or your cousins Lin and Mei face consequences. We know where you work and where your children go to school.'",
     governmentConnection:
-      "Note referenced 'Addis Ababa has eyes everywhere' and mentioned the Ethiopian National Intelligence and Security Service by acronym (NISS).",
+      "Note referenced 'Beijing has eyes everywhere' and mentioned the Chinese Ministry of State Security by acronym (MSS).",
     evidenceFiles: ["tire_damage_photos.zip", "note_scan.pdf"],
     dangerLevel: "immediate_attention_needed",
     whenNote:
@@ -232,17 +232,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-06-05T12:00:00.000Z",
     occurredAt: "2023-12-12T08:14:00.000Z",
     whoTargeted:
-      "Email sender using security.verification@gov-notify-sa.com, claiming Saudi General Intelligence Presidency",
-    personDisplayName: "Saudi GIP-claimed email sender",
-    personRole: "Claimed Saudi General Intelligence Presidency",
+      "Email sender using security.notify@gov-cn-secure.com, claiming Chinese Ministry of State Security",
+    personDisplayName: "MSS-claimed email sender",
+    personRole: "Claimed Chinese Ministry of State Security",
     whatHappened:
       "Received an email with a 12-page dossier about my personal life, finances, and associates that was largely accurate, demonstrating significant surveillance capability.",
     howContacted:
-      "Email to my personal Gmail from spoofed domain gov-notify-sa.com. Contained my home address, car model, and children's school names.",
+      "Email to my personal Gmail from spoofed domain gov-cn-secure.com. Contained my home address, car model, and children's school names.",
     whatDemanded:
-      "Demanded I cease contact with journalist Jamal Al-Rashid and stop funding dissident media, or face 'asset freezes and family consequences'.",
+      "Demanded I cease contact with journalist Chen Wei and stop funding dissident media, or face 'asset freezes and family consequences'.",
     governmentConnection:
-      "Email claimed Saudi General Intelligence Presidency and referenced the crown prince's office. Several dossier facts could only come from Saudi government records.",
+      "Email claimed Chinese Ministry of State Security and referenced the Politburo. Several dossier facts could only come from Chinese government records.",
     evidenceFiles: ["email_full_with_headers.eml", "dossier_attachment.pdf"],
     dangerLevel: "danger_expected_within_a_week",
     whenNote:
@@ -256,17 +256,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-06-19T12:00:00.000Z",
     occurredAt: "2023-09-08T19:00:00.000Z",
     whoTargeted:
-      "Venezuelan SEBIN agent, contacted through an intermediary I know named Carlos Fuentes",
-    personDisplayName: "Carlos Fuentes (intermediary for SEBIN)",
-    personRole: "SEBIN intermediary",
+      "Chinese MSS agent, contacted through an intermediary I know named Chen Liwei",
+    personDisplayName: "Chen Liwei (intermediary for MSS)",
+    personRole: "MSS intermediary",
     whatHappened:
-      "Carlos relayed a warning that my bank accounts in Venezuela had been flagged and that my mother's pension would be suspended if I continued speaking out.",
+      "Chen relayed a warning that my bank accounts in China had been frozen and that my mother's pension would be suspended if I continued speaking out.",
     howContacted:
-      "Indirect contact through acquaintance Carlos Fuentes (+58-412-555-0091) who relayed a verbal threat on behalf of an unidentified official.",
+      "Indirect contact through acquaintance Chen Liwei (+86-138-555-0091) who relayed a verbal threat on behalf of an unidentified official.",
     whatDemanded:
-      "Through Carlos: demanded I stop giving media interviews about Maduro and remove videos documenting a 2023 protest crackdown.",
+      "Through Chen: demanded I stop giving media interviews about Xi Jinping and remove videos documenting the 2022 White Paper protest crackdown.",
     governmentConnection:
-      "Carlos identified the contact as SEBIN (Bolivarian Intelligence Service) and referenced the Maduro administration by name.",
+      "Chen identified the contact as Ministry of State Security (MSS) and referenced the Xi Jinping administration by name.",
     evidenceFiles: [],
     dangerLevel: "not_immediate_danger",
     whenNote:
@@ -280,17 +280,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-07-03T12:00:00.000Z",
     occurredAt: "2023-10-02T12:00:00.000Z",
     whoTargeted:
-      "Pakistani ISI operatives, suspected based on their knowledge of classified details only ISI would possess",
-    personDisplayName: "Suspected ISI operatives",
-    personRole: "Pakistani ISI",
+      "Chinese MSS operatives, suspected based on their knowledge of classified details only MSS would possess",
+    personDisplayName: "Suspected MSS operatives",
+    personRole: "Chinese Ministry of State Security",
     whatHappened:
       "Received three letters mailed to my home containing photographs of me taken at various locations over a month, showing I was being physically surveilled.",
     howContacted:
       "Physical letters mailed to my home with no return address. Plain white envelopes. Photos printed on standard office paper.",
     whatDemanded:
-      "Third letter stated: 'You have been watched. Your file has been sent to Islamabad. Cooperation is the only path to safety for your family.'",
+      "Third letter stated: 'You have been watched. Your file has been sent to Beijing. Cooperation is the only path to safety for your family.'",
     governmentConnection:
-      "Third letter named ISI and referenced a Pakistani military court case number involving my brother—information not publicly available.",
+      "Third letter named the MSS and referenced a Chinese court case number involving my brother—information not publicly available.",
     evidenceFiles: ["letters_scanned.pdf", "photo_prints_scan.pdf"],
     dangerLevel: "danger_expected_within_a_week",
     whenNote:
@@ -304,22 +304,22 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-07-17T12:00:00.000Z",
     occurredAt: "2023-06-22T18:00:00.000Z",
     whoTargeted:
-      "Turkish MIT operative posing as a journalist, introduced himself as 'Mehmet Arslan'",
-    personDisplayName: "Mehmet Arslan",
-    personRole: "Suspected Turkish MIT operative posing as journalist",
+      "Chinese MSS operative posing as a journalist, introduced himself as 'Zhang Wei'",
+    personDisplayName: "Zhang Wei",
+    personRole: "Suspected Chinese MSS operative posing as journalist",
     whatHappened:
-      "Agreed to an interview believing it was legitimate journalism. The 'journalist' made veiled references to my Gülen-affiliated relatives and asked for my contacts list.",
+      "Agreed to an interview believing it was legitimate journalism. The 'journalist' made veiled references to my Falun Gong–practicing relatives and asked for my contacts list.",
     howContacted:
-      "Email from mehmet.arslan@haberturk-press.net (unofficial domain) requesting an interview. Follow-up phone call to +1-718-555-0203.",
+      "Email from zhang.wei@huanqiu-press.net (unofficial domain) requesting an interview. Follow-up phone call to +1-718-555-0203.",
     whatDemanded:
-      "Asked for names and US locations of other Gülen movement members. Implied Turkish courts had an active file on me and cooperation would be 'noted favorably'.",
+      "Asked for names and US locations of other Falun Gong practitioners. Implied Chinese courts had an active file on me and cooperation would be 'noted favorably'.",
     governmentConnection:
-      "Named MIT (Turkish National Intelligence Organization) as having interest in my case. Referenced the 2016 coup and named arrested relatives.",
+      "Named the Ministry of State Security (MSS) as having interest in my case. Referenced the 1999 Falun Gong crackdown and named detained relatives.",
     evidenceFiles: ["fake_press_id_photo.jpg", "email_chain.pdf"],
     dangerLevel: "not_immediate_danger",
     whenNote:
-      "June 22, 2023, 2:00–3:45 PM, at a coffee shop on Steinway Street in Astoria, Queens",
-    locationLabel: "Steinway Street, Astoria, Queens, NY",
+      "June 22, 2023, 2:00–3:45 PM, at a coffee shop on Main Street in Flushing, Queens",
+    locationLabel: "Main Street, Flushing, Queens, NY",
     region: "nyc_metro",
     physicalViolence: "physical_violence_not_used",
   },
@@ -328,9 +328,9 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-08-01T12:00:00.000Z",
     occurredAt: "2023-08-15T02:47:00.000Z",
     whoTargeted:
-      "Individuals believed affiliated with the Cambodian government based on knowledge of internal CPP party communications",
-    personDisplayName: "Cambodian state-linked actors",
-    personRole: "Cambodian government-linked intruders",
+      "Individuals believed affiliated with the Chinese government based on knowledge of internal CCP communications",
+    personDisplayName: "Chinese state-linked actors",
+    personRole: "Chinese government-linked intruders",
     whatHappened:
       "My laptop was broken into during a conference. Forensic analysis showed remote access software had been installed and encrypted documents were exfiltrated.",
     howContacted:
@@ -338,7 +338,7 @@ const fakeSources: readonly FakeSource[] = [
     whatDemanded:
       "No explicit demand. The compromise appeared intended to surveil my communications and contacts rather than issue immediate demands.",
     governmentConnection:
-      "Digital forensics identified command-and-control servers linked to infrastructure attributed to Cambodian state-linked actors by CitizenLab researchers.",
+      "Digital forensics identified command-and-control servers linked to infrastructure attributed to Chinese state-aligned actors by Citizen Lab researchers.",
     evidenceFiles: [
       "forensic_report.pdf",
       "hotel_keycard_log.png",
@@ -356,18 +356,18 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-08-15T12:00:00.000Z",
     occurredAt: "2024-05-03T16:00:00.000Z",
     whoTargeted:
-      "Account claiming to represent Cuban State Security (G2), contacted via WhatsApp",
-    personDisplayName: "Cuban G2-claimed contact",
-    personRole: "Claimed Cuban State Security (G2)",
+      "Account claiming to represent the Chinese Ministry of State Security, contacted via WeChat",
+    personDisplayName: "MSS-claimed WeChat contact",
+    personRole: "Claimed Chinese Ministry of State Security (MSS)",
     whatHappened:
-      "Received WhatsApp messages claiming my elderly parents in Havana were 'under observation' and that their housing situation depended on my behavior abroad.",
+      "Received WeChat messages claiming my elderly parents in Beijing were 'under observation' and that their housing situation depended on my behavior abroad.",
     howContacted:
-      "WhatsApp messages from +53-5-555-0147 (Cuban country code). Sender used my first name and knew my parents' Havana street address.",
+      "WeChat messages from +86-138-555-0147 (Chinese country code). Sender used my first name and knew my parents' Beijing street address.",
     whatDemanded:
-      "Demanded I withdraw testimony agreed to before the UN Human Rights Committee regarding Cuban political prisoners. Gave me 72 hours.",
+      "Demanded I withdraw testimony agreed to before the UN Human Rights Committee regarding Chinese political prisoners and Uyghur detainees. Gave me 72 hours.",
     governmentConnection:
-      "Sender explicitly stated they were from Cuban State Security (G2). Named my parents and knew their CDR neighborhood watch file number.",
-    evidenceFiles: ["whatsapp_screenshots.zip"],
+      "Sender explicitly stated they were from the Chinese Ministry of State Security. Named my parents and knew their grid management household ID number.",
+    evidenceFiles: ["wechat_screenshots.zip"],
     dangerLevel: "immediate_attention_needed",
     whenNote:
       "May 3, 2024, messages received over a 6-hour period starting at noon, at my office in Union City, NJ",
@@ -380,21 +380,21 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-08-29T12:00:00.000Z",
     occurredAt: "2024-03-30T19:00:00.000Z",
     whoTargeted:
-      "North Korean government liaison, contacted through defector community member Kim Sung-ho",
-    personDisplayName: "Kim Sung-ho (compelled courier)",
-    personRole: "DPRK liaison-directed courier",
+      "Chinese government liaison, contacted through diaspora community member Wang Lei",
+    personDisplayName: "Wang Lei (compelled courier)",
+    personRole: "MSS-directed courier",
     whatHappened:
-      "Kim delivered a USB drive containing a video of my relatives in Pyongyang and a recorded audio threat. Kim had been paid $500 in Seoul to bring it to me.",
+      "Wang delivered a USB drive containing a video of my relatives in Chongqing and a recorded audio threat. Wang had been paid $500 in Hong Kong to bring it to me.",
     howContacted:
-      "In-person delivery through Kim Sung-ho, who was approached at a café in Itaewon, Seoul by a man who gave him the USB and instructions.",
+      "In-person delivery through Wang Lei, who was approached at a café in Wan Chai, Hong Kong by a man who gave him the USB and instructions.",
     whatDemanded:
-      "Audio stated I must stop working with Liberty in North Korea (LiNK) or my family would be sent to a political prison camp. Named Camp 14 specifically.",
+      "Audio stated I must stop working with China Aid or my family would be sent to a Xinjiang re-education camp. Named a specific facility in Aksu Prefecture.",
     governmentConnection:
-      "The audio message referenced the Korean Workers' Party Central Committee. Level of detail about my family confirms state-level intelligence access.",
+      "The audio message referenced the United Front Work Department. Level of detail about my family confirms state-level intelligence access.",
     evidenceFiles: [
       "usb_video_file.mp4",
       "audio_threat.mp3",
-      "kim_statement.pdf",
+      "wang_statement.pdf",
     ],
     dangerLevel: "immediate_attention_needed",
     whenNote:
@@ -408,17 +408,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-09-12T12:00:00.000Z",
     occurredAt: "2023-07-11T17:30:00.000Z",
     whoTargeted:
-      "Two men presenting Azerbaijani government IDs, claiming to be from an 'Azerbaijani Community Support Office'",
-    personDisplayName: "Two Azerbaijani Embassy-linked officials",
-    personRole: "Claimed Azerbaijani Ministry of Internal Affairs / embassy",
+      "Two men presenting Chinese consulate IDs, claiming to be from an 'Office of Overseas Chinese Affairs'",
+    personDisplayName: "Two Chinese consulate-linked officials",
+    personRole: "Claimed Chinese consulate / Overseas Chinese Affairs Office",
     whatHappened:
-      "Visited my real estate office unannounced and met with me for 20 minutes, referencing my social media posts and my 2022 interview with RFE/RL by name.",
+      "Visited my real estate office unannounced and met with me for 20 minutes, referencing my social media posts and my 2022 interview with RFA by name.",
     howContacted:
       "Unannounced in-person visit. IDs appeared official but referenced a non-existent office. Left a pamphlet with a phone number.",
     whatDemanded:
-      "Told me to 'be careful what you say publicly' and mentioned my business license could face 'complications'. Said my interviews were 'noticed in Baku'.",
+      "Told me to 'be careful what you say publicly' and mentioned my business license could face 'complications'. Said my interviews were 'noticed in Beijing'.",
     governmentConnection:
-      "Presented government-issued IDs and referenced the Azerbaijani Ministry of Internal Affairs. One said they were 'attached to the embassy'.",
+      "Presented government-issued IDs and referenced the Chinese Ministry of Public Security. One said they were 'attached to the embassy'.",
     evidenceFiles: ["office_camera_still.jpg", "pamphlet_scan.jpg"],
     dangerLevel: "not_immediate_danger",
     whenNote:
@@ -432,18 +432,18 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-09-26T12:00:00.000Z",
     occurredAt: "2023-10-05T14:00:00.000Z",
     whoTargeted:
-      "Unknown callers from Tajikistan numbers, believed to be GKNB (Tajik security service) operatives",
-    personDisplayName: "Unknown Tajik GKNB-linked callers",
-    personRole: "Suspected Tajik GKNB operatives",
+      "Unknown callers from Chinese numbers, believed to be MSS (Chinese Ministry of State Security) operatives",
+    personDisplayName: "Unknown MSS-linked callers",
+    personRole: "Suspected Chinese MSS operatives",
     whatHappened:
-      "Received 14 calls over two weeks, most hung up. One call lasted 3 minutes and included threats. My Telegram was also cloned to contact my friends.",
+      "Received 14 calls over two weeks, most hung up. One call lasted 3 minutes and included threats. My WeChat was also cloned to contact my friends.",
     howContacted:
-      "Phone calls from +992-37-555-XXXX numbers. Cloned Telegram account (@mirzo_official_2) messaged 6 contacts claiming I needed money urgently.",
+      "Phone calls from +86-10-555-XXXX numbers. Cloned WeChat account (zhangbo_official_2) messaged 6 contacts claiming I needed money urgently.",
     whatDemanded:
-      "Caller stated I should 'go home and face the courts' and that my brother had already been detained as a guarantee of my return to Tajikistan.",
+      "Caller stated I should 'go home and face the courts' and that my brother had already been detained as a guarantee of my return to China.",
     governmentConnection:
-      "Referenced specific Tajik court case numbers. Caller identified by name a GKNB officer supposedly handling my case.",
-    evidenceFiles: ["call_log_screenshot.png", "telegram_clone_messages.pdf"],
+      "Referenced specific Chinese court case numbers. Caller identified by name an MSS officer supposedly handling my case.",
+    evidenceFiles: ["call_log_screenshot.png", "wechat_clone_messages.pdf"],
     dangerLevel: "danger_expected_within_a_week",
     whenNote:
       "October 5–19, 2023, calls received at my home and workplace in Columbus",
@@ -456,17 +456,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-10-10T12:00:00.000Z",
     occurredAt: "2023-02-14T19:00:00.000Z",
     whoTargeted:
-      "Facebook user 'Nour Al-Amal', later identified by community members as working with Syrian mukhabarat",
-    personDisplayName: "Nour Al-Amal",
-    personRole: "Suspected Syrian Air Force Intelligence proxy",
+      "Facebook user 'Anna Wang', later identified by community members as working with Chinese state security",
+    personDisplayName: "Anna Wang",
+    personRole: "Suspected Chinese MSS proxy",
     whatHappened:
-      "Infiltrated my local Syrian diaspora support group online, gained trust over four months, then helped doxx several group members to a pro-Assad network.",
+      "Infiltrated my local Hong Kong diaspora support group online, gained trust over four months, then helped doxx several group members to a pro-Beijing network.",
     howContacted:
-      "Facebook group membership request accepted. Also connected on WhatsApp (+1-612-555-0088). Used a convincing fake Syrian refugee backstory.",
+      "Facebook group membership request accepted. Also connected on WhatsApp (+1-612-555-0088). Used a convincing fake Hong Kong refugee backstory.",
     whatDemanded:
       "After doxxing: 'You're next if you don't shut down this group.' Group was then flooded with threatening messages targeting individual members.",
     governmentConnection:
-      "Pro-Assad Facebook pages that published our information coordinate with Syrian Air Force Intelligence. Community investigator confirmed the connection.",
+      "Pro-Beijing Facebook pages that published our information coordinate with Chinese state-linked information operators. Community investigator confirmed the connection.",
     evidenceFiles: [
       "facebook_profile_archive.zip",
       "doxxing_posts_screenshots.pdf",
@@ -483,17 +483,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-10-24T12:00:00.000Z",
     occurredAt: "2023-12-03T15:00:00.000Z",
     whoTargeted:
-      "Unidentified persons who sent official-looking letters on apparent Sudanese government letterhead",
-    personDisplayName: "Sudanese GIS-letterhead sender",
-    personRole: "Claimed Sudanese General Intelligence Service",
+      "Unidentified persons who sent official-looking letters on apparent Chinese government letterhead",
+    personDisplayName: "MSS-letterhead sender",
+    personRole: "Claimed Chinese Ministry of State Security",
     whatHappened:
-      "Received three letters over two months claiming I was under investigation for 'financial crimes against the Sudanese state' and demanding I return for questioning.",
+      "Received three letters over two months claiming I was under investigation for 'national security crimes against the Chinese state' and demanding I return for questioning.",
     howContacted:
-      "Physical mail to my home. Letters had Sudanese government logos. One included a fraudulent Interpol notice confirmed fake via Interpol's public database.",
+      "Physical mail to my home. Letters had Chinese government logos. One included a fraudulent Interpol red notice confirmed fake via Interpol's public database.",
     whatDemanded:
-      "Stated I had 30 days to present myself at the Sudanese embassy 'voluntarily' or risk an international arrest warrant and family asset seizure in Khartoum.",
+      "Stated I had 30 days to present myself at the Chinese embassy 'voluntarily' or risk an international arrest warrant and family asset seizure in Beijing.",
     governmentConnection:
-      "Letters bore the General Intelligence Service (GIS) of Sudan letterhead and referenced my specific political affiliations and diaspora organization memberships.",
+      "Letters bore the Ministry of State Security letterhead and referenced my specific political affiliations and diaspora organization memberships.",
     evidenceFiles: [
       "letter1_scan.pdf",
       "letter2_scan.pdf",
@@ -511,19 +511,19 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-11-07T12:00:00.000Z",
     occurredAt: "2024-03-01T16:00:00.000Z",
     whoTargeted:
-      "Rwandan government-linked hackers identified by Access Now forensics (Pegasus spyware on my device)",
-    personDisplayName: "Rwandan-linked Pegasus operator",
-    personRole: "Rwandan government-linked Pegasus operator",
+      "Chinese state-linked hackers identified by Citizen Lab forensics (mobile surveillance malware on my device)",
+    personDisplayName: "Chinese state-linked spyware operator",
+    personRole: "Chinese state-aligned surveillance operator",
     whatHappened:
-      "My iPhone was infected with Pegasus spyware. Access Now confirmed the infection after I participated in a BBC interview about Rwandan detention of dissidents.",
+      "My iPhone was infected with Chinese state-aligned surveillance malware. Citizen Lab confirmed the infection after I participated in a BBC interview about the Xinjiang detention system.",
     howContacted:
-      "Zero-click exploit. I received a suspicious iMessage from +250-78-555-0032 on March 2 that may have been the infection vector.",
+      "Zero-click exploit. I received a suspicious iMessage from +86-10-555-0032 on March 2 that may have been the infection vector.",
     whatDemanded:
       "No direct demand. Surveillance appeared aimed at identifying my sources and accessing my unpublished book manuscript content.",
     governmentConnection:
-      "Access Now attributed the Pegasus deployment to infrastructure consistent with Rwanda's known Pegasus license, per prior CitizenLab reporting.",
+      "Citizen Lab attributed the surveillance deployment to infrastructure consistent with Chinese state-aligned operators tracked in prior reporting.",
     evidenceFiles: [
-      "access_now_forensic_report.pdf",
+      "citizen_lab_forensic_report.pdf",
       "mvt_scan_output.txt",
     ],
     dangerLevel: "not_immediate_danger",
@@ -538,17 +538,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-11-21T12:00:00.000Z",
     occurredAt: "2023-08-25T22:00:00.000Z",
     whoTargeted:
-      "Man identifying as Consul for Community Affairs at the Eritrean embassy, name given as 'Tewolde Haile'",
-    personDisplayName: "Tewolde Haile",
-    personRole: "Eritrean Embassy Consul for Community Affairs",
+      "Man identifying as Consul for Overseas Chinese Affairs at the Chinese embassy, name given as 'Wang Yiming'",
+    personDisplayName: "Wang Yiming",
+    personRole: "Chinese Embassy Consul for Overseas Chinese Affairs",
     whatHappened:
-      "Approached me after an Eritrean community event, invited me for coffee, then spent an hour pressuring me to pay the diaspora tax and report members who refused.",
+      "Approached me after a Chinese-American community event, invited me for tea, then spent an hour pressuring me to register with the local Overseas Chinese Association and report members deemed 'politically unreliable'.",
     howContacted:
-      "In-person approach at a public community event. He had an Eritrean embassy business card. Later sent a follow-up text to my mobile, source of number unknown.",
+      "In-person approach at a public community event. He had a Chinese embassy business card. Later sent a follow-up text to my mobile, source of number unknown.",
     whatDemanded:
-      "Stated the 2% diaspora tax was mandatory and non-payers were reported to Eritrean authorities. Said family property in Asmara was 'tied to compliance'.",
+      "Stated registration with the Overseas Chinese Association was expected for passport renewal and that non-cooperation was reported to Beijing. Said family property in Shanghai was 'tied to compliance'.",
     governmentConnection:
-      "Presented official Eritrean Embassy business card. Represents a documented Eritrean government practice condemned by UN human rights bodies.",
+      "Presented official Chinese Embassy business card. Represents a documented Chinese government practice condemned in US and UN reports on transnational repression.",
     evidenceFiles: [
       "business_card_photo.jpg",
       "text_message_screenshot.png",
@@ -565,17 +565,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-12-05T12:00:00.000Z",
     occurredAt: "2023-09-10T17:00:00.000Z",
     whoTargeted:
-      "Multiple coordinated accounts, at least one tied to Bangladesh Rapid Action Battalion (RAB) based on metadata",
-    personDisplayName: "Coordinated harassment network (RAB-linked)",
-    personRole: "Bangladesh RAB-linked harassment network",
+      "Multiple coordinated accounts, at least one tied to Chinese state-aligned information operators based on metadata",
+    personDisplayName: "Coordinated harassment network (China-linked)",
+    personRole: "Chinese state-linked harassment network",
     whatHappened:
       "Coordinated harassment campaign flooded my professional accounts. My employer received anonymous emails claiming I was a terrorism supporter.",
     howContacted:
       "Twitter/X, Facebook, LinkedIn, and email. Anonymous HR emails contained my correct employee ID, indicating an insider source or breach.",
     whatDemanded:
-      "Employer email claimed I was 'under terror financing investigation' in Bangladesh and urged termination. DMs demanded I delete commentary about garment workers.",
+      "Employer email claimed I was 'under national security investigation' in China and urged termination. DMs demanded I delete commentary about Uyghur forced labor in supply chains.",
     governmentConnection:
-      "Twitter accounts traced to Dhaka IP ranges. One email header resolved to an address block linked to RAB in a 2022 researcher report.",
+      "Twitter accounts traced to Beijing IP ranges. One email header resolved to an address block linked to a Chinese state-aligned operator group in a 2022 ASPI report.",
     evidenceFiles: [
       "employer_email_screenshots.pdf",
       "twitter_harassment_archive.zip",
@@ -592,17 +592,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2025-12-19T12:00:00.000Z",
     occurredAt: "2023-11-30T17:00:00.000Z",
     whoTargeted:
-      "Individual calling himself 'Inspector Khodarahmi', claiming to be from the Iranian IRGC Intelligence",
-    personDisplayName: "Inspector Khodarahmi",
-    personRole: "Claimed IRGC Intelligence inspector",
+      "Individual calling himself 'Inspector Liu', claiming to be from the Chinese Ministry of State Security",
+    personDisplayName: "Inspector Liu",
+    personRole: "Claimed MSS inspector",
     whatHappened:
-      "Received a video call showing my cousin Sepideh in what appeared to be a Tehran detention facility. A man off-camera issued demands while she looked frightened.",
+      "Received a video call showing my cousin Mei in what appeared to be a Chinese detention facility. A man off-camera issued demands while she looked frightened.",
     howContacted:
-      "WhatsApp video call from +98-21-555-0044. Call lasted approximately 8 minutes before the connection was cut without warning.",
+      "WeChat video call from +86-10-555-0044. Call lasted approximately 8 minutes before the connection was cut without warning.",
     whatDemanded:
-      "Demanded I provide US addresses of 5 specific Iranian-American journalists by name. Threatened Sepideh would be charged under Article 508 if I refused.",
+      "Demanded I provide US addresses of 5 specific Chinese-American journalists by name. Threatened Mei would be charged under Article 105 of the Chinese Criminal Law (subversion of state power) if I refused.",
     governmentConnection:
-      "Caller identified as IRGC Intelligence and referenced Sepideh's arrest warrant number. Her lawyer has confirmed she is held in Evin Prison.",
+      "Caller identified as MSS and referenced Mei's arrest warrant number. Her lawyer has confirmed she is held in Qincheng Prison.",
     evidenceFiles: [
       "video_call_recording.mp4",
       "lawyers_written_confirmation.pdf",
@@ -619,17 +619,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-01-02T12:00:00.000Z",
     occurredAt: "2024-02-21T02:30:00.000Z",
     whoTargeted:
-      "Unknown individual using AI voice synthesis, impersonating my father who lives in Hanoi, Vietnam",
-    personDisplayName: "Vietnamese MPS-linked voice impersonator",
-    personRole: "Suspected Vietnamese Ministry of Public Security operator",
+      "Unknown individual using AI voice synthesis, impersonating my father who lives in Chongqing, China",
+    personDisplayName: "Chinese MSS-linked voice impersonator",
+    personRole: "Suspected Chinese Ministry of State Security operator",
     whatHappened:
       "Received a call sounding exactly like my father urging me to come home. When I called back on his verified number, my real father had not made any call.",
     howContacted:
       "Phone call to my mobile using AI voice synthesis of my father's voice. Caller ID showed a US area code number. Call lasted 2 minutes 41 seconds.",
     whatDemanded:
-      "Synthesized voice said: 'Come home, there is a problem with your papers.' Designed to lure me to Vietnam, likely for detention by authorities.",
+      "Synthesized voice said: 'Come home, there is a problem with your papers.' Designed to lure me to China, likely for detention by authorities.",
     governmentConnection:
-      "Consistent with Vietnamese Ministry of Public Security tactics targeting overseas dissidents. My father was separately warned not to discuss this.",
+      "Consistent with Chinese Ministry of State Security tactics targeting overseas dissidents under Operation Fox Hunt. My father was separately warned not to discuss this.",
     evidenceFiles: [
       "call_recording.m4a",
       "real_father_call_recording.m4a",
@@ -646,17 +646,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-01-16T12:00:00.000Z",
     occurredAt: "2023-10-22T21:45:00.000Z",
     whoTargeted:
-      "Two unidentified men in suits who followed me and confronted me, possibly Kazakhstani consulate-linked",
-    personDisplayName: "Two Kazakhstani consulate-linked men",
-    personRole: "Suspected Kazakhstani consulate operatives",
+      "Two unidentified men in suits who followed me and confronted me, possibly Chinese consulate-linked",
+    personDisplayName: "Two Chinese consulate-linked men",
+    personRole: "Suspected Chinese consulate operatives",
     whatHappened:
-      "Noticed I was being followed after leaving a community meeting near the Kazakhstani consulate. The two men confronted me and made implicit threats about family in Almaty.",
+      "Noticed I was being followed after leaving a Hong Kong diaspora community meeting in Midtown. The two men confronted me and made implicit threats about family in Beijing.",
     howContacted:
-      "Physical surveillance followed by in-person confrontation. The men spoke Russian and Kazakh. One photographed me during the encounter.",
+      "Physical surveillance followed by in-person confrontation. The men spoke Mandarin. One photographed me during the encounter.",
     whatDemanded:
-      "Told me in Kazakh that my passport renewal would be 'complicated' unless I stopped attending opposition group meetings. Said 'Almaty knows your face.'",
+      "Told me in Mandarin that my passport renewal would be 'complicated' unless I stopped attending pro-democracy group meetings. Said 'Beijing knows your face.'",
     governmentConnection:
-      "The individuals were observed coming from the direction of the Kazakhstani Consulate General on 59th Street. Referenced 'the office' as their authority.",
+      "The individuals were observed coming from the direction of a known Chinese consulate office. Referenced 'the office' as their authority.",
     evidenceFiles: ["subway_surveillance_still.jpg"],
     dangerLevel: "danger_expected_within_a_week",
     whenNote:
@@ -670,17 +670,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-01-30T12:00:00.000Z",
     occurredAt: "2024-04-08T17:00:00.000Z",
     whoTargeted:
-      "Social media campaign and @truth_about_myanmarcoup, a Tatmadaw-linked account",
-    personDisplayName: "@truth_about_myanmarcoup",
-    personRole: "Tatmadaw-linked information operation",
+      "Social media campaign and @real_china_voice, a Chinese state-linked account",
+    personDisplayName: "@real_china_voice",
+    personRole: "Chinese state-linked information operation",
     whatHappened:
-      "Account published a fake screenshot attributing statements to me supporting armed resistance, used to defame me within the diaspora community.",
+      "Account published a fake screenshot attributing statements to me supporting Hong Kong independence, used to defame me within the Chinese-American diaspora community.",
     howContacted:
-      "DM from @truth_about_myanmarcoup on Twitter and a separate email to my employer. Messages arrived across multiple platforms simultaneously.",
+      "DM from @real_china_voice on Twitter and a separate email to my employer. Messages arrived across multiple platforms simultaneously.",
     whatDemanded:
-      "Demanded I post a video supporting the military council or more fabricated evidence would be released. Threatened to contact immigration authorities with false claims.",
+      "Demanded I post a video supporting the Chinese government or more fabricated evidence would be released. Threatened to contact immigration authorities with false claims.",
     governmentConnection:
-      "Account @truth_about_myanmarcoup has been linked to Tatmadaw information operations by the Stanford Internet Observatory.",
+      "Account @real_china_voice has been linked to Chinese state-aligned information operations by the Stanford Internet Observatory.",
     evidenceFiles: [
       "fake_screenshot.png",
       "dm_screenshot.png",
@@ -698,17 +698,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-02-13T12:00:00.000Z",
     occurredAt: "2023-07-14T14:00:00.000Z",
     whoTargeted:
-      "Individual claiming to represent Zimbabwe's Central Intelligence Organisation (CIO), gave name 'Brighton Moyo'",
-    personDisplayName: "Brighton Moyo",
-    personRole: "Claimed Zimbabwe Central Intelligence Organisation",
+      "Individual claiming to represent the Chinese Ministry of State Security, gave name 'Liu Bin'",
+    personDisplayName: "Liu Bin",
+    personRole: "Claimed Chinese Ministry of State Security",
     whatHappened:
-      "Moyo called claiming to facilitate 'voluntary dialogue' between the government and diaspora. He repeatedly referenced specific private conversations I had with friends.",
+      "Liu called claiming to facilitate 'voluntary dialogue' between the government and the overseas Chinese community. He repeatedly referenced specific private conversations I had with friends.",
     howContacted:
-      "Phone call from +263-77-555-0091. He claimed my number came from a community directory, but my number is not publicly listed anywhere.",
+      "Phone call from +86-10-555-0091. He claimed my number came from a community directory, but my number is not publicly listed anywhere.",
     whatDemanded:
-      "Told me to stop funding the MDC Alliance or risk being 'persona non grata' in Zimbabwe. Said CIO had 'thick files' on diaspora activists.",
+      "Told me to stop funding Hong Kong Watch or risk being 'persona non grata' in China. Said the MSS had 'thick files' on diaspora activists.",
     governmentConnection:
-      "Self-identified as CIO. Referenced a confidential government list of diaspora organizations not available from any public source.",
+      "Self-identified as MSS. Referenced a confidential government list of diaspora organizations not available from any public source.",
     evidenceFiles: ["call_log.png"],
     dangerLevel: "not_immediate_danger",
     whenNote:
@@ -722,17 +722,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-02-27T12:00:00.000Z",
     occurredAt: "2024-03-05T13:00:00.000Z",
     whoTargeted:
-      "Unidentified group linked to Egyptian General Intelligence Service (GIS) based on prior communications pattern",
-    personDisplayName: "Egyptian GIS-linked sender",
-    personRole: "Claimed Egyptian General Intelligence Service",
+      "Unidentified group linked to the Chinese Ministry of State Security based on prior communications pattern",
+    personDisplayName: "Chinese MSS-linked sender",
+    personRole: "Claimed Chinese Ministry of State Security",
     whatHappened:
       "Received surveillance photos of my home, car, and children's school taken over weeks, emailed as an attachment with no accompanying text message.",
     howContacted:
       "Email from xf77r@protonmail.com with 14 attached photos and no subject line or body. Showed my morning routine, children's school drop-off, and grocery trips.",
     whatDemanded:
-      "Follow-up email two days later: 'We hope you understand what this means. Think carefully about your next article on Egyptian detentions.'",
+      "Follow-up email two days later: 'We hope you understand what this means. Think carefully about your next article on the Xinjiang detention system.'",
     governmentConnection:
-      "Prior email from 'Egyptian Expatriate Services' used language mirroring documented Egyptian GIS communications, per research published by Amnesty Tech.",
+      "Prior email from 'Overseas Chinese Affairs Services' used language mirroring documented Chinese state-linked communications, per research published by Citizen Lab.",
     evidenceFiles: [
       "surveillance_photos_redacted.zip",
       "email1.eml",
@@ -750,24 +750,24 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-03-13T12:00:00.000Z",
     occurredAt: "2023-05-17T23:30:00.000Z",
     whoTargeted:
-      "Person presenting as Uzbek Embassy trade representative, gave name 'Farhodjon Yusupov'",
-    personDisplayName: "Farhodjon Yusupov",
-    personRole: "Uzbek Embassy Commercial Section representative",
+      "Person presenting as Chinese Embassy commercial counselor, gave name 'Chen Wei'",
+    personDisplayName: "Chen Wei",
+    personRole: "Chinese Embassy Commercial Counselor",
     whatHappened:
-      "Introduced himself at a business conference, then privately warned me during cocktail hour that my criticism of the Uzbek government was 'creating problems' for my relatives.",
+      "Introduced himself at a business conference, then privately warned me during cocktail hour that my criticism of the Chinese government was 'creating problems' for my relatives.",
     howContacted:
-      "In-person at a professional event. He had an Uzbek Embassy Commercial Section business card. Later sent a LinkedIn connection request.",
+      "In-person at a professional event. He had a Chinese Embassy Economic and Commercial Office business card. Later sent a LinkedIn connection request.",
     whatDemanded:
-      "Said relatives' business licenses in Tashkent were 'under review'. Asked me to refrain from testifying at an upcoming USCIRF hearing on Uzbek prisoners.",
+      "Said relatives' business licenses in Shanghai were 'under review'. Asked me to refrain from testifying at an upcoming USCIRF hearing on Uyghur detainees.",
     governmentConnection:
-      "Embassy business card confirmed Uzbek government affiliation. His prior knowledge of my private USCIRF invitation suggests intelligence access.",
+      "Embassy business card confirmed Chinese government affiliation. His prior knowledge of my private USCIRF invitation suggests intelligence access.",
     evidenceFiles: [
       "business_card_scan.jpg",
       "linkedin_connection_request.png",
     ],
     dangerLevel: "not_immediate_danger",
     whenNote:
-      "May 17, 2023, approximately 7:30 PM, at the Central Asia Business Forum in McLean, VA",
+      "May 17, 2023, approximately 7:30 PM, at the US-China Business Forum in McLean, VA",
     locationLabel: "McLean, VA",
     region: "washington_dc_metro",
     physicalViolence: "physical_violence_not_used",
@@ -777,20 +777,20 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-03-27T12:00:00.000Z",
     occurredAt: "2023-08-07T15:00:00.000Z",
     whoTargeted:
-      "Unknown actor using tools consistent with Moroccan DGED foreign intelligence operations, per digital forensics",
-    personDisplayName: "Moroccan DGED-linked operator",
-    personRole: "Suspected Moroccan DGED operator",
+      "Unknown actor using tools consistent with Chinese state-aligned cyber operations, per digital forensics",
+    personDisplayName: "Chinese state-linked operator",
+    personRole: "Suspected Chinese state-aligned cyber operator",
     whatHappened:
-      "Phone targeted with a WhatsApp phishing attack. Clicking the link installed surveillance software that exfiltrated 3 weeks of messages before I discovered it.",
+      "Phone targeted with a WeChat phishing attack. Clicking the link installed surveillance software that exfiltrated 3 weeks of messages before I discovered it.",
     howContacted:
-      "WhatsApp message from +212-6-555-0173 disguised as a WhatsApp security verification using official branding. Convinced me to click the link.",
+      "WeChat message from +86-138-555-0173 disguised as a WeChat security verification using official branding. Convinced me to click the link.",
     whatDemanded:
-      "After discovery, received a call from a Moroccan number: 'We have everything we need. Stay quiet about Sahara matters going forward.'",
+      "After discovery, received a call from a Chinese number: 'We have everything we need. Stay quiet about Tibet matters going forward.'",
     governmentConnection:
-      "Digital forensics identified command servers linked to Moroccan DGED operations in reports published by Amnesty Tech.",
+      "Digital forensics identified command servers linked to Chinese state-aligned operations in reports published by Citizen Lab.",
     evidenceFiles: [
       "forensic_analysis_report.pdf",
-      "whatsapp_phishing_screenshot.png",
+      "wechat_phishing_screenshot.png",
     ],
     dangerLevel: "danger_expected_within_a_week",
     whenNote:
@@ -804,17 +804,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-04-10T12:00:00.000Z",
     occurredAt: "2023-12-05T19:00:00.000Z",
     whoTargeted:
-      "Person claiming to be from Algerian DRS intelligence; approached my landlord directly",
-    personDisplayName: "Algerian Consular Legal Affairs visitor",
-    personRole: "Claimed Algerian DRS / Consular Legal Affairs",
+      "Person claiming to be from Chinese consular legal affairs; approached my landlord directly",
+    personDisplayName: "Chinese consular legal affairs visitor",
+    personRole: "Claimed Chinese MSS / Consular Legal Affairs",
     whatHappened:
-      "My landlord told me a man visited the building claiming to conduct a background investigation on behalf of Algerian authorities, asking about my visitors and schedule.",
+      "My landlord told me a man visited the building claiming to conduct a background investigation on behalf of Chinese authorities, asking about my visitors and schedule.",
     howContacted:
-      "Indirect—through my landlord Robert Chen, who informed me that evening. The man left a card reading 'Algerian Consular Legal Affairs'.",
+      "Indirect—through my landlord Robert Park, who informed me that evening. The man left a card reading 'Chinese Consulate Legal Affairs'.",
     whatDemanded:
-      "Told my landlord I was 'wanted for questioning' and that my US status 'may be affected by outstanding Algerian legal matters'. Left a callback number.",
+      "Told my landlord I was 'wanted for questioning' and that my US status 'may be affected by outstanding Chinese legal matters'. Left a callback number.",
     governmentConnection:
-      "Card referenced Algerian Consular Legal Affairs. The phone number connects to a line at the Algerian Embassy per public embassy directory listings.",
+      "Card referenced Chinese Consulate Legal Affairs. The phone number connects to a line at the Chinese Consulate per public consular directory listings.",
     evidenceFiles: [
       "landlord_written_statement.pdf",
       "business_card_photo.jpg",
@@ -831,20 +831,20 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-04-24T12:00:00.000Z",
     occurredAt: "2024-01-15T17:00:00.000Z",
     whoTargeted:
-      "Pro-Kremlin troll network; primary operator reached out from Telegram account @dmitri_patriot_official",
-    personDisplayName: "@dmitri_patriot_official",
-    personRole: "Pro-Kremlin troll network operator",
+      "Pro-Beijing troll network; primary operator reached out from Telegram account @huaxia_voice_official",
+    personDisplayName: "@huaxia_voice_official",
+    personRole: "Pro-Beijing troll network operator",
     whatHappened:
       "Sustained 3-month harassment campaign targeting my journalism. Network reported my accounts with false claims, resulting in two temporary platform suspensions.",
     howContacted:
-      "Harassment across Twitter/X, Telegram, and email. @dmitri_patriot_official sent DMs including my home neighborhood and physical description.",
+      "Harassment across Twitter/X, Telegram, and email. @huaxia_voice_official sent DMs including my home neighborhood and physical description.",
     whatDemanded:
-      "'Every journalist who lies about Russia is held accountable. We know your neighborhood. Keep writing and find out what accountability looks like.'",
+      "'Every journalist who lies about China is held accountable. We know your neighborhood. Keep writing and find out what accountability looks like.'",
     governmentConnection:
-      "The coordinating Telegram channel is documented as part of a Kremlin-linked information operation by EU DisinfoLab. Russian Foreign Ministry amplified content.",
+      "The coordinating Telegram channel is documented as part of a Chinese state-linked information operation by the Australian Strategic Policy Institute. Chinese Foreign Ministry spokespersons amplified content.",
     evidenceFiles: [
       "telegram_message_screenshots.zip",
-      "eu_disinfolab_excerpt.pdf",
+      "aspi_report_excerpt.pdf",
     ],
     dangerLevel: "danger_expected_within_a_week",
     whenNote:
@@ -858,17 +858,17 @@ const fakeSources: readonly FakeSource[] = [
     createdAt: "2026-05-08T12:00:00.000Z",
     occurredAt: "2024-01-20T02:15:00.000Z",
     whoTargeted:
-      "Two men posing as a community ride, later revealing ties to the Congolese ANR (Agence Nationale de Renseignements)",
-    personDisplayName: "Two ANR-linked men",
-    personRole: "Congolese ANR (Agence Nationale de Renseignements)",
+      "Two men posing as a community ride, later revealing ties to the Chinese Ministry of State Security",
+    personDisplayName: "Two MSS-linked men",
+    personRole: "Chinese Ministry of State Security (MSS)",
     whatHappened:
-      "What I believed was a friendly ride from JFK became a 40-minute interrogation about my work exposing DRC corruption, using details only from my private communications.",
+      "What I believed was a friendly ride from JFK became a 40-minute interrogation about my work exposing CCP corruption, using details only from my private communications.",
     howContacted:
       "Arranged by a trusted community member (name withheld). The ride was offered as a favor. I had no reason to suspect malicious intent beforehand.",
     whatDemanded:
-      "Claimed ANR had shared my file with Interpol. Offered a 'path forward' if I handed over source materials and unpublished reporting on the mining sector.",
+      "Claimed MSS had shared my file with Interpol via a fraudulent red notice. Offered a 'path forward' if I handed over source materials and unpublished reporting on the Xinjiang labor system.",
     governmentConnection:
-      "Identified themselves as ANR at the end of the ride. Knew details of internal DRC government communications referencing the President's office.",
+      "Identified themselves as MSS at the end of the ride. Knew details of internal CCP communications referencing the Politburo.",
     evidenceFiles: ["voice_memo_partial_recording.m4a"],
     dangerLevel: "immediate_attention_needed",
     whenNote:
