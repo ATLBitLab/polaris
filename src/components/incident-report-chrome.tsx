@@ -10,10 +10,10 @@ import {
 } from "@/components/incident-report-provider";
 
 export const reportSteps = [
-  { slug: "when", index: "I.", heading: "When" },
-  { slug: "where", index: "II.", heading: "Where" },
-  { slug: "what", index: "III.", heading: "What happened" },
-  { slug: "who", index: "IV.", heading: "Who was involved" },
+  { slug: "when", index: "I.", heading: "When did the incident occur?" },
+  { slug: "where", index: "II.", heading: "Where did this occur?" },
+  { slug: "what", index: "III.", heading: "What happened?" },
+  { slug: "who", index: "IV.", heading: "Who was involved?" },
   { slug: "next", index: "V.", heading: "What next" },
   { slug: "contact", index: "VI.", heading: "Contact opt-in" },
 ] as const;

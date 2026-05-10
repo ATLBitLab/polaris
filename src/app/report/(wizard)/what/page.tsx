@@ -24,7 +24,7 @@ export default function ReportWhatPage() {
       <ReportProgress currentSlug="what" />
       <ReportStepHeading
         slug="what"
-        helper="Record a voice memo or type a plain-language account. Voice transcripts drop into the written account so you can edit them."
+        helper="Record a voice memo or type a plain-language account. You can edit the voice transcript text after recording."
       />
 
       {draft ? (
@@ -50,7 +50,7 @@ export default function ReportWhatPage() {
               >
                 {recordingState === "transcribing"
                   ? "Transcribing"
-                  : "Record voice"}
+                  : "Record memo"}
               </Button>
             )}
             {recordingState === "unsupported" ? (

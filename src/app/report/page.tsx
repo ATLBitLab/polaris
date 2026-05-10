@@ -11,12 +11,15 @@ export default function ReportIntroPage() {
         Record what happened while details are fresh.
       </h1>
       <p className="mt-7 max-w-[62ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
-        One section at a time. Polaris autosaves from this browser, and each
-        Continue confirms what is on file.
+        Have you or someone you know ever felt threatened or intimidated by the
+        Chinese government? Transnational repression (TNR) can take many forms,
+        including, but not limited to: physical assault at a protest, being
+        photographed/followed by suspicious people, social media harassment,
+        deepfakes, and having family members detained or questioned.
       </p>
-      <p className="mt-4 max-w-[62ch] text-[0.95rem] leading-relaxed text-[var(--ink-3)] italic">
-        Incident reports may include identifying details when you choose to
-        provide them. The safety quiz remains the no-identifying-detail path.
+      <p className="mt-4 max-w-[62ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
+        Report your TNR incident here. Your progress is saved as you continue
+        through the report. Your information is kept entirely confidential.
       </p>
 
       <div className="mt-10 flex flex-wrap items-center gap-3">

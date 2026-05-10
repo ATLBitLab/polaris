@@ -13,8 +13,6 @@ const timeChoices: {
   readonly label: string;
 }[] = [
   { kind: "just_now", label: "Just now" },
-  { kind: "an_hour_ago", label: "An hour ago" },
-  { kind: "yesterday", label: "Yesterday" },
   { kind: "manual", label: "Manual" },
 ];
 
@@ -32,7 +30,7 @@ export default function ReportWhenPage() {
       />
       {draft ? (
         <>
-          <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-2">
             {timeChoices.map((choice) => (
               <button
                 key={choice.kind}
