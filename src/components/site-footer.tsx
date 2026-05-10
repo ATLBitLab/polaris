@@ -24,7 +24,8 @@ export function SiteFooter() {
         <p className="text-[0.8125rem] leading-relaxed text-[var(--ink-2)]">
           <span className="font-medium text-[var(--ink)]">Polaris:</span>{" "}
           Guidance, protection, and impact minimization for diaspora communities
-          facing transnational repression.
+          in the United States facing transnational repression by the Chinese
+          government.
         </p>
 
         <p className="mt-4 text-[0.8125rem] leading-relaxed text-[var(--ink-2)]">
