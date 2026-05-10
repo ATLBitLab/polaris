@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/polaris.png" alt="Polaris" width="480" />
+  <img src="public/polaris.png" alt="Polaris" />
 </p>
 
 # Polaris
