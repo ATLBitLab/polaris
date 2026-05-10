@@ -1,7 +1,6 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useEffect, useRef } from "react";
 import type { IncidentPerson } from "@/lib/incident-report";
 import { Button } from "@/components/ui/button";
 import { useIncidentReport } from "@/components/incident-report-provider";
@@ -15,36 +14,11 @@ export default function ReportWhoPage() {
   const {
     report,
     analysisState,
-    runAnalysis,
     addPerson,
     updatePerson,
     removePerson,
   } = useIncidentReport();
   const people = report?.draft.people ?? [];
-  const autoExtractedRef = useRef(false);
-  const hasNarrative =
-    (report?.draft.narrativeText ?? "").trim().length > 0;
-
-  useEffect(() => {
-    if (autoExtractedRef.current) {
-      return;
-    }
-    if (!report) {
-      return;
-    }
-    if (!hasNarrative) {
-      return;
-    }
-    if (people.length > 0) {
-      autoExtractedRef.current = true;
-      return;
-    }
-    if (analysisState !== "idle") {
-      return;
-    }
-    autoExtractedRef.current = true;
-    void runAnalysis();
-  }, [report, hasNarrative, people.length, analysisState, runAnalysis]);
 
   return (
     <section>
