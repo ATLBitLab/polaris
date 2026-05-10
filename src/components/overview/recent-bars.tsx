@@ -2,9 +2,13 @@ import type { WeeklyCount } from "@/lib/incident-overview";
 
 type RecentBarsProps = {
   readonly weeks: readonly WeeklyCount[];
+  readonly windowLabel?: string;
 };
 
-export function RecentBars({ weeks }: RecentBarsProps) {
+export function RecentBars({
+  weeks,
+  windowLabel = "the last 8 weeks",
+}: RecentBarsProps) {
   if (weeks.length === 0) {
     return null;
   }
@@ -40,7 +44,7 @@ export function RecentBars({ weeks }: RecentBarsProps) {
         })}
       </div>
       <p className="mt-3 text-[0.78rem] leading-[1.5] text-[var(--ink-3)]">
-        {total} report{total === 1 ? "" : "s"} across the last 8 weeks.
+        {total} report{total === 1 ? "" : "s"} across {windowLabel}.
       </p>
     </div>
   );
