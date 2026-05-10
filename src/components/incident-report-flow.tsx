@@ -390,10 +390,11 @@ export function IncidentReportFlow({
 
     setRecordingState("transcribing");
 
-    const formData = new FormData();
-    formData.append("audio", blob, `incident-audio.${extensionForMime(blob.type)}`);
-
     try {
+      const wavBlob = await convertRecordingToWav(blob);
+      const formData = new FormData();
+      formData.append("audio", wavBlob, "incident-audio.wav");
+
       const response = await fetch(
         `/api/incident-reports/${report.id}/transcribe`,
         {
@@ -419,7 +420,7 @@ export function IncidentReportFlow({
       setError(
         nextError instanceof Error
           ? nextError.message
-          : "Unable to transcribe audio",
+          : "Unable to prepare audio for transcription",
       );
     }
   }
@@ -1189,7 +1190,6 @@ function getPresetTime(kind: IncidentTimeKind): string | null {
 
 function getSupportedAudioMimeType(): string {
   const options = [
-    "audio/wav",
     "audio/webm;codecs=opus",
     "audio/webm",
     "audio/mp4",
@@ -1198,17 +1198,132 @@ function getSupportedAudioMimeType(): string {
   return options.find((item) => MediaRecorder.isTypeSupported(item)) ?? "";
 }
 
-function extensionForMime(mimeType: string): string {
-  if (mimeType.includes("wav")) {
-    return "wav";
+async function convertRecordingToWav(blob: Blob): Promise<Blob> {
+  if (await hasWavHeader(blob)) {
+    return blob.type === "audio/wav" ? blob : blob.slice(0, blob.size, "audio/wav");
   }
-  if (mimeType.includes("mp4")) {
-    return "m4a";
+
+  const AudioContextClass =
+    window.AudioContext ??
+    (window as Window & { readonly webkitAudioContext?: typeof AudioContext })
+      .webkitAudioContext;
+
+  if (!AudioContextClass) {
+    throw new Error("This browser cannot prepare audio for transcription.");
   }
-  if (mimeType.includes("mpeg")) {
-    return "mp3";
+
+  const audioContext = new AudioContextClass();
+
+  try {
+    const decoded = await audioContext.decodeAudioData(await blob.arrayBuffer());
+    const resampled = await resampleAudio(decoded, 16_000);
+    return encodeWav(resampled);
+  } finally {
+    await audioContext.close().catch(() => undefined);
   }
-  return "webm";
+}
+
+async function hasWavHeader(blob: Blob): Promise<boolean> {
+  const header = new Uint8Array(await blob.slice(0, 12).arrayBuffer());
+
+  return (
+    asciiAt(header, "RIFF", 0) &&
+    asciiAt(header, "WAVE", 8)
+  );
+}
+
+async function resampleAudio(
+  audioBuffer: AudioBuffer,
+  targetSampleRate: number,
+): Promise<AudioBuffer> {
+  if (audioBuffer.sampleRate === targetSampleRate) {
+    return audioBuffer;
+  }
+
+  const frameCount = Math.max(
+    1,
+    Math.ceil(audioBuffer.duration * targetSampleRate),
+  );
+  const offlineContext = new OfflineAudioContext(
+    audioBuffer.numberOfChannels,
+    frameCount,
+    targetSampleRate,
+  );
+  const source = offlineContext.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(offlineContext.destination);
+  source.start(0);
+
+  return offlineContext.startRendering();
+}
+
+function encodeWav(audioBuffer: AudioBuffer): Blob {
+  const sampleRate = audioBuffer.sampleRate;
+  const channelData = mixToMono(audioBuffer);
+  const bytesPerSample = 2;
+  const dataSize = channelData.length * bytesPerSample;
+  const buffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(buffer);
+
+  writeAscii(view, 0, "RIFF");
+  view.setUint32(4, 36 + dataSize, true);
+  writeAscii(view, 8, "WAVE");
+  writeAscii(view, 12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * bytesPerSample, true);
+  view.setUint16(32, bytesPerSample, true);
+  view.setUint16(34, 8 * bytesPerSample, true);
+  writeAscii(view, 36, "data");
+  view.setUint32(40, dataSize, true);
+
+  let offset = 44;
+
+  for (const sample of channelData) {
+    const clamped = Math.max(-1, Math.min(1, sample));
+    const pcm = clamped < 0 ? clamped * 0x8000 : clamped * 0x7fff;
+    view.setInt16(offset, pcm, true);
+    offset += bytesPerSample;
+  }
+
+  return new Blob([buffer], { type: "audio/wav" });
+}
+
+function mixToMono(audioBuffer: AudioBuffer): Float32Array {
+  const channelCount = audioBuffer.numberOfChannels;
+  const mono = new Float32Array(audioBuffer.length);
+
+  for (let channelIndex = 0; channelIndex < channelCount; channelIndex += 1) {
+    const channel = audioBuffer.getChannelData(channelIndex);
+
+    for (let sampleIndex = 0; sampleIndex < channel.length; sampleIndex += 1) {
+      mono[sampleIndex] += channel[sampleIndex] / channelCount;
+    }
+  }
+
+  return mono;
+}
+
+function writeAscii(view: DataView, offset: number, value: string) {
+  for (let index = 0; index < value.length; index += 1) {
+    view.setUint8(offset + index, value.charCodeAt(index));
+  }
+}
+
+function asciiAt(bytes: Uint8Array, value: string, offset: number): boolean {
+  if (bytes.length < offset + value.length) {
+    return false;
+  }
+
+  for (let index = 0; index < value.length; index += 1) {
+    if (bytes[offset + index] !== value.charCodeAt(index)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function parseOptionalNumber(value: string): number | null {

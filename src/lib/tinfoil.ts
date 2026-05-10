@@ -7,6 +7,7 @@ import {
   type IncidentAnalysis,
   type IncidentDraft,
 } from "./incident-report";
+import type { TinfoilAudioUpload } from "./audio-format";
 
 const transcriptionModel = "whisper-large-v3-turbo";
 const defaultAnalysisModel = "llama3-3-70b";
@@ -17,20 +18,19 @@ export function hasTinfoilConfig(): boolean {
   return Boolean(process.env.TINFOIL_API_KEY);
 }
 
-export async function transcribeIncidentAudio(file: File): Promise<{
+export async function transcribeIncidentAudio(upload: TinfoilAudioUpload): Promise<{
   readonly text: string;
   readonly model: string;
   readonly language: string | null;
 }> {
   const client = getTinfoilClient();
-  const bytes = Buffer.from(await file.arrayBuffer());
-  const upload = await toFile(bytes, file.name || "incident-audio.wav", {
-    type: file.type || "audio/wav",
+  const audioFile = await toFile(upload.bytes, upload.filename, {
+    type: upload.contentType,
   });
 
   const transcription = await client.audio.transcriptions.create({
     model: transcriptionModel,
-    file: upload,
+    file: audioFile,
   });
 
   return {

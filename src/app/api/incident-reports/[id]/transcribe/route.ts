@@ -4,6 +4,7 @@ import {
   saveTranscript,
 } from "@/lib/incident-store";
 import { hasTinfoilConfig, transcribeIncidentAudio } from "@/lib/tinfoil";
+import { prepareTinfoilAudioUpload } from "@/lib/audio-format";
 
 export const runtime = "nodejs";
 
@@ -39,9 +40,24 @@ export async function POST(
   }
 
   const { id } = await context.params;
+  const bytes = new Uint8Array(await audio.arrayBuffer());
+  const upload = prepareTinfoilAudioUpload(bytes, audio.name);
+
+  if (!upload) {
+    console.warn("Unsupported incident audio upload", {
+      name: audio.name,
+      type: audio.type,
+      size: audio.size,
+    });
+
+    return NextResponse.json(
+      { error: "Voice recording must be prepared as WAV or MP3 audio" },
+      { status: 415 },
+    );
+  }
 
   try {
-    const transcript = await transcribeIncidentAudio(audio);
+    const transcript = await transcribeIncidentAudio(upload);
     const saved = await saveTranscript(
       id,
       getDeviceSourceFromRequest(request),
