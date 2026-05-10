@@ -12,6 +12,7 @@ type FilterDrawerProps = {
 export function FilterDrawer({ children, activeCount }: FilterDrawerProps) {
   const [open, setOpen] = useState(false);
   const searchParams = useSearchParams();
+  const asideRef = useRef<HTMLElement>(null);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export function FilterDrawer({ children, activeCount }: FilterDrawerProps) {
 
   useEffect(() => {
     if (!open) return;
+    asideRef.current?.querySelector("form")?.reset();
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
@@ -69,6 +71,7 @@ export function FilterDrawer({ children, activeCount }: FilterDrawerProps) {
           className="absolute inset-0 cursor-default bg-[oklch(22%_0.024_250_/_0.32)]"
         />
         <aside
+          ref={asideRef}
           role="dialog"
           aria-modal="true"
           aria-label="Dashboard filters"
