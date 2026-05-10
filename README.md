@@ -1,6 +1,6 @@
 # Polaris Safety Quiz
 
-Polaris is a small Next.js App Router app for a privacy-preserving event safety quiz. The quiz collects only broad state or metro, role, and event type dimensions, calculates a calm planning band, and writes anonymous aggregate analytics to Supabase when server credentials are configured.
+Polaris is a small Next.js App Router app for a privacy-preserving event safety quiz. The quiz collects only A-D answer keys for ten safety exposure questions, calculates a calm planning band, and writes anonymous aggregate analytics to Supabase when server credentials are configured.
 
 ## Local Development
 
@@ -38,13 +38,12 @@ The public publishable key is documented for Vercel and future client-side Supab
 
 Schema changes live in `supabase/migrations`. The analytics table is `public.quiz_events` and stores only:
 
-- broad `location_key`
-- `role`
-- selected `event_type_keys`
+- `answers`, a JSON object of A-D answer keys keyed by quiz question
+- `score`, an integer from 0 to 30
 - `risk_band`
 - `created_at`
 
-It does not store names, contact info, street addresses, exact coordinates, user accounts, or IP addresses. RLS is enabled and no browser-facing insert policy is defined, so writes are performed only by the server route with a server-side credential.
+It does not store names, contact info, street addresses, exact coordinates, user accounts, free text, or IP addresses. RLS is enabled and no browser-facing insert policy is defined, so writes are performed only by the server route with a server-side credential.
 
 The Supabase CLI is available in this workspace (`supabase --version` reported `2.98.2` on May 9, 2026). Local migration verification passed with:
 
@@ -73,6 +72,6 @@ Reference docs:
 
 The scoring surface is intentionally centralized:
 
-- `src/lib/quiz-config.ts` contains location buckets, role weights, event type weights, thresholds, and guidance metadata.
+- `src/lib/quiz-config.ts` contains the ten quiz questions, A-D answer scores, thresholds, and guidance metadata.
 - `src/lib/quiz-engine.ts` validates inputs, calculates the risk band, builds the rationale, and returns prioritized guidance groups.
-- `src/lib/quiz-engine.test.ts` covers the MVP scoring paths and threshold boundaries.
+- `src/lib/quiz-engine.test.ts` covers score boundaries, input validation, and guidance groups.

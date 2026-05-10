@@ -1,100 +1,34 @@
 export type RiskBand = "lower" | "moderate" | "elevated";
 
-export type RoleKey = "community_member" | "organizer";
+export type AnswerKey = "A" | "B" | "C" | "D";
 
-export type EventTypeKey =
-  | "low_key_social"
-  | "picnic"
-  | "protest"
-  | "international_political_work";
-
-type MetroLocationKey =
-  | "metro_atlanta"
-  | "dc_metro"
-  | "new_york_metro"
-  | "los_angeles_metro"
-  | "sf_bay_area"
-  | "chicago_metro";
-
-type StateLocationKey =
-  | "alabama"
-  | "alaska"
-  | "arizona"
-  | "arkansas"
-  | "california"
-  | "colorado"
-  | "connecticut"
-  | "delaware"
-  | "district_of_columbia"
-  | "florida"
-  | "georgia"
-  | "hawaii"
-  | "idaho"
-  | "illinois"
-  | "indiana"
-  | "iowa"
-  | "kansas"
-  | "kentucky"
-  | "louisiana"
-  | "maine"
-  | "maryland"
-  | "massachusetts"
-  | "michigan"
-  | "minnesota"
-  | "mississippi"
-  | "missouri"
-  | "montana"
-  | "nebraska"
-  | "nevada"
-  | "new_hampshire"
-  | "new_jersey"
-  | "new_mexico"
-  | "new_york"
-  | "north_carolina"
-  | "north_dakota"
-  | "ohio"
-  | "oklahoma"
-  | "oregon"
-  | "pennsylvania"
-  | "rhode_island"
-  | "south_carolina"
-  | "south_dakota"
-  | "tennessee"
-  | "texas"
-  | "utah"
-  | "vermont"
-  | "virginia"
-  | "washington_state"
-  | "west_virginia"
-  | "wisconsin"
-  | "wyoming";
-
-export type LocationKey = MetroLocationKey | StateLocationKey | "other_us";
+export type QuestionKey =
+  | "event_visibility"
+  | "public_posting"
+  | "venue_timing"
+  | "response_plan"
+  | "harassment_history"
+  | "incident_documentation"
+  | "legal_identity"
+  | "family_work_exposure"
+  | "account_payments"
+  | "public_profile";
 
 export type GuidanceCategoryKey = "event_safety" | "identity_protection";
 
-export type LocationBucket = {
-  readonly key: LocationKey;
-  readonly label: string;
-  readonly kind: "metro" | "state" | "fallback";
-  readonly weight: number;
-  readonly rationale: string;
-};
-
-export type RoleOption = {
-  readonly key: RoleKey;
-  readonly label: string;
-  readonly shortLabel: string;
-  readonly weight: number;
-  readonly rationale: string;
-};
-
-export type EventTypeOption = {
-  readonly key: EventTypeKey;
+export type AnswerOption = {
+  readonly key: AnswerKey;
   readonly label: string;
   readonly description: string;
-  readonly weight: number;
+  readonly points: number;
   readonly rationale: string;
+};
+
+export type QuizQuestion = {
+  readonly key: QuestionKey;
+  readonly prompt: string;
+  readonly helper: string;
+  readonly answers: readonly AnswerOption[];
 };
 
 export type RiskBandConfig = {
@@ -105,6 +39,11 @@ export type RiskBandConfig = {
   readonly summary: string;
 };
 
+export type GuidanceTrigger = {
+  readonly question: QuestionKey;
+  readonly minAnswer: AnswerKey;
+};
+
 export type GuidanceItem = {
   readonly id: string;
   readonly category: GuidanceCategoryKey;
@@ -112,187 +51,419 @@ export type GuidanceItem = {
   readonly body: string;
   readonly priority: number;
   readonly minBand: RiskBand;
-  readonly roles?: readonly RoleKey[];
-  readonly eventTypes?: readonly EventTypeKey[];
+  readonly triggers?: readonly GuidanceTrigger[];
 };
 
-const stateRationale =
-  "State-level location keeps the assessment approximate.";
+export const answerScores: Record<AnswerKey, number> = {
+  A: 0,
+  B: 1,
+  C: 2,
+  D: 3,
+};
 
-const metroLocationBuckets = [
-  {
-    key: "metro_atlanta",
-    label: "Metro Atlanta",
-    kind: "metro",
-    weight: 1,
-    rationale: "Metro-area planning benefits from a clear arrival and exit plan.",
-  },
-  {
-    key: "dc_metro",
-    label: "Washington, DC metro",
-    kind: "metro",
-    weight: 2,
-    rationale: "This metro bucket can involve higher public visibility.",
-  },
-  {
-    key: "new_york_metro",
-    label: "New York City metro",
-    kind: "metro",
-    weight: 1,
-    rationale: "Metro-area planning benefits from a clear arrival and exit plan.",
-  },
-  {
-    key: "los_angeles_metro",
-    label: "Los Angeles metro",
-    kind: "metro",
-    weight: 1,
-    rationale: "Metro-area planning benefits from a clear arrival and exit plan.",
-  },
-  {
-    key: "sf_bay_area",
-    label: "San Francisco Bay Area",
-    kind: "metro",
-    weight: 1,
-    rationale: "Metro-area planning benefits from a clear arrival and exit plan.",
-  },
-  {
-    key: "chicago_metro",
-    label: "Chicago metro",
-    kind: "metro",
-    weight: 1,
-    rationale: "Metro-area planning benefits from a clear arrival and exit plan.",
-  },
-] as const satisfies readonly LocationBucket[];
-
-const stateLocationBuckets = (
-  [
-    ["alabama", "Alabama", 0],
-    ["alaska", "Alaska", 0],
-    ["arizona", "Arizona", 0],
-    ["arkansas", "Arkansas", 0],
-    ["california", "California", 0],
-    ["colorado", "Colorado", 0],
-    ["connecticut", "Connecticut", 0],
-    ["delaware", "Delaware", 0],
-    ["district_of_columbia", "District of Columbia", 1],
-    ["florida", "Florida", 0],
-    ["georgia", "Georgia", 0],
-    ["hawaii", "Hawaii", 0],
-    ["idaho", "Idaho", 0],
-    ["illinois", "Illinois", 0],
-    ["indiana", "Indiana", 0],
-    ["iowa", "Iowa", 0],
-    ["kansas", "Kansas", 0],
-    ["kentucky", "Kentucky", 0],
-    ["louisiana", "Louisiana", 0],
-    ["maine", "Maine", 0],
-    ["maryland", "Maryland", 0],
-    ["massachusetts", "Massachusetts", 0],
-    ["michigan", "Michigan", 0],
-    ["minnesota", "Minnesota", 0],
-    ["mississippi", "Mississippi", 0],
-    ["missouri", "Missouri", 0],
-    ["montana", "Montana", 0],
-    ["nebraska", "Nebraska", 0],
-    ["nevada", "Nevada", 0],
-    ["new_hampshire", "New Hampshire", 0],
-    ["new_jersey", "New Jersey", 0],
-    ["new_mexico", "New Mexico", 0],
-    ["new_york", "New York", 0],
-    ["north_carolina", "North Carolina", 0],
-    ["north_dakota", "North Dakota", 0],
-    ["ohio", "Ohio", 0],
-    ["oklahoma", "Oklahoma", 0],
-    ["oregon", "Oregon", 0],
-    ["pennsylvania", "Pennsylvania", 0],
-    ["rhode_island", "Rhode Island", 0],
-    ["south_carolina", "South Carolina", 0],
-    ["south_dakota", "South Dakota", 0],
-    ["tennessee", "Tennessee", 0],
-    ["texas", "Texas", 0],
-    ["utah", "Utah", 0],
-    ["vermont", "Vermont", 0],
-    ["virginia", "Virginia", 0],
-    ["washington_state", "Washington", 0],
-    ["west_virginia", "West Virginia", 0],
-    ["wisconsin", "Wisconsin", 0],
-    ["wyoming", "Wyoming", 0],
-  ] as const
-).map(([key, label, weight]) => ({
-  key,
-  label,
-  kind: "state" as const,
-  weight,
-  rationale:
-    key === "district_of_columbia"
-      ? "This state-level bucket can involve higher public visibility."
-      : stateRationale,
-})) satisfies readonly LocationBucket[];
-
-const fallbackLocationBucket = {
-  key: "other_us",
-  label: "Other U.S. state or metro",
-  kind: "fallback",
-  weight: 0,
-  rationale: "The fallback bucket keeps the assessment broad.",
-} as const satisfies LocationBucket;
+const answers = {
+  event_visibility: [
+    {
+      key: "A",
+      label: "Private or familiar",
+      description: "A small gathering with expected participants.",
+      points: 0,
+      rationale: "The event itself appears limited to familiar participants.",
+    },
+    {
+      key: "B",
+      label: "Shared within a community",
+      description: "Open to invited networks or a known community list.",
+      points: 1,
+      rationale: "The event has some community visibility.",
+    },
+    {
+      key: "C",
+      label: "Publicly promoted",
+      description: "Public posts, flyers, or event pages invite a wider group.",
+      points: 2,
+      rationale:
+        "Public promotion makes arrival, exit, and visibility planning more useful.",
+    },
+    {
+      key: "D",
+      label: "Likely to draw outside attention",
+      description:
+        "The event is public, high-profile, or likely to attract people outside the intended audience.",
+      points: 3,
+      rationale:
+        "A high-publicity event calls for deliberate movement and communications planning.",
+    },
+  ],
+  public_posting: [
+    {
+      key: "A",
+      label: "No public details",
+      description: "Details are shared privately with people who need them.",
+      points: 0,
+      rationale: "Event details are not broadly posted.",
+    },
+    {
+      key: "B",
+      label: "General public notice",
+      description:
+        "A broad description is public, but exact details stay in trusted channels.",
+      points: 1,
+      rationale: "Some event information is public.",
+    },
+    {
+      key: "C",
+      label: "Exact details are public",
+      description: "Date, time, venue, or sign-up links are easy to find.",
+      points: 2,
+      rationale:
+        "Public event details make it worth reviewing what information is exposed.",
+    },
+    {
+      key: "D",
+      label: "Widely reshared or personally identifying",
+      description:
+        "Posts include organizer contacts, participant details, or are being shared beyond the intended audience.",
+      points: 3,
+      rationale:
+        "Widely shared event details can expose organizers or attendees beyond the event itself.",
+    },
+  ],
+  venue_timing: [
+    {
+      key: "A",
+      label: "Low-sensitivity setting",
+      description: "The venue and date are ordinary for the group.",
+      points: 0,
+      rationale: "The venue and timing do not add much exposure.",
+    },
+    {
+      key: "B",
+      label: "Routine public setting",
+      description: "The venue is public, but the date and setting are routine.",
+      points: 1,
+      rationale: "A public setting adds routine logistics considerations.",
+    },
+    {
+      key: "C",
+      label: "Symbolic or high-profile",
+      description:
+        "The venue or date has political, cultural, media, or community significance.",
+      points: 2,
+      rationale:
+        "A meaningful venue or date can draw more attention than an ordinary gathering.",
+    },
+    {
+      key: "D",
+      label: "Predictable exposure",
+      description:
+        "The exact place and time could expose attendees, hosts, or speakers in a sensitive way.",
+      points: 3,
+      rationale:
+        "Predictable venue and timing details raise the value of a careful arrival and departure plan.",
+    },
+  ],
+  response_plan: [
+    {
+      key: "A",
+      label: "Clear plan and owners",
+      description:
+        "Roles, check-ins, exits, and escalation contacts are already assigned.",
+      points: 0,
+      rationale: "The response plan already has clear owners.",
+    },
+    {
+      key: "B",
+      label: "Basic plan",
+      description: "A meetup point and check-in plan exist.",
+      points: 1,
+      rationale: "The response plan has basic structure.",
+    },
+    {
+      key: "C",
+      label: "Informal coordination",
+      description: "People have talked about it, but no one clearly owns it.",
+      points: 2,
+      rationale:
+        "Informal coordination leaves room for confusion if conditions change.",
+    },
+    {
+      key: "D",
+      label: "No response plan",
+      description:
+        "There is no shared plan for check-ins, exits, accessibility needs, or escalation decisions.",
+      points: 3,
+      rationale:
+        "A missing response plan is one of the strongest reasons to slow down and assign responsibilities.",
+    },
+  ],
+  harassment_history: [
+    {
+      key: "A",
+      label: "No known unwanted attention",
+      description: "There are no specific harassment or monitoring concerns.",
+      points: 0,
+      rationale: "There is no known pattern of unwanted attention.",
+    },
+    {
+      key: "B",
+      label: "Some concern",
+      description: "There has been disagreement, rumor, or mild online attention.",
+      points: 1,
+      rationale: "Some unwanted attention is possible.",
+    },
+    {
+      key: "C",
+      label: "Prior harassment or monitoring",
+      description:
+        "There has been doxxing, counter-presence, targeted messages, or monitoring concern.",
+      points: 2,
+      rationale:
+        "Prior harassment or monitoring makes buddy plans and information boundaries more important.",
+    },
+    {
+      key: "D",
+      label: "Active or expected hostile attention",
+      description:
+        "Threats, targeted posts, hostile presence, or organized monitoring are current concerns.",
+      points: 3,
+      rationale:
+        "Active hostile attention calls for a more deliberate plan before sharing details or attending.",
+    },
+  ],
+  incident_documentation: [
+    {
+      key: "A",
+      label: "Little or no documentation",
+      description: "No public photos, video, or incident notes are planned.",
+      points: 0,
+      rationale: "Documentation is unlikely to identify people.",
+    },
+    {
+      key: "B",
+      label: "Consent expectations are clear",
+      description: "Photos or notes may happen, but consent norms are explicit.",
+      points: 1,
+      rationale: "Documentation is planned with some consent guardrails.",
+    },
+    {
+      key: "C",
+      label: "Public documentation may happen",
+      description:
+        "Photos, video, press, livestreams, or incident notes may be public.",
+      points: 2,
+      rationale:
+        "Public documentation can expose people who expected lower visibility.",
+    },
+    {
+      key: "D",
+      label: "Identification is likely",
+      description:
+        "Live posting, press, or incident records may identify people before review.",
+      points: 3,
+      rationale:
+        "Likely identification through documentation calls for clear consent and review expectations.",
+    },
+  ],
+  legal_identity: [
+    {
+      key: "A",
+      label: "No legal identity required",
+      description: "No legal names or ID details are needed for participation.",
+      points: 0,
+      rationale: "Legal identity exposure appears minimal.",
+    },
+    {
+      key: "B",
+      label: "Limited private list",
+      description: "Legal names may be held by one trusted person or system.",
+      points: 1,
+      rationale: "Legal identity may be present in a limited private context.",
+    },
+    {
+      key: "C",
+      label: "Registration or logistics require it",
+      description:
+        "Registration, travel, venue access, or reimbursement may collect legal names.",
+      points: 2,
+      rationale:
+        "Legal names in logistics systems deserve a minimum-needed review.",
+    },
+    {
+      key: "D",
+      label: "Sensitive identity details may spread",
+      description:
+        "ID, immigration, employment, school, or other legal details may leave a trusted circle.",
+      points: 3,
+      rationale:
+        "Sensitive legal identity details should be handled only by people and systems that need them.",
+    },
+  ],
+  family_work_exposure: [
+    {
+      key: "A",
+      label: "No meaningful connection",
+      description: "Participation is unlikely to affect family, work, school, or housing.",
+      points: 0,
+      rationale: "Family, work, school, and housing exposure appears low.",
+    },
+    {
+      key: "B",
+      label: "Small chance of visibility",
+      description: "Someone from those parts of life might notice participation.",
+      points: 1,
+      rationale: "There is a small chance participation becomes visible elsewhere.",
+    },
+    {
+      key: "C",
+      label: "Visibility could matter",
+      description:
+        "Family, workplace, school, landlord, clients, or colleagues could see participation.",
+      points: 2,
+      rationale:
+        "Possible visibility to family, work, school, or housing contexts deserves advance thought.",
+    },
+    {
+      key: "D",
+      label: "Consequences could be serious",
+      description:
+        "Visibility could affect relatives, employment, enrollment, housing, immigration, or financial stability.",
+      points: 3,
+      rationale:
+        "Serious downstream consequences make identity and public documentation boundaries especially important.",
+    },
+  ],
+  account_payments: [
+    {
+      key: "A",
+      label: "No extra accounts or payments",
+      description: "No payment, donation, or platform sign-in is needed.",
+      points: 0,
+      rationale: "Accounts and payment trails do not add much exposure.",
+    },
+    {
+      key: "B",
+      label: "Optional low-detail form",
+      description: "RSVPs or donations are optional and collect little information.",
+      points: 1,
+      rationale: "A small amount of account or payment data may exist.",
+    },
+    {
+      key: "C",
+      label: "Personal accounts connect to the event",
+      description:
+        "Payments, reimbursements, travel, or platform accounts link personal details to participation.",
+      points: 2,
+      rationale:
+        "Personal account and payment trails can connect identity to event activity.",
+    },
+    {
+      key: "D",
+      label: "Sensitive accounts are involved",
+      description:
+        "Banking, workplace, school, government, or public social accounts are tied to event activity.",
+      points: 3,
+      rationale:
+        "Sensitive account or payment links should be separated from public event activity where feasible.",
+    },
+  ],
+  public_profile: [
+    {
+      key: "A",
+      label: "Low public profile",
+      description: "You or the organizers are not publicly associated with the event.",
+      points: 0,
+      rationale: "Public profile exposure appears low.",
+    },
+    {
+      key: "B",
+      label: "Known in the community",
+      description: "You or organizers have some community visibility.",
+      points: 1,
+      rationale: "Existing community visibility adds some exposure.",
+    },
+    {
+      key: "C",
+      label: "Named public role",
+      description:
+        "You or organizers are listed as speakers, media contacts, hosts, or public representatives.",
+      points: 2,
+      rationale:
+        "Named public roles make personal account and contact boundaries more important.",
+    },
+    {
+      key: "D",
+      label: "Targeted public attention",
+      description:
+        "Media attention, hostile monitoring, or targeted public posts mention you, organizers, or attendees.",
+      points: 3,
+      rationale:
+        "Targeted public attention raises both event safety and identity protection needs.",
+    },
+  ],
+} as const satisfies Record<QuestionKey, readonly AnswerOption[]>;
 
 export const quizConfig = {
-  locationBuckets: [
-    ...metroLocationBuckets,
-    ...stateLocationBuckets,
-    fallbackLocationBucket,
-  ],
-  roleOptions: [
+  questions: [
     {
-      key: "community_member",
-      label: "Community member",
-      shortLabel: "Attending",
-      weight: 0,
-      rationale:
-        "Attending usually needs a personal plan more than a coordination plan.",
+      key: "event_visibility",
+      prompt: "How public is the event itself?",
+      helper: "Choose the option closest to the audience and likely attention.",
+      answers: answers.event_visibility,
     },
     {
-      key: "organizer",
-      label: "Organizer",
-      shortLabel: "Organizing",
-      weight: 1,
-      rationale:
-        "Organizing adds coordination and information stewardship responsibilities.",
-    },
-  ],
-  eventTypes: [
-    {
-      key: "low_key_social",
-      label: "Low-key social gathering",
-      description: "Meetups, trainings, or small group time in familiar spaces.",
-      weight: 0,
-      rationale: "Low-key gatherings usually need routine preparation.",
+      key: "public_posting",
+      prompt: "How much event information is posted publicly?",
+      helper: "Consider flyers, event pages, social posts, and reshared details.",
+      answers: answers.public_posting,
     },
     {
-      key: "picnic",
-      label: "Picnic or outdoor community event",
-      description:
-        "Casual outdoor events where weather, transit, and meetup points matter.",
-      weight: 1,
-      rationale: "Outdoor events benefit from a little more logistics planning.",
+      key: "venue_timing",
+      prompt: "How sensitive are the venue and timing details?",
+      helper: "A date or place can change the exposure even when the event is small.",
+      answers: answers.venue_timing,
     },
     {
-      key: "protest",
-      label: "Protest or public demonstration",
-      description:
-        "Public events where movement, visibility, and crowd conditions can change.",
-      weight: 3,
-      rationale: "Public demonstrations call for a stronger event plan.",
+      key: "response_plan",
+      prompt: "How prepared is the response plan?",
+      helper: "Think about check-ins, exit points, accessibility needs, and escalation.",
+      answers: answers.response_plan,
     },
     {
-      key: "international_political_work",
-      label: "International political work",
-      description:
-        "Work connected to international advocacy, diaspora communities, or cross-border issues.",
-      weight: 6,
-      rationale:
-        "International political work can raise identity and communications considerations.",
+      key: "harassment_history",
+      prompt: "How likely is unwanted attention or harassment?",
+      helper: "Use what you know now, not worst-case speculation.",
+      answers: answers.harassment_history,
+    },
+    {
+      key: "incident_documentation",
+      prompt: "How will photos, video, or incident notes be handled?",
+      helper: "Include press, livestreams, social posts, and shared folders.",
+      answers: answers.incident_documentation,
+    },
+    {
+      key: "legal_identity",
+      prompt: "How much legal identity information is required?",
+      helper: "Registration, travel, venue access, and reimbursements all count.",
+      answers: answers.legal_identity,
+    },
+    {
+      key: "family_work_exposure",
+      prompt: "Could participation affect family, work, school, or housing?",
+      helper: "Consider where participation might become visible beyond the event.",
+      answers: answers.family_work_exposure,
+    },
+    {
+      key: "account_payments",
+      prompt: "What accounts or payment tools are involved?",
+      helper: "Look for account sign-ins, donations, reimbursements, and travel systems.",
+      answers: answers.account_payments,
+    },
+    {
+      key: "public_profile",
+      prompt: "How visible are you or the organizers already?",
+      helper: "Include public roles, media contact, and targeted online attention.",
+      answers: answers.public_profile,
     },
   ],
   thresholds: [
@@ -300,21 +471,21 @@ export const quizConfig = {
       band: "lower",
       label: "Lower",
       minScore: 0,
-      maxScore: 2,
+      maxScore: 7,
       summary: "Routine planning should cover the main needs for this event.",
     },
     {
       band: "moderate",
       label: "Moderate",
-      minScore: 3,
-      maxScore: 5,
+      minScore: 8,
+      maxScore: 15,
       summary: "Add a few more coordination steps before the event.",
     },
     {
       band: "elevated",
       label: "Elevated",
-      minScore: 6,
-      maxScore: null,
+      minScore: 16,
+      maxScore: 30,
       summary:
         "Use a more deliberate plan for identity, travel, and communications.",
     },
@@ -351,80 +522,123 @@ export const quizConfig = {
       minBand: "lower",
     },
     {
-      id: "organizer-roles",
+      id: "coordination-roles",
       category: "event_safety",
       title: "Name coordination roles",
       body: "Assign point people for check-ins, accessibility needs, and escalation decisions so one person is not carrying everything.",
       priority: 30,
       minBand: "moderate",
-      roles: ["organizer"],
     },
     {
-      id: "protest-buddy",
+      id: "public-buddy-plan",
       category: "event_safety",
       title: "Move with a buddy",
-      body: "For public demonstrations, pair up and agree on when to step away if conditions change.",
+      body: "For higher-visibility events, pair up and agree on when to step away if conditions change.",
       priority: 40,
       minBand: "moderate",
-      eventTypes: ["protest"],
+      triggers: [
+        { question: "event_visibility", minAnswer: "C" },
+        { question: "harassment_history", minAnswer: "C" },
+        { question: "public_profile", minAnswer: "C" },
+      ],
     },
     {
-      id: "international-travel-window",
+      id: "limited-event-details",
       category: "event_safety",
-      title: "Keep travel details limited",
-      body: "Share exact arrival and departure details only with people who need them for coordination.",
+      title: "Keep exact details limited",
+      body: "Share exact arrival, departure, venue, and timing details only with people who need them for coordination.",
       priority: 50,
+      minBand: "moderate",
+      triggers: [
+        { question: "public_posting", minAnswer: "C" },
+        { question: "venue_timing", minAnswer: "C" },
+      ],
+    },
+    {
+      id: "documentation-handoff",
+      category: "event_safety",
+      title: "Decide what gets documented",
+      body: "Agree who can record, where incident notes go, and what should be reviewed before anything becomes public.",
+      priority: 60,
       minBand: "elevated",
-      eventTypes: ["international_political_work"],
+      triggers: [
+        { question: "incident_documentation", minAnswer: "C" },
+        { question: "harassment_history", minAnswer: "C" },
+        { question: "response_plan", minAnswer: "C" },
+      ],
     },
     {
       id: "minimal-registration",
       category: "identity_protection",
       title: "Collect the minimum needed",
-      body: "If you are organizing, avoid asking for legal names, home addresses, or extra contact fields unless there is a clear need.",
-      priority: 60,
-      minBand: "lower",
-      roles: ["organizer"],
-    },
-    {
-      id: "public-pages",
-      category: "identity_protection",
-      title: "Review public event pages",
-      body: "Check that flyers, posts, and sign-up pages do not expose private contact details or volunteer lists.",
+      body: "Avoid asking for legal names, home addresses, extra contact fields, or account links unless there is a clear need.",
       priority: 70,
-      minBand: "moderate",
-      roles: ["organizer"],
-    },
-    {
-      id: "separate-channel",
-      category: "identity_protection",
-      title: "Use a dedicated contact channel",
-      body: "Consider a dedicated email or messaging channel for event logistics instead of personal accounts.",
-      priority: 80,
-      minBand: "moderate",
+      minBand: "lower",
     },
     {
       id: "photo-consent",
       category: "identity_protection",
       title: "Set photo expectations",
       body: "Before posting photos, check consent and avoid tagging people who did not ask to be identified.",
-      priority: 90,
+      priority: 80,
       minBand: "lower",
+      triggers: [
+        { question: "incident_documentation", minAnswer: "B" },
+        { question: "public_posting", minAnswer: "C" },
+        { question: "public_profile", minAnswer: "C" },
+      ],
+    },
+    {
+      id: "public-pages",
+      category: "identity_protection",
+      title: "Review public event pages",
+      body: "Check that flyers, posts, and sign-up pages do not expose private contact details, participant lists, or volunteer information.",
+      priority: 90,
+      minBand: "moderate",
+      triggers: [
+        { question: "public_posting", minAnswer: "C" },
+        { question: "legal_identity", minAnswer: "C" },
+        { question: "account_payments", minAnswer: "C" },
+        { question: "public_profile", minAnswer: "C" },
+      ],
+    },
+    {
+      id: "separate-channel",
+      category: "identity_protection",
+      title: "Use a dedicated contact channel",
+      body: "Consider a dedicated email or messaging channel for event logistics instead of personal accounts.",
+      priority: 100,
+      minBand: "moderate",
     },
     {
       id: "account-boundaries",
       category: "identity_protection",
       title: "Separate personal and public activity",
-      body: "For international political work, keep personal accounts separate from public organizing channels when feasible.",
-      priority: 100,
+      body: "Keep personal accounts, payment trails, and public organizing channels separate when feasible.",
+      priority: 110,
       minBand: "elevated",
-      eventTypes: ["international_political_work"],
+      triggers: [
+        { question: "legal_identity", minAnswer: "C" },
+        { question: "family_work_exposure", minAnswer: "C" },
+        { question: "account_payments", minAnswer: "C" },
+        { question: "public_profile", minAnswer: "C" },
+      ],
+    },
+    {
+      id: "family-work-boundaries",
+      category: "identity_protection",
+      title: "Plan for family and work visibility",
+      body: "Decide in advance what you want visible to relatives, employers, schools, landlords, or clients, and adjust registration and posting choices around that.",
+      priority: 120,
+      minBand: "elevated",
+      triggers: [
+        { question: "family_work_exposure", minAnswer: "C" },
+        { question: "public_profile", minAnswer: "D" },
+      ],
     },
   ],
 } as const satisfies {
-  readonly locationBuckets: readonly LocationBucket[];
-  readonly roleOptions: readonly RoleOption[];
-  readonly eventTypes: readonly EventTypeOption[];
+  readonly questions: readonly QuizQuestion[];
   readonly thresholds: readonly RiskBandConfig[];
   readonly guidanceCategories: readonly {
     readonly key: GuidanceCategoryKey;
@@ -433,6 +647,10 @@ export const quizConfig = {
   }[];
   readonly guidanceItems: readonly GuidanceItem[];
 };
+
+export const questionKeys = quizConfig.questions.map((question) => question.key);
+
+export const answerKeys = ["A", "B", "C", "D"] as const satisfies readonly AnswerKey[];
 
 export const riskBandRank: Record<RiskBand, number> = {
   lower: 0,

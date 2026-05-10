@@ -14,7 +14,7 @@ A second audience is implicit: program officers and grant-makers at human rights
 
 ## Product Purpose
 
-The Safety Quiz collects three broad dimensions, location, role, and event types, and returns a calm planning band ("Lower," "Moderate," "Elevated") plus a short, prioritized list of practical steps in two areas: personal safety at events and identity protection.
+The Safety Quiz collects ten A-D answers about safety exposure and returns a calm planning band ("Lower," "Moderate," "Elevated") plus a short, prioritized list of practical steps in two areas: personal safety at events and identity protection.
 
 Success means a user leaves with three or four concrete steps in mind, the page collected nothing identifying, and the experience felt like clear-headed planning rather than a panic checklist.
 
@@ -35,7 +35,7 @@ Steady. Considered. Editorially serious. Polaris reads like a page from a though
 
 - Treat the reader as a competent adult. The page should help them think, not warn them.
 - The risk band is a sentence, not a colored chip. Words do the work; refuse the traffic-light vocabulary.
-- One clear path. Three numbered questions, one primary action, one prioritized plan.
+- One clear path. Ten numbered questions, one primary action, one prioritized plan.
 - Privacy is visible through product behavior: no names, addresses, accounts, or coordinates collected. State this once, plainly.
 - Editorial restraint. Serif display type and a single warm accent are enough; no decorative motion, no card-grid mosaics, no nested panels.
 - Familiar form controls only. Native selects, real radios and checkboxes, focus rings, keyboard order.
