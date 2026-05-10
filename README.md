@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. The first screen is the quiz.
+Open `http://localhost:3000`. The first screen offers incident reporting and the safety quiz.
 
 Useful checks:
 

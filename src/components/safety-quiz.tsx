@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import { ChevronLeft } from "lucide-react";
 import { quizConfig, type AnswerKey, type QuestionKey } from "@/lib/quiz-config";
 import {
   parseQuizInput,
@@ -28,7 +29,7 @@ function StarMark({ className = "" }: { className?: string }) {
   );
 }
 
-export function SafetyQuiz() {
+export function SafetyQuiz({ onBack }: { readonly onBack?: () => void }) {
   const [answers, setAnswers] = useState<PartialAnswers>({});
   const [result, setResult] = useState<QuizResult | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
@@ -91,7 +92,7 @@ export function SafetyQuiz() {
 
   return (
     <main className="mx-auto w-full max-w-[44rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
-      <Masthead />
+      <Masthead onBack={onBack} />
 
       <Hero />
 
@@ -167,7 +168,7 @@ export function SafetyQuiz() {
   );
 }
 
-function Masthead() {
+function Masthead({ onBack }: { readonly onBack?: () => void }) {
   return (
     <header className="flex items-center justify-between border-b border-[var(--rule)] pb-5">
       <div className="flex items-center gap-3">
@@ -176,9 +177,20 @@ function Masthead() {
           Polaris
         </span>
       </div>
-      <span className="text-[0.72rem] tracking-[0.18em] text-[var(--ink-3)] uppercase">
-        A planning tool
-      </span>
+      {onBack ? (
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-2 text-[0.82rem] text-[var(--ink-3)] underline decoration-[var(--rule-strong)] underline-offset-[6px] transition-colors duration-150 ease-out hover:text-[var(--ink)]"
+        >
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          Home
+        </button>
+      ) : (
+        <span className="text-[0.72rem] tracking-[0.18em] text-[var(--ink-3)] uppercase">
+          A planning tool
+        </span>
+      )}
     </header>
   );
 }
@@ -203,8 +215,8 @@ function Hero() {
             <span className="not-italic numeral mr-2 text-[var(--clay)]">
               §
             </span>
-            A planning aid, not a verdict. No names, addresses, accounts, or
-            coordinates leave this page.
+            A planning aid, not a verdict. This quiz does not ask for names,
+            addresses, accounts, or coordinates.
           </p>
         </aside>
       </div>
