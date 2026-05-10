@@ -110,10 +110,12 @@ export function ReportStepNav({
   currentSlug,
   continueDisabled,
   continueLabel,
+  onContinue,
 }: {
   readonly currentSlug: ReportStepSlug;
   readonly continueDisabled?: boolean;
   readonly continueLabel?: string;
+  readonly onContinue?: () => void;
 }) {
   const router = useRouter();
   const { flushPendingPatches } = useIncidentReport();
@@ -125,6 +127,7 @@ export function ReportStepNav({
 
   async function handleContinue() {
     await flushPendingPatches();
+    onContinue?.();
     router.push(next ? `/report/${next.slug}` : "/report/done");
   }
 

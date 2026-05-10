@@ -16,8 +16,18 @@ export default function ReportWhatPage() {
     startRecording,
     stopRecording,
     updateNarrative,
+    runAnalysis,
+    analysisState,
   } = useIncidentReport();
   const draft = report?.draft;
+  const hasNarrative = (draft?.narrativeText ?? "").trim().length > 0;
+  const peopleCount = draft?.people.length ?? 0;
+
+  function handleContinue() {
+    if (hasNarrative && peopleCount === 0 && analysisState !== "running") {
+      void runAnalysis();
+    }
+  }
 
   return (
     <section>
@@ -77,7 +87,7 @@ export default function ReportWhatPage() {
         </p>
       )}
 
-      <ReportStepNav currentSlug="what" />
+      <ReportStepNav currentSlug="what" onContinue={handleContinue} />
     </section>
   );
 }
