@@ -12,9 +12,14 @@ type SiteVerifyResponse = {
   readonly "error-codes"?: readonly string[];
 };
 
+const retryableErrorCodes = new Set([
+  "timeout-or-duplicate",
+  "challenge-expired",
+  "internal-error",
+]);
+
 export async function verifyTurnstileToken(
   token: string | null,
-  remoteIp: string | null,
 ): Promise<VerifyResult> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
 
@@ -44,51 +49,55 @@ export async function verifyTurnstileToken(
     response = await fetch(SITEVERIFY_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        secret,
-        response: token,
-        ...(remoteIp ? { remoteip: remoteIp } : {}),
-      }),
+      body: JSON.stringify({ secret, response: token }),
     });
   } catch (error) {
-    console.error("Turnstile verification request failed", error);
+    console.error("Turnstile verification fetch threw", error);
     return {
       ok: false,
       status: 502,
-      error: "Verification service unavailable",
+      error: "Verification could not reach Cloudflare. Please try again.",
     };
   }
 
   if (!response.ok) {
-    console.error("Turnstile siteverify returned", response.status);
+    const responseText = await response.text().catch(() => "");
+    console.error(
+      "Turnstile siteverify returned non-OK status",
+      response.status,
+      responseText.slice(0, 500),
+    );
     return {
       ok: false,
       status: 502,
-      error: "Verification service unavailable",
+      error: "Verification service is temporarily unavailable. Please try again.",
     };
   }
 
-  const payload = (await response.json()) as SiteVerifyResponse;
+  let payload: SiteVerifyResponse;
+  try {
+    payload = (await response.json()) as SiteVerifyResponse;
+  } catch (error) {
+    console.error("Turnstile siteverify returned non-JSON body", error);
+    return {
+      ok: false,
+      status: 502,
+      error: "Verification service returned an unexpected response. Please try again.",
+    };
+  }
 
   if (!payload.success) {
-    console.warn("Turnstile token rejected", payload["error-codes"]);
-    return { ok: false, status: 403, error: "Verification failed" };
+    const codes = payload["error-codes"] ?? [];
+    console.warn("Turnstile token rejected", codes);
+    const isRetryable = codes.some((code) => retryableErrorCodes.has(code));
+    return {
+      ok: false,
+      status: 403,
+      error: isRetryable
+        ? "Verification expired. Please try again."
+        : "Verification failed. Please refresh and try again.",
+    };
   }
 
   return { ok: true };
-}
-
-export function getRequestIp(request: Request): string | null {
-  const cfIp = request.headers.get("cf-connecting-ip");
-  if (cfIp) {
-    return cfIp;
-  }
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    const first = forwarded.split(",")[0]?.trim();
-    if (first) {
-      return first;
-    }
-  }
-  return null;
 }
