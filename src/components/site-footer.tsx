@@ -75,15 +75,6 @@ export function SiteFooter() {
           . Maintained by Hong Kong activist Joey Siu.
         </p>
 
-        <div className="mt-4 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-[0.78rem] text-[var(--ink-3)]">
-          <Link
-            href="/research"
-            className="underline decoration-[var(--rule-strong)] underline-offset-[4px] hover:text-[var(--ink-2)]"
-          >
-            Researcher access
-          </Link>
-        </div>
-
         <div className="mt-6 border-t border-[var(--rule)] pt-6">
           <p className="text-[0.75rem] font-medium uppercase tracking-[0.06em] text-[var(--ink-3)]">
             Learn more about transnational repression
@@ -128,6 +119,15 @@ export function SiteFooter() {
           visualizations use aggregated data and privacy thresholds to reduce
           re-identification risk.
         </p>
+
+        <div className="mt-8 border-t border-[var(--rule)] pt-6">
+          <Link
+            href="/research"
+            className="text-[0.78rem] text-[var(--ink-3)] underline decoration-[var(--rule-strong)] underline-offset-[4px] hover:text-[var(--ink-2)]"
+          >
+            Researcher access
+          </Link>
+        </div>
       </div>
     </footer>
   );
