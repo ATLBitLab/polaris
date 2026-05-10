@@ -9,7 +9,7 @@ const FREEDOM_HOUSE_LOGO =
   "https://freedomhouse.org/themes/custom/ts_freedomhouse/logo.svg";
 
 const FBI_TRANSNATIONAL_REPRESSION =
-  "https://www.fbi.gov/how-we-can-help-you/safety-resources/protect-yourself-from-transnational-repression";
+  "https://www.fbi.gov/investigate/counterintelligence/transnational-repression";
 const AMNESTY_GOING_GLOBAL =
   "https://policehumanrightsresources.org/going-global-chinas-transnational-repression-of-protesters-worldwide";
 const FREEDOM_HOUSE_TR_REPORT =
