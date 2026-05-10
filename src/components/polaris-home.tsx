@@ -41,10 +41,12 @@ export function PolarisHome() {
         </h1>
 
         <p className="mt-8 max-w-[62ch] text-[1.0625rem] leading-[1.75] text-[var(--ink-2)]">
-          Polaris is a place to document what happened and assess your own
-          exposure. Built for members of the Hong Kong, Tibetan, Uyghur, and
-          mainland Chinese communities, and for allies of pro-democracy
-          advocates from China.
+          Polaris is for people living in the United States who are
+          surveilled, harassed, or threatened by the Chinese government. That
+          can mean intimidation at a protest, online harassment, or pressure
+          put on family members back home. Built for members of the Hong
+          Kong, Tibetan, Uyghur, and mainland Chinese communities, and for
+          allies of pro-democracy advocates from China.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">

@@ -6,9 +6,9 @@ product
 
 ## Users
 
-Polaris is built for people facing transnational repression in the U.S. and the people who stand with them.
+Polaris is built for people in the United States who are surveilled, harassed, or threatened by the Chinese government, and for the allies who stand with them. This is transnational repression: pressure that follows people across borders, including intimidation at protests, online harassment campaigns, and coercive pressure placed on family members still living in China.
 
-The primary audience is members of the Hong Kong, Tibetan, Uyghur, and mainland Chinese communities, along with allies of pro-democracy advocates from China. Surface copy names these groups directly. The canonical persona is a Chinese pro-democracy activist living in the U.S., opening Polaris on a weekday evening to record an incident of harassment, surveillance, or threat, or to think through how to attend a public commemoration safely.
+The primary audience is members of the Hong Kong, Tibetan, Uyghur, and mainland Chinese communities, along with allies of pro-democracy advocates from China. Surface copy names these groups, and the perpetrator, directly. The canonical persona is a Chinese pro-democracy activist living in the U.S., opening Polaris on a weekday evening to record an incident of harassment, surveillance, or threat, or to think through how to attend a public commemoration safely.
 
 A second audience is implicit: program officers and grant-makers at human rights and civic-tech funders who reach the page while reviewing the project. They should see craft, restraint, and a serious privacy stance immediately, without ever encountering marketing language.
 
