@@ -7,10 +7,11 @@ import {
   type IncidentAnalysis,
   type IncidentDraft,
 } from "./incident-report";
-import type { TinfoilAudioUpload } from "./audio-format";
+import { splitWavUpload, type TinfoilAudioUpload } from "./audio-format";
 
 const transcriptionModel = "whisper-large-v3-turbo";
 const defaultAnalysisModel = "llama3-3-70b";
+const transcriptionChunkSeconds = 25;
 
 let cachedClient: TinfoilAI | null | undefined;
 
@@ -24,6 +25,30 @@ export async function transcribeIncidentAudio(upload: TinfoilAudioUpload): Promi
   readonly language: string | null;
 }> {
   const client = getTinfoilClient();
+  const chunks = splitWavUpload(upload, transcriptionChunkSeconds);
+  const parts: string[] = [];
+  let language: string | null = null;
+
+  for (const chunk of chunks) {
+    const transcription = await transcribeAudioChunk(client, chunk);
+    parts.push(transcription.text);
+    language ??= transcription.language;
+  }
+
+  return {
+    text: parts.filter(Boolean).join(" ").trim(),
+    model: transcriptionModel,
+    language,
+  };
+}
+
+async function transcribeAudioChunk(
+  client: TinfoilAI,
+  upload: TinfoilAudioUpload,
+): Promise<{
+  readonly text: string;
+  readonly language: string | null;
+}> {
   const audioFile = await toFile(upload.bytes, upload.filename, {
     type: upload.contentType,
   });
@@ -35,7 +60,6 @@ export async function transcribeIncidentAudio(upload: TinfoilAudioUpload): Promi
 
   return {
     text: "text" in transcription ? transcription.text.trim() : "",
-    model: transcriptionModel,
     language:
       "language" in transcription && typeof transcription.language === "string"
         ? transcription.language

@@ -368,7 +368,7 @@ export function IncidentReportFlow({
         void transcribeAudio(blob);
       };
 
-      recorder.start();
+      recorder.start(1000);
       setRecordingState("recording");
     } catch {
       setRecordingState("unsupported");
