@@ -59,10 +59,10 @@ export function DashboardFilters({
     <form
       method="GET"
       action="/overview"
-      className="flex h-full flex-col"
+      className="flex min-h-0 flex-1 flex-col"
       aria-label="Dashboard filters"
     >
-      <div className="flex-1 overflow-y-auto px-5 pt-5 pb-6 sm:px-6">
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 pt-5 pb-6 sm:px-6">
         <div className="flex flex-col gap-7">
           <Fieldset legend="Regions">
             <ul className="border-t border-[var(--rule)]">
