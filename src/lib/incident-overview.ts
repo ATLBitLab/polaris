@@ -5,13 +5,19 @@ import {
   shouldShowFakeIncidentReports,
 } from "./fake-incident-reports";
 import {
+  defaultOverviewFilters,
+  type DangerBucket,
+  type DatePreset,
+  type OverviewFilters,
+} from "./overview-filters";
+import {
   isRegionKey,
   regionCentroids,
   type RegionKey,
 } from "./region-centroids";
 import { getSupabaseAdminClient } from "./supabase-server";
 
-export type DangerBucket = "high" | "mid" | "low" | "untriaged";
+export type { DangerBucket } from "./overview-filters";
 
 export type RegionAggregate = {
   readonly key: RegionKey;
@@ -29,6 +35,7 @@ export type WeeklyCount = {
 
 export type OverviewData = {
   readonly totalReports: number;
+  readonly totalUnfiltered: number;
   readonly totalLast30Days: number;
   readonly byDanger: Readonly<Record<DangerBucket, number>>;
   readonly physicalViolence: {
@@ -58,17 +65,29 @@ const dangerRank: Record<DangerBucket, number> = {
   high: 3,
 };
 
-export async function loadOverviewData(): Promise<OverviewData> {
+const dayMs = 24 * 60 * 60 * 1000;
+
+export async function loadOverviewData(
+  filters: OverviewFilters = defaultOverviewFilters,
+): Promise<OverviewData> {
   const realRows = await loadRealRows();
-  const fakeRows = shouldShowFakeIncidentReports()
+  const fakeRows = filters.includeDemo && shouldShowFakeIncidentReports()
     ? getFakeIncidentReportsWithPeople().map(({ report }) => ({
         created_at: report.created_at,
         analysis_metadata: report.analysis_metadata,
       }))
     : [];
 
-  const allRows: readonly OverviewRow[] = [...realRows, ...fakeRows];
-  return aggregate(allRows, fakeRows.length);
+  const unfilteredRows: readonly OverviewRow[] = [...realRows, ...fakeRows];
+  const now = Date.now();
+  const filteredRows = applyFilters(unfilteredRows, filters, now);
+
+  return aggregate(filteredRows, {
+    totalUnfiltered: unfilteredRows.length,
+    demoCount: fakeRows.length,
+    datePreset: filters.datePreset,
+    nowMs: now,
+  });
 }
 
 async function loadRealRows(): Promise<readonly OverviewRow[]> {
@@ -91,12 +110,77 @@ async function loadRealRows(): Promise<readonly OverviewRow[]> {
   return data as OverviewRow[];
 }
 
+function applyFilters(
+  rows: readonly OverviewRow[],
+  filters: OverviewFilters,
+  nowMs: number,
+): readonly OverviewRow[] {
+  const dateCutoff = computeDateCutoff(nowMs, filters.datePreset);
+  const regionSet = filters.regions.length > 0 ? new Set(filters.regions) : null;
+  const dangerSet = filters.danger.length > 0 ? new Set(filters.danger) : null;
+
+  return rows.filter((row) => {
+    if (dateCutoff !== null) {
+      const created = Date.parse(row.created_at);
+      if (!Number.isFinite(created) || created < dateCutoff) return false;
+    }
+
+    const meta = readMetadata(row.analysis_metadata);
+
+    if (regionSet) {
+      if (!isRegionKey(meta.region) || !regionSet.has(meta.region)) {
+        return false;
+      }
+    }
+
+    if (dangerSet) {
+      const bucket = mapDanger(meta.dangerLevel);
+      if (!dangerSet.has(bucket)) return false;
+    }
+
+    if (filters.violence !== "any") {
+      if (meta.physicalViolence === null) return false;
+      const isViolent = meta.physicalViolence === "physical_violence_used";
+      if (filters.violence === "yes" && !isViolent) return false;
+      if (filters.violence === "no" && isViolent) return false;
+    }
+
+    if (filters.evidence !== "any") {
+      if (meta.evidenceCount === null) return false;
+      const hasEvidence = meta.evidenceCount > 0;
+      if (filters.evidence === "with" && !hasEvidence) return false;
+      if (filters.evidence === "without" && hasEvidence) return false;
+    }
+
+    return true;
+  });
+}
+
+function computeDateCutoff(nowMs: number, preset: DatePreset): number | null {
+  switch (preset) {
+    case "7d":
+      return nowMs - 7 * dayMs;
+    case "30d":
+      return nowMs - 30 * dayMs;
+    case "90d":
+      return nowMs - 90 * dayMs;
+    case "all":
+      return null;
+  }
+}
+
+type AggregateContext = {
+  readonly totalUnfiltered: number;
+  readonly demoCount: number;
+  readonly datePreset: DatePreset;
+  readonly nowMs: number;
+};
+
 function aggregate(
   rows: readonly OverviewRow[],
-  demoCount: number,
+  ctx: AggregateContext,
 ): OverviewData {
-  const now = Date.now();
-  const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+  const thirtyDaysAgo = ctx.nowMs - 30 * dayMs;
 
   const byDanger: Record<DangerBucket, number> = {
     high: 0,
@@ -167,10 +251,11 @@ function aggregate(
     .sort((a, b) => b.count - a.count);
 
   const topRegions = allRegions.slice(0, 5);
-  const recentByWeek = buildWeeklyCounts(rows, now);
+  const recentByWeek = buildPeriodCounts(rows, ctx.nowMs, ctx.datePreset);
 
   return {
     totalReports: rows.length,
+    totalUnfiltered: ctx.totalUnfiltered,
     totalLast30Days,
     byDanger,
     physicalViolence: {
@@ -184,8 +269,8 @@ function aggregate(
     topRegions,
     allRegions,
     recentByWeek,
-    demoDataIncluded: demoCount > 0,
-    demoCount,
+    demoDataIncluded: ctx.demoCount > 0,
+    demoCount: ctx.demoCount,
   };
 }
 
@@ -234,15 +319,14 @@ function rankToBucket(rank: number): DangerBucket {
   return "untriaged";
 }
 
-function buildWeeklyCounts(
+function buildPeriodCounts(
   rows: readonly OverviewRow[],
   nowMs: number,
+  preset: DatePreset,
 ): WeeklyCount[] {
-  const weekMs = 7 * 24 * 60 * 60 * 1000;
-  const weeks = 8;
-  const buckets: WeeklyCount[] = [];
+  const { bucketCount, daysPerBucket } = periodShape(preset);
+  const bucketMs = daysPerBucket * dayMs;
 
-  // Normalize "now" to start of UTC day so weeks align consistently.
   const today = new Date(nowMs);
   const startToday = Date.UTC(
     today.getUTCFullYear(),
@@ -250,28 +334,45 @@ function buildWeeklyCounts(
     today.getUTCDate(),
   );
 
-  for (let i = weeks - 1; i >= 0; i -= 1) {
-    const start = startToday - i * weekMs;
+  const buckets: WeeklyCount[] = [];
+  for (let i = bucketCount - 1; i >= 0; i -= 1) {
+    const start = startToday - i * bucketMs;
     buckets.push({
       weekStart: new Date(start).toISOString(),
       count: 0,
     });
   }
 
-  const earliest = startToday - (weeks - 1) * weekMs;
+  const earliest = startToday - (bucketCount - 1) * bucketMs;
   for (const row of rows) {
     const created = Date.parse(row.created_at);
     if (!Number.isFinite(created) || created < earliest) continue;
 
-    const offsetWeeks = Math.min(
-      weeks - 1,
-      Math.max(0, Math.floor((created - earliest) / weekMs)),
+    const offset = Math.min(
+      bucketCount - 1,
+      Math.max(0, Math.floor((created - earliest) / bucketMs)),
     );
-    buckets[offsetWeeks] = {
-      weekStart: buckets[offsetWeeks].weekStart,
-      count: buckets[offsetWeeks].count + 1,
+    buckets[offset] = {
+      weekStart: buckets[offset].weekStart,
+      count: buckets[offset].count + 1,
     };
   }
 
   return buckets;
+}
+
+function periodShape(preset: DatePreset): {
+  readonly bucketCount: number;
+  readonly daysPerBucket: number;
+} {
+  switch (preset) {
+    case "7d":
+      return { bucketCount: 7, daysPerBucket: 1 };
+    case "30d":
+      return { bucketCount: 4, daysPerBucket: 7 };
+    case "90d":
+      return { bucketCount: 13, daysPerBucket: 7 };
+    case "all":
+      return { bucketCount: 8, daysPerBucket: 7 };
+  }
 }

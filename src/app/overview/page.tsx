@@ -1,12 +1,22 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import {
+  ActiveFiltersSummary,
+  DashboardFilters,
+} from "@/components/overview/dashboard-filters";
 import { DangerBars } from "@/components/overview/danger-bars";
 import { IncidentMap } from "@/components/overview/incident-map";
 import { RecentBars } from "@/components/overview/recent-bars";
 import { RegionList } from "@/components/overview/region-list";
 import { StatCard } from "@/components/overview/stat-card";
+import { shouldShowFakeIncidentReports } from "@/lib/fake-incident-reports";
 import { loadOverviewData } from "@/lib/incident-overview";
+import {
+  parseOverviewFilters,
+  type DatePreset,
+  type OverviewFilters,
+} from "@/lib/overview-filters";
 
 export const metadata: Metadata = {
   title: "Overview · Polaris",
@@ -16,8 +26,19 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function OverviewPage() {
-  const data = await loadOverviewData();
+type SearchParams = Promise<
+  Record<string, string | string[] | undefined>
+>;
+
+export default async function OverviewPage({
+  searchParams,
+}: {
+  readonly searchParams: SearchParams;
+}) {
+  const demoEnvEnabled = shouldShowFakeIncidentReports();
+  const sp = await searchParams;
+  const filters = parseOverviewFilters(sp, { demoEnvEnabled });
+  const data = await loadOverviewData(filters);
 
   const violencePct =
     data.physicalViolence.analyzed === 0
@@ -32,6 +53,10 @@ export default async function OverviewPage() {
     data.evidence.analyzed === 0
       ? null
       : Math.round((data.evidence.withEvidence / data.evidence.analyzed) * 100);
+
+  const regionsForList =
+    filters.regions.length > 0 ? data.allRegions : data.topRegions;
+  const recentCopy = recentActivityCopy(filters.datePreset);
 
   return (
     <main className="mx-auto w-full max-w-[78rem] px-6 pt-10 pb-24 sm:px-10 sm:pt-14">
@@ -80,17 +105,42 @@ export default async function OverviewPage() {
         </aside>
       </section>
 
-      <section className="mt-14">
+      <section className="mt-10">
+        <DashboardFilters
+          filters={filters}
+          demoEnvEnabled={demoEnvEnabled}
+        />
+        <ActiveFiltersSummary
+          filters={filters}
+          totalShown={data.totalReports}
+          totalAll={data.totalUnfiltered}
+          demoEnvEnabled={demoEnvEnabled}
+        />
+      </section>
+
+      <section className="mt-12">
         <div className="card overflow-hidden p-4 sm:p-6">
           <IncidentMap regions={data.allRegions} />
         </div>
         <MapLegend />
+        {data.allRegions.length === 0 ? (
+          <p className="mt-4 text-[0.86rem] text-[var(--ink-3)]">
+            No regions match these filters. Adjust or{" "}
+            <Link
+              href="/overview"
+              className="text-[var(--ink-2)] underline underline-offset-4"
+            >
+              clear all
+            </Link>{" "}
+            to see every report.
+          </p>
+        ) : null}
       </section>
 
       <section className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           eyebrow="Total reports"
-          footnote={`${data.totalLast30Days} in the last 30 days.`}
+          footnote={totalReportsFootnote(data, filters)}
         >
           <p className="numeral text-[3.25rem] leading-[1] text-[var(--ink)]">
             {data.totalReports}
@@ -139,11 +189,12 @@ export default async function OverviewPage() {
           Most active regions
         </h2>
         <p className="mt-3 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-          The five regions with the most reports in this view, with a marker
-          for the worst danger level any single report in that region carried.
+          {filters.regions.length > 0
+            ? "The regions matching this view, ordered by report count, with a marker for the worst danger level any single report carried."
+            : "The five regions with the most reports in this view, with a marker for the worst danger level any single report in that region carried."}
         </p>
         <div className="mt-6">
-          <RegionList regions={data.topRegions} />
+          <RegionList regions={regionsForList} />
         </div>
       </section>
 
@@ -153,11 +204,13 @@ export default async function OverviewPage() {
           Recent activity
         </h2>
         <p className="mt-3 max-w-[60ch] text-[0.95rem] leading-relaxed text-[var(--ink-2)]">
-          Reports per week over the last eight weeks. The dashboard updates
-          as new reports are submitted.
+          {recentCopy.helper}
         </p>
         <div className="mt-6 max-w-[36rem]">
-          <RecentBars weeks={data.recentByWeek} />
+          <RecentBars
+            weeks={data.recentByWeek}
+            windowLabel={recentCopy.windowLabel}
+          />
         </div>
       </section>
 
@@ -180,6 +233,50 @@ export default async function OverviewPage() {
       </footer>
     </main>
   );
+}
+
+function totalReportsFootnote(
+  data: { readonly totalLast30Days: number; readonly totalUnfiltered: number; readonly totalReports: number },
+  filters: OverviewFilters,
+): string {
+  if (filters.datePreset !== "all") {
+    return `Filtered from ${data.totalUnfiltered} report${
+      data.totalUnfiltered === 1 ? "" : "s"
+    } overall.`;
+  }
+  return `${data.totalLast30Days} in the last 30 days.`;
+}
+
+function recentActivityCopy(preset: DatePreset): {
+  readonly helper: string;
+  readonly windowLabel: string;
+} {
+  switch (preset) {
+    case "7d":
+      return {
+        helper:
+          "Reports per day over the last seven days. The dashboard updates as new reports are submitted.",
+        windowLabel: "the last 7 days",
+      };
+    case "30d":
+      return {
+        helper:
+          "Reports per week over the last 30 days. The dashboard updates as new reports are submitted.",
+        windowLabel: "the last 30 days",
+      };
+    case "90d":
+      return {
+        helper:
+          "Reports per week over the last 90 days. The dashboard updates as new reports are submitted.",
+        windowLabel: "the last 90 days",
+      };
+    case "all":
+      return {
+        helper:
+          "Reports per week over the last eight weeks. The dashboard updates as new reports are submitted.",
+        windowLabel: "the last 8 weeks",
+      };
+  }
 }
 
 function MapLegend() {
